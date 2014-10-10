@@ -45,8 +45,6 @@ if (noSDK) { // dummy code for when testing UI without add-on SDK
 }
 //////////////////////////////////////////////////////////////////////////////
 
-var prefs 			= self.options.prefs;
-
 function bytesToReadable(bytes,decimal) {
 	var s = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
 	if (bytes == 0) return '0 '+s[0];
@@ -96,6 +94,7 @@ function doResize() {
 }
 
 function onPrefChange([prefName,prefValue]) {
+	self.options.prefs[prefName] = prefValue;
 	if (prefName == 'sab_enabled' || prefName == 'nzbg_enabled') {
 		if (prefValue) {
 			if (prefName == 'nzbg_enabled')
@@ -148,6 +147,8 @@ self.port.on('rpc-call-failure',function({call,reply}) {
 		TabList[call.id].setError(reply.message);
 });
 
+window.setInterval(function() {console.log(self.options.prefs.nzbg_ip);},1000);
+
 function sab_tab(id,title) {
 	var _this = this;
 	this.id = id;
@@ -192,7 +193,7 @@ function sab_tab(id,title) {
 	});
 	// Open download client webpage
 	this.btnOpenEle.click(function() {
-		window.open('http://'+prefs.sab_ip+':'+prefs.sab_port);
+		window.open('http://'+self.options.prefs.sab_ip+':'+self.options.prefs.sab_port);
 	});
 	// Send 'queue' RPC call which contains all the info we need (labeled as Status for parity with nzbget)
 	this.refreshStatus = function() {
@@ -289,7 +290,7 @@ function nzbg_tab(id,title) {
 	});
 	// Open download client webpage
 	this.btnOpenEle.click(function() {
-		window.open('http://'+prefs.nzbg_ip+':'+prefs.nzbg_port);
+		window.open('http://'+self.options.prefs.nzbg_ip+':'+self.options.prefs.nzbg_port);
 	});
 	// Send 'status' RPC call to get current download speed & paused state
 	this.refreshStatus = function() {
