@@ -82,21 +82,22 @@ for (let i = 0; i < indexers.length; ++i) {
 			}
 
 			let apikey = (
-				document.getElementsByName('RSSTOKEN')[0] ||	// nzbs/nmatrix/oznzb
+				document.getElementsByName('RSSTOKEN')[0] ||	// nzbs/nmatrix/oznzb/nzbsu
 				document.getElementsByName('rsstoken')[0]			// dognzb/nzbgeek
 			).value;
 			let dlkey = $(
-				$(this).find('a')[0] ||			// nzbs/nmatrix/oznzb (child link)
-				$(this).closest('a')[0] ||	// nzbs/nmatrix/oznzb (parent link)
+				$(this).find('a')[0] ||			// nzbs/nmatrix/oznzb/nzbsu (child link)
+				$(this).closest('a')[0] ||	// nzbs/nmatrix/oznzb/nzbsu (parent link)
 				thisRow.find('a')[0]				// dognzb
 			).attr('href').split('/')[2];
 			if (domain == 'nzbgeek.info') dlkey = getURLParameter('guid',$(thisRow).find('a[href*="guid="]').attr('href'));
 
 			let Title = $(
-				thisRow.find('a.title')[0] ||								// nzbs/nmatrix/oznzb/nzbgeek result table
+				thisRow.find('a.title')[0] ||								// nzbs/nmatrix/oznzb/nzbgeek/nzbsu result table
 				thisRow.find('a.link')[0] ||								// dognzb result table
 				$('div#infohead > h1')[0] ||								// nzbs details page
 				$('h2')[0] ||																// nmatrix details page
+				$('div.span12 >h3')[0] || 									// nzb.su details page
 				$('div.container-index > font[size=5]')[0]	// nzbgeek details page
 			).text();
 			let URL = window.location.protocol+'//'+apiURL+'/api?t=get&id='+dlkey+'&apikey='+apikey;
@@ -108,6 +109,7 @@ for (let i = 0; i < indexers.length; ++i) {
 				thisRow.find('div[align=right]')[0] ||									// dognzb results table
 				$('div#infohead > h2 > a')[0] || 												// nzbs details
 				$('div#show1').find('a[href*="?c="]')[0] || 						// nzbgeek details
+				$('div.span12 > a[href^="/browse?t="]')[0] ||						// nzb.su details page
 				$('dl.dl-horizontal').find('a[href^="/browse?t="]')[0]	// nmatrix details
 			).text().trim().toLowerCase().split(/[-(\s>\s)]+/); 			// newznab pages, split with " > " / "-"
 
