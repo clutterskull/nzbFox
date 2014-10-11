@@ -323,7 +323,7 @@ function nzbg_tab(id,title) {
 			if ((rpc.result[i].Status == 'DOWNLOADING') || (rpc.result[i].Status == 'QUEUED' && this.lastStatus.result.DownloadPaused)) { // If download is active, or first in queue while paused
 				dlTotalMB = (rpc.result[i].FileSizeMB - rpc.result[i].PausedSizeMB);
 				dlRemainingMB = (rpc.result[i].RemainingSizeMB - rpc.result[i].PausedSizeMB);
-				dlPercent =  Math.round((dlTotalMB - dlRemainingMB) / dlTotalMB * 100);
+				dlPercent =  Math.floor((dlTotalMB - dlRemainingMB) / dlTotalMB * 100);
 				dlName = rpc.result[i].NZBName+((rpc.result[i].Category != '') ? ' ('+rpc.result[i].Category+')':'');
 				dlTime = (this.lastStatus.result.DownloadRate > 0?timeLeftString((dlRemainingMB * 1024 / (this.lastStatus.result.DownloadRate / 1024))):'N/A')+' ('+dlRemainingMB+' MB)';
 				break;
@@ -353,6 +353,10 @@ function nzbg_tab(id,title) {
 $(function() {
 	$('#tabs').tabs({
 		activate: doResize
+	});
+	
+	$('button#showOptions').button({text:false,icons:{primary:'ui-icon-wrench'}}).click(function() {
+		self.port.emit('showOptions');
 	});
 
 	if (self.options.prefs.nzbg_enabled)
