@@ -1,9 +1,9 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- 
+
 		nzbFox (c) 2014 Nick Cooper - https://github.com/NickSC
-		
+
 */
 
 var prefs 			= self.options.prefs;
@@ -31,6 +31,11 @@ self.port.on('sabnzbd-added',function(data) {
 		alert('Unable to send "'+data.request.title+'" to SABnzbd+'+"\n"+'Message: '+data.rpc.message+"\n\n"+JSON.stringify(data.rpc.query));
 	}
 });
+
+function getURLParameter(name,url) {
+	if (!url) url = location.search;
+  return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(url)||[,""])[1].replace(/\+/g, '%20'))||null
+}
 
 function CreateButton(ID,Title,Category,URL,WrapHTML) {
 
@@ -67,36 +72,42 @@ for (let i = 0; i < indexers.length; ++i) {
 		var domain = indexers[i];
 
 		function eachNewznabDownload(index) {
-
 			let thisRow = $(this).closest('tr');
 			let apiURL = window.location.hostname;
 			let wrapHTML = ['<div class="icon" style="display: inline">','</div>'];
-
 			if (domain == 'dognzb.cr') apiURL = 'api.dognzb.cr';
+			if (domain == 'nzbgeek.info') {
+				thisRow = $(this).closest('tr.HighlightTVRow2');
+				apiURL = 'api.nzbgeek.info';
+			}
 
 			let apikey = (
 				document.getElementsByName('RSSTOKEN')[0] ||	// nzbs/nmatrix/oznzb
-				document.getElementsByName('rsstoken')[0]			// dognzb
+				document.getElementsByName('rsstoken')[0]			// dognzb/nzbgeek
 			).value;
 			let dlkey = $(
 				$(this).find('a')[0] ||			// nzbs/nmatrix/oznzb (child link)
 				$(this).closest('a')[0] ||	// nzbs/nmatrix/oznzb (parent link)
 				thisRow.find('a')[0]				// dognzb
 			).attr('href').split('/')[2];
+			if (domain == 'nzbgeek.info') dlkey = getURLParameter('guid',$(thisRow).find('a[href*="guid="]').attr('href'));
 
 			let Title = $(
-				thisRow.find('a.title')[0] ||	// nzbs/nmatrix/oznzb result table
-				thisRow.find('a.link')[0] ||	// dognzb result table
-				$('div#infohead > h1')[0] ||	// nzbs details page
-				$('h2')[0]										// nmatrix details page
+				thisRow.find('a.title')[0] ||								// nzbs/nmatrix/oznzb/nzbgeek result table
+				thisRow.find('a.link')[0] ||								// dognzb result table
+				$('div#infohead > h1')[0] ||								// nzbs details page
+				$('h2')[0] ||																// nmatrix details page
+				$('div.container-index > font[size=5]')[0]	// nzbgeek details page
 			).text();
 			let URL = window.location.protocol+'//'+apiURL+'/api?t=get&id='+dlkey+'&apikey='+apikey;
 
 			let Cat = $(
 				thisRow.find('td.less:first > a')[0] ||									// nzbs/nmatrix results table
+				thisRow.find('a[href^="geekseek.php?c="]')[0] ||				// nzbgeek results table
 				thisRow.find('a[href^="/browse?t="]')[0] ||							// oznzb results table
 				thisRow.find('div[align=right]')[0] ||									// dognzb results table
 				$('div#infohead > h2 > a')[0] || 												// nzbs details
+				$('div#show1').find('a[href*="?c="]')[0] || 						// nzbgeek details
 				$('dl.dl-horizontal').find('a[href^="/browse?t="]')[0]	// nmatrix details
 			).text().trim().toLowerCase().split(/[-(\s>\s)]+/); 			// newznab pages, split with " > " / "-"
 
@@ -116,13 +127,19 @@ for (let i = 0; i < indexers.length; ++i) {
 
 			let downloadButton = CreateButton(index,Title,Category,URL,wrapHTML);
 			if (domain == 'dognzb.cr')
-				$(downloadButton).insertBefore($(this).closest('tr').find('a.link'))
+				$(downloadButton).insertBefore($(this).closest('tr').find('a.link'));
 			else
 				$(downloadButton).insertBefore($(this).closest('*'));
-
 		}
 
-		let btnSelector = (domain == 'dognzb.cr') ? 'div.dog-icon-download':'div.icon.icon_nzb, a.icon.icon_nzb';
+		var btnSelector = '';
+		if (domain == 'dognzb.cr')
+			btnSelector = 'div.dog-icon-download';
+		else
+		if (domain == 'nzbgeek.info')
+			btnSelector = 'a[href*="&api="][title="Download NZB"]';
+		else
+			btnSelector = 'div.icon.icon_nzb, a.icon.icon_nzb';
 
 		if (domain == 'fanzub.com')
 			$('td.file').each(function(index) {
@@ -132,7 +149,7 @@ for (let i = 0; i < indexers.length; ++i) {
 		if (domain == 'binsearch.info')
  			$('tr[bgcolor="#FFFFFF"], tr[bgcolor="#F6F7FA"]').each(function(index) {
 				let Title = ($(this).find('span.s').text().match(/"(.*?)"/) || ['','Unknown NZB @ binsearch'])[1];
-				let URL = window.location.protocol+'//'+domain+'/?action=nzb&'+$(this).find('input').attr('name')+'=on';	
+				let URL = window.location.protocol+'//'+domain+'/?action=nzb&'+$(this).find('input').attr('name')+'=on';
 				$(this).find('td:nth-child(2)').append(CreateButton(index,Title,'',URL));
  			});
 		else
