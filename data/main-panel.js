@@ -147,8 +147,6 @@ self.port.on('rpc-call-failure',function({call,reply}) {
 		TabList[call.id].setError(reply.message);
 });
 
-window.setInterval(function() {console.log(self.options.prefs.nzbg_ip);},1000);
-
 function sab_tab(id,title) {
 	var _this = this;
 	this.id = id;
@@ -193,7 +191,7 @@ function sab_tab(id,title) {
 	});
 	// Open download client webpage
 	this.btnOpenEle.click(function() {
-		window.open('http://'+self.options.prefs.sab_ip+':'+self.options.prefs.sab_port);
+		window.open((self.options.prefs.sab_ssl?'https':'http')+'://'+self.options.prefs.sab_ip+':'+self.options.prefs.sab_port);
 	});
 	// Send 'queue' RPC call which contains all the info we need (labeled as Status for parity with nzbget)
 	this.refreshStatus = function() {
@@ -290,7 +288,7 @@ function nzbg_tab(id,title) {
 	});
 	// Open download client webpage
 	this.btnOpenEle.click(function() {
-		window.open('http://'+self.options.prefs.nzbg_ip+':'+self.options.prefs.nzbg_port);
+		window.open((self.options.prefs.nzbg_ssl?'https':'http')+'://'+self.options.prefs.nzbg_ip+':'+self.options.prefs.nzbg_port);
 	});
 	// Send 'status' RPC call to get current download speed & paused state
 	this.refreshStatus = function() {

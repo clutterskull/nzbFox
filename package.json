@@ -7,12 +7,19 @@
 	"icon": "data/nzb-64.png",
 	"author": "Enesce",
 	"license": "MPL 2.0",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	
 	"preferences": [
 	{
 		"name": "nzbg_enabled",
 		"title": "Enable NZBGet",
+		"description": "",
+		"type": "bool",
+		"value": false
+	},
+	{
+		"name": "nzbg_ssl",
+		"title": "Use SSL",
 		"description": "",
 		"type": "bool",
 		"value": false
@@ -55,6 +62,13 @@
 	{
 		"name": "sab_enabled",
 		"title": "Enable SABnzbd+",
+		"description": "",
+		"type": "bool",
+		"value": false
+	},
+	{
+		"name": "sab_ssl",
+		"title": "Use SSL",
 		"description": "",
 		"type": "bool",
 		"value": false
