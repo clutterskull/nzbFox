@@ -32,6 +32,8 @@ self.port.on('sabnzbd-added',function(data) {
 	}
 });
 
+function log(msg) {self.port.emit('log',msg);}
+
 function getURLParameter(name,url) {
 	if (!url) url = location.search;
   return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(url)||[,""])[1].replace(/\+/g, '%20'))||null
@@ -48,7 +50,7 @@ function CreateButton(ID,Title,Category,URL,WrapHTML) {
 	if (prefs.nzbg_enabled) {
 		var NZBG_Ele = $(WrapHTML[0]+'<a id="nzbFoxNZBGet'+ID+'" style="outline: none;padding-right: 2px" href="#" title="Send to NZBGet"><img src="'+imgNZBG+'" /></a>'+WrapHTML[1]);
 		NZBG_Ele.click(function() {
-			console.log('NZBGet Clicked = '+ID+' / '+Title+' / '+Category+' / '+URL);
+			log('NZBGet Clicked = '+ID+' / '+Title+' / '+Category+' / '+URL);
 			self.port.emit('nzbget-add', {id: ID,title:Title,category:Category,url:URL});
 			return false;
 		});
@@ -57,7 +59,7 @@ function CreateButton(ID,Title,Category,URL,WrapHTML) {
 	if (prefs.sab_enabled) {
 		var SAB_Ele = $(WrapHTML[0]+'<a id="nzbFoxSAB'+ID+'" style="outline: none;padding-right: 2px" href="#" title="Send to SABnzbd+"><img src="'+imgSAB+'" /></a>'+WrapHTML[1]);
 		SAB_Ele.click(function() {
-			console.log('SAB Clicked = '+ID+' / '+Title+' / '+Category+' / '+URL);
+			log('SAB Clicked = '+ID+' / '+Title+' / '+Category+' / '+URL);
 			self.port.emit('sabnzbd-add', {id: ID,title:Title,category:Category,url:URL});
 			return false;
 		});

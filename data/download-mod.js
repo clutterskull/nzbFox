@@ -6,6 +6,8 @@
 		
 */
 
+function log(msg) {self.port.emit('log',msg);}
+
 if (dialog.mLauncher.MIMEInfo.MIMEType == 'application/x-nzb' || dialog.mLauncher.MIMEInfo.primaryExtension.toLowerCase() == 'nzb') {
 	var modeGroup = document.getElementById('mode');
 	var fileName = dialog.mLauncher.suggestedFileName;

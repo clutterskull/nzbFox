@@ -7,7 +7,7 @@
 	"icon": "data/nzb-64.png",
 	"author": "Enesce",
 	"license": "MPL 2.0",
-	"version": "1.0.2",
+	"version": "1.0.3",
 	
 	"preferences": [
 	{
@@ -149,8 +149,14 @@
 		"description": "",
 		"type": "string",
 		"value": "Adult"
+	},
+	{
+		"name": "dev",
+		"title": "Developer Mode",
+		"description": "Enables additional logging to web console.\nOnly enable if you know what you are doing!",
+		"type": "bool",
+		"value": false
 	}
-	
-	
+
 	]
 }

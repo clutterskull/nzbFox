@@ -45,6 +45,8 @@ if (noSDK) { // dummy code for when testing UI without add-on SDK
 }
 //////////////////////////////////////////////////////////////////////////////
 
+function log(msg) {self.port.emit('log',msg);}
+
 function bytesToReadable(bytes,decimal) {
 	var s = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
 	if (bytes == 0) return '0 '+s[0];
@@ -126,6 +128,7 @@ self.port.on('hide',function() {
 	refreshAll_timer = window.setTimeout(refreshAll,refreshFreq);
 });
 self.port.on('rpc-call-success',function({call,reply}) {
+	log('rpc-call-success '+JSON.stringify(call)+' / '+JSON.stringify(reply));
 	if (!TabList[call.id]) return;
 	TabList[call.id].setError('');
 	if (call.method == 'status' || call.method == 'queue') {
@@ -143,6 +146,7 @@ self.port.on('rpc-call-success',function({call,reply}) {
 	}
 });
 self.port.on('rpc-call-failure',function({call,reply}) {
+	log('rpc-call-failure '+JSON.stringify(call)+' / '+JSON.stringify(reply));
 	if (TabList[call.id])
 		TabList[call.id].setError(reply.message);
 });
