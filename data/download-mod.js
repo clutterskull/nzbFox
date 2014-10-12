@@ -7,9 +7,8 @@
 */
 
 function log(msg) {self.port.emit('log',msg);}
-
 log('Download prompt detected, MIME = "'+dialog.mLauncher.MIMEInfo.MIMEType+'" primExt = "'+dialog.mLauncher.MIMEInfo.primaryExtension.toLowerCase()+'"');
-
+if (self.options.prefs.dev) console.log(dialog.mLauncher);
 if (dialog.mLauncher.MIMEInfo.MIMEType == 'application/x-nzb' || dialog.mLauncher.MIMEInfo.primaryExtension.toLowerCase() == 'nzb') {
 	var modeGroup = document.getElementById('mode');
 	var fileName = dialog.mLauncher.suggestedFileName;

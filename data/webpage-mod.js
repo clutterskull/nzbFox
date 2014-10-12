@@ -121,9 +121,7 @@ for (let i = 0; i < indexers.length; ++i) {
 			).text();
 			if (domain == 'nzbplanet.net') Cat = (thisRow.find('td.less:first > a').attr('title') || $('table#detailstable').find('a[href^="/browse?t="]').text() || '').substr(7); // nzbplanet only shows subcat, so get Cat1>Cat2 from link title
 			Cat = Cat.trim().toLowerCase().split(/[-(\s>\s)]+/); 			// newznab pages, split with " > " / "-"
-			
-			
-			
+
 			let Category = '';
 			if (Cat[0] == '') Cat[0] = String(window.location.pathname).toLowerCase().split('/')[1];
 			switch (Cat[0]) {
@@ -162,9 +160,9 @@ for (let i = 0; i < indexers.length; ++i) {
 		else
 		if (domain == 'binsearch.info')
  			$('tr[bgcolor="#FFFFFF"], tr[bgcolor="#F6F7FA"]').each(function(index) {
-				let Title = ($(this).find('span.s').text().match(/"(.*?)"/) || ['','Unknown NZB @ binsearch'])[1];
+				let Title = ($(this).find('span.s').text().match(/"(.*?)"/) || ['','Unknown Title @ binsearch'])[1];
 				let URL = window.location.protocol+'//'+domain+'/?action=nzb&'+$(this).find('input').attr('name')+'=on';
-				$(this).find('td:nth-child(2)').append(CreateButton(index,Title,'',URL));
+				$(this).find('input').parent().append(CreateButton(index,Title,'',URL));
  			});
 		else
 		$(btnSelector).each(eachNewznabDownload);

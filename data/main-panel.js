@@ -5,6 +5,7 @@
  		nzbFox (c) 2014 Nick Cooper - https://github.com/NickSC
  
 */
+// todo: [Object object] was being passed by nzbget rpc error for invalid parameter
 
 //////////////////////////////////////////////////////////////////////////////
 var noSDK = (typeof self.port == 'undefined');
@@ -31,14 +32,16 @@ if (noSDK) { // dummy code for when testing UI without add-on SDK
 	var options = (new function() {
 		this.prefs = {
 			nzbg_enabled: true,
-			sab_enabled: false,
+			sab_enabled: true,
 			
 			nzbg_ip: '192.168.1.4',
 			nzbg_port: 8080,
 			nzbg_user: '',
 			nzbg_pass: '',
 			
-			
+			sab_ip: '192.168.1.4',
+			sab_port: 8084,
+			sab_apikey: '123456',		
 		};
 	});
 	
@@ -69,7 +72,7 @@ function refreshAll() {
 	window.clearTimeout(refreshAll_timer);
 	for (var i = 0; i < TabList.length; ++i)
 		if (TabList[i])
-			TabList[i].btnRefreshEle.click();
+			TabList[i].refreshStatus(); //.btnRefreshEle.click(); not being called because click() closes menu
 	refreshAll_timer = window.setTimeout(refreshAll,refreshFreq);
 }
 
@@ -128,7 +131,7 @@ self.port.on('hide',function() {
 	refreshAll_timer = window.setTimeout(refreshAll,refreshFreq);
 });
 self.port.on('rpc-call-success',function({call,reply}) {
-	log('rpc-call-success '+JSON.stringify(call)+' / '+JSON.stringify(reply));
+//	log('rpc-call-success '+JSON.stringify(call)+' / '+JSON.stringify(reply));
 	if (!TabList[call.id]) return;
 	TabList[call.id].setError('');
 	if (call.method == 'status' || call.method == 'queue') {
@@ -155,35 +158,123 @@ function sab_tab(id,title) {
 	var _this = this;
 	this.id = id;
 	this.lastStatus;
+	this.lastQueue;
 
-	this.tabHeader = $('<li><a href="#tabs-'+id+'">'+title+'</a></li>'); //.insertBefore('#tabList > li:last');
+	this.tabHeader = $('<li><a href="#tabs-'+id+'">'+title+'</a></li>');
 									 $('#tabList').append(this.tabHeader);
 	this.tab = $('<div/>', {id: 'tabs-'+id}).appendTo('#tabs');
-	this.tab.html(
-		'<b>Speed:</b> <div id="dlSpeed" class="nzbFox"></div><br/>'+
-		'<b>Downloading:</b> <div id="dlName" class="nzbFox"></div><br/>'+
-		'<b>Remaining:</b> <div id="dlTime" class="nzbFox"></div><br/>'+
-		'<div id="dlProgress" class="ui-progressbar"><div id="dlProgress-label" class="ui-progressbar-label"></div></div><br/>'+
-		'<button id="togglePause">...</button>'+
-		'<button id="refresh">Refresh</button>'+
-		'<div id="error" class="nzbFox"></div>'+
-		'<button id="open" style="float: right">&nbsp;</button>'+
-		''
-	);
+	this.tab.html($('div#sabnzbd.template').html());
+	// Labels
 	this.dlSpeedEle = this.tab.find('#dlSpeed');
 	this.dlNameEle = this.tab.find('#dlName');
 	this.dlTimeEle = this.tab.find('#dlTime');
 	this.dlProgressEle = this.tab.find('#dlProgress').progressbar({value: false});
 	this.dlProgressLabelEle = this.tab.find('#dlProgress-label');
+	this.errorEle = this.tab.find('#error');
+	// Buttons
 	this.btnTogglePauseEle = this.tab.find('#togglePause').button();
 	this.btnRefreshEle = this.tab.find('#refresh').button({icons:{primary: 'ui-icon-refresh'}});
 	this.btnOpenEle = this.tab.find('#open').button({text:false,icons:{primary: 'ui-icon-newwin'}});
-	this.errorEle = this.tab.find('#error');
+	// Menus	
+	this.menuEle = this.tab.find('ul#menu').menu({position: {my: 'left bottom', at: 'right bottom'}}).hide();
+	this.btnTogglePauseMenuEle = this.tab.find('#toggleMenu').button({text:false,icons:{primary:'ui-icon-triangle-1-n'}});
+	
+	// Show Menu
+	this.tab.find('#toggleMenu').click(function() {
+		_this.menuEle.show().position({
+			my: 'left bottom',
+			at: 'top right',
+			of: this
+		});
+		$(document).one('click', function() {
+			_this.menuEle.hide();
+		});
+		return false;
+	})
+
+	// Menu Actions
+	// Set speed limit
+	this.btnSpeedLimit = this.tab.find('li#speedLimit').click(function() {
+		$('#dialogSpeedLimit').dialog({
+			autoOpen: true,
+			modal: true,
+			draggable: false,
+			resizable: false,
+			width: 150,
+			position: {my: 'center', at: 'center', of: '#tabs'},
+			buttons: [ {
+					text: 'OK',
+					click: function() {
+						$(this).dialog('close');
+						var speedLimit = Number($(this).find('input#speedLimit').val());
+						self.port.emit('rpc-call',{target:'sab',id: _this.id, method:'config',params: {name:'speedlimit',value:(speedLimit == ''?0:speedLimit)},onSuccess: 'rpc-call-success',onFailure: 'rpc-call-failure'});
+					}
+				},
+				{text: 'Cancel', click: function() {$(this).dialog('close');}}
+			]
+		}).find('input#speedLimit').val(_this.lastStatus.queue.speedlimit);
+	});
+	// Pause for
+	this.btnPauseFor5m = this.tab.find('li#pause-5m').click(function() {_this.rpcPauseFor(5)});
+	this.btnPauseFor15m = this.tab.find('li#pause-15m').click(function() {_this.rpcPauseFor(15)});;
+	this.btnPauseFor30m = this.tab.find('li#pause-30m').click(function() {_this.rpcPauseFor(30)});;
+	this.btnPauseFor60m = this.tab.find('li#pause-60m').click(function() {_this.rpcPauseFor(60)});;
+	this.btnPauseForCustom = this.tab.find('li#pause-custom').click(function() {
+		$('#dialogPauseFor').dialog({
+			autoOpen: true,
+			modal: true,
+			draggable: false,
+			resizable: false,
+			width: 150,
+			position: {my: 'center', at: 'center', of: '#tabs'},
+			buttons: [ {
+					text: 'OK',
+					click: function() {
+						$(this).dialog('close');
+						_this.rpcPauseFor(Number($(this).find('input#pauseFor').val()));
+					}
+				},
+				{text: 'Cancel', click: function() {$(this).dialog('close');}}
+			]
+		});
+	});
+	// On finish (queue)
+	this.btnOnFinishNothing = this.tab.find('li#finish-nothing').click(function() {_this.rpcFinishAction('');});
+	this.btnOnFinishShutdown = this.tab.find('li#finish-shutdown').click(function() {_this.rpcFinishAction('shutdown_program')});
+	this.btnOnFinishScript = this.tab.find('li#finish-script').click(function() {
+		var options = '';
+
+		for (var i = 0; i < _this.lastStatus.queue.scripts.length; ++i)
+			if (_this.lastStatus.queue.scripts[i].endsWith('.py') || _this.lastStatus.queue.scripts[i].endsWith('.bat'))
+				options += '<option value="script_'+_this.lastStatus.queue.scripts[i]+'"'+((_this.lastStatus.queue.finishaction == 'script_'+_this.lastStatus.queue.scripts[i])?' selected':'')+'>'+_this.lastStatus.queue.scripts[i]+'</option>';
+
+		$('select#finishScript').html(options);
+
+		$('#dialogFinishScript').dialog({
+			autoOpen: true,
+			modal: true,
+			draggable: false,
+			resizable: false,
+			width: 300,
+			position: {my: 'center', at: 'center', of: '#tabs'},
+			buttons: [ {
+					text: 'OK',
+					click: function() {
+						$(this).dialog('close');
+						_this.rpcFinishAction($(this).find('select#finishScript').val());
+					}
+				},
+				{text: 'Cancel', click: function() {$(this).dialog('close');}}
+			]
+		});
+	
+	});
 	
 	// Update jQuery UI with our new DOM elements & set active tab to our newly created tab
+	this.tab.find('#btnSet').buttonset();
 	$('#tabs').tabs('refresh');
 	$('#tabs').tabs('option', 'active', 0);
-
+	
 	// Pause Button Click
 	this.btnTogglePauseEle.click(function() {
 		self.port.emit('rpc-call',{target:'sab',id: _this.id, method:(_this.lastStatus.queue.paused?'resume':'pause'),params: {},onSuccess: 'rpc-call-success',onFailure: 'rpc-call-failure'});
@@ -215,6 +306,19 @@ function sab_tab(id,title) {
 		if (rpc.queue.speedlimit > 0)
 			dlSpeed += ' ('+rpc.queue.speedlimit+' KB/s limit)';
 
+		this.btnOnFinishNothing.css('color','');
+		this.btnOnFinishShutdown.css('color','');
+		this.btnOnFinishScript.css('color','');
+		
+		if (!rpc.queue.finishaction)
+			this.btnOnFinishNothing.css('color','#FF8C00') // DarkOrange
+		else
+		if (rpc.queue.finishaction == 'shutdown_program')
+			this.btnOnFinishShutdown.css('color','#FF8C00')
+		else
+		if (rpc.queue.finishaction.startsWith('script_'))
+			this.btnOnFinishScript.css('color','#FF8C00');	
+		
 		for (var i = 0; i < rpc.queue.slots.length; ++i)
 			if (rpc.queue.slots[i].status == 'Downloading' || (rpc.queue.slots[i].status == 'Queued' && rpc.queue.paused)) { // If download is active, or first in queue while paused
 				dlTime = rpc.queue.slots[i].timeleft.split(':')
@@ -233,6 +337,20 @@ function sab_tab(id,title) {
 		this.setPaused(rpc.queue.paused);
 		doResize();
 	};
+	this.rpcFinishAction = function(action) {
+		// Finish action is not accessible via SAB's API. So we must emulate the request through web interface
+		var url = (self.options.prefs.sab_ssl?'https':'http')+'://'+self.options.prefs.sab_ip+':'+self.options.prefs.sab_port+'/queue/change_queue_complete_action?action='+action+'&session='+self.options.prefs.sab_apikey;
+		var xhr = new XMLHttpRequest();
+		try {
+			xhr.open('post',url);
+			xhr.timeout = 2000;
+			xhr.send();
+		}catch(e) {log('Error setting SAB finish action. '+e.message);log('Req URL: '+url);}
+	}
+	this.rpcPauseFor = function(mins) {
+		self.port.emit('rpc-call',{target:'sab',id: _this.id, method:'config',params: {name:'set_pause',value:mins},onSuccess: 'rpc-call-success',onFailure: 'rpc-call-failure'});
+		this.btnRefreshEle.click();
+	}
 	this.setPaused = function(isPaused){
 		this.btnTogglePauseEle.button('option',{label: isPaused?'Resume':'Pause',icons:{primary:isPaused?'ui-icon-play':'ui-icon-pause'}});
 		this.btnTogglePauseEle.css('color',isPaused?'#00FF00':'#FF0000');
@@ -247,40 +365,97 @@ function sab_tab(id,title) {
 	}
 }
 
+
 function nzbg_tab(id,title) {
 	var _this = this;
 	this.id = id;
 	this.lastStatus;
 	this.lastQueue;
 
-	this.tabHeader = $('<li><a href="#tabs-'+id+'">'+title+'</a></li>'); //.insertBefore('#tabList > li:last');
+	this.tabHeader = $('<li><a href="#tabs-'+id+'">'+title+'</a></li>');
 									 $('#tabList').append(this.tabHeader);
 	this.tab = $('<div/>', {id: 'tabs-'+id}).appendTo('#tabs');
-	this.tab.html(
-		'<b>Speed:</b> <div id="dlSpeed" class="nzbFox"></div><br/>'+
-		'<b>Downloading:</b> <div id="dlName" class="nzbFox"></div><br/>'+
-		'<b>Remaining:</b> <div id="dlTime" class="nzbFox"></div><br/>'+
-		'<div id="dlProgress" class="ui-progressbar"><div id="dlProgress-label" class="ui-progressbar-label"></div></div><br/>'+
-		'<button id="togglePause">...</button>'+
-		'<button id="refresh">Refresh</button>'+
-		'<div id="error" class="nzbFox"></div>'+
-		'<button id="open" style="float: right">&nbsp;</button>'+
-		''
-	);
+	this.tab.html($('div#nzbget.template').html());
+	// Labels
 	this.dlSpeedEle = this.tab.find('#dlSpeed');
 	this.dlNameEle = this.tab.find('#dlName');
 	this.dlTimeEle = this.tab.find('#dlTime');
 	this.dlProgressEle = this.tab.find('#dlProgress').progressbar({value: false});
 	this.dlProgressLabelEle = this.tab.find('#dlProgress-label');
+	this.errorEle = this.tab.find('#error');
+	// Buttons
 	this.btnTogglePauseEle = this.tab.find('#togglePause').button();
 	this.btnRefreshEle = this.tab.find('#refresh').button({icons:{primary: 'ui-icon-refresh'}});
 	this.btnOpenEle = this.tab.find('#open').button({text:false,icons:{primary: 'ui-icon-newwin'}});
-	this.errorEle = this.tab.find('#error');
+	// Menus	
+	this.menuEle = this.tab.find('ul#menu').menu({position: {my: 'left bottom', at: 'right bottom'}}).hide();
+	this.btnTogglePauseMenuEle = this.tab.find('#toggleMenu').button({text:false,icons:{primary:'ui-icon-triangle-1-n'}});
+
+	// Show Menu
+	this.tab.find('#toggleMenu').click(function() {
+		_this.menuEle.show().position({
+			my: 'left bottom',
+			at: 'top right',
+			of: this
+		});
+		$(document).one('click', function() {
+			_this.menuEle.hide();
+		});
+		return false;
+	})
+
+	// Menu Actions
+	// Set speed limit
+	this.btnSpeedLimit = this.tab.find('li#speedLimit').click(function() {
+		$('#dialogSpeedLimit').dialog({
+			autoOpen: true,
+			modal: true,
+			draggable: false,
+			resizable: false,
+			width: 150,
+			position: {my: 'center', at: 'center', of: '#tabs'},
+			buttons: [ {
+					text: 'OK',
+					click: function() {
+						$(this).dialog('close');
+						var speedLimit = Number($(this).find('input#speedLimit').val());
+						self.port.emit('rpc-call',{target:'nzbg',id: _this.id, method:'rate',params: [(speedLimit == ''?0:speedLimit)],onSuccess: 'rpc-call-success',onFailure: 'rpc-call-failure'});
+					}
+				},
+				{text: 'Cancel', click: function() {$(this).dialog('close');}}
+			]
+		}).find('input#speedLimit').val(_this.lastStatus.result.DownloadLimit / 1024);
+	});
+	// Pause for
+	this.btnPauseFor5m = this.tab.find('li#pause-5m').click(function() {_this.rpcPauseFor(5)});
+	this.btnPauseFor15m = this.tab.find('li#pause-15m').click(function() {_this.rpcPauseFor(15)});;
+	this.btnPauseFor30m = this.tab.find('li#pause-30m').click(function() {_this.rpcPauseFor(30)});;
+	this.btnPauseFor60m = this.tab.find('li#pause-60m').click(function() {_this.rpcPauseFor(60)});;
+	this.btnPauseForCustom = this.tab.find('li#pause-custom').click(function() {
+		$('#dialogPauseFor').dialog({
+			autoOpen: true,
+			modal: true,
+			draggable: false,
+			resizable: false,
+			width: 150,
+			position: {my: 'center', at: 'center', of: '#tabs'},
+			buttons: [ {
+					text: 'OK',
+					click: function() {
+						$(this).dialog('close');
+						_this.rpcPauseFor(Number($(this).find('input#pauseFor').val()));
+					}
+				},
+				{text: 'Cancel', click: function() {$(this).dialog('close');}}
+			]
+		});
+	});
 
 	// Update jQuery UI with our new DOM elements & set active tab to our newly created tab
+	this.tab.find('#btnSet').buttonset();
 	$('#tabs').tabs('refresh');
 	$('#tabs').tabs('option', 'active', 0);
-
+    
 	// Pause Button Click
 	this.btnTogglePauseEle.click(function() {
 		self.port.emit('rpc-call',{target:'nzbg',id: _this.id, method:(_this.lastStatus.result.DownloadPaused?'resumedownload':'pausedownload'),params: [],onSuccess: 'rpc-call-success',onFailure: 'rpc-call-failure'});
@@ -294,6 +469,7 @@ function nzbg_tab(id,title) {
 	this.btnOpenEle.click(function() {
 		window.open((self.options.prefs.nzbg_ssl?'https':'http')+'://'+self.options.prefs.nzbg_ip+':'+self.options.prefs.nzbg_port);
 	});
+	
 	// Send 'status' RPC call to get current download speed & paused state
 	this.refreshStatus = function() {
 		self.port.emit('rpc-call',{target:'nzbg',id: this.id, method:'status',params:[], onSuccess: 'rpc-call-success',onFailure: 'rpc-call-failure' });
@@ -335,10 +511,15 @@ function nzbg_tab(id,title) {
 		this.dlProgressLabelEle.text(dlPercent+'%');
 		doResize();
 	};
+	this.rpcFinishAction = function(action) {} // Not Implemented in NZBGet
+	this.rpcPauseFor = function(mins) {
+		self.port.emit('rpc-call',{target:'nzbg',id: _this.id, method:'pausedownload',params: [],onSuccess: 'rpc-call-success',onFailure: 'rpc-call-failure'}); // Must pause first, resume rpc will only work on already paused events
+		self.port.emit('rpc-call',{target:'nzbg',id: _this.id, method:'scheduleresume',params: [mins * 60],onSuccess: 'rpc-call-success',onFailure: 'rpc-call-failure'});
+		this.btnRefreshEle.click();
+	}
 	this.setPaused = function(isPaused) {
 		this.btnTogglePauseEle.button('option',{label: isPaused?'Resume':'Pause',icons:{primary:isPaused?'ui-icon-play':'ui-icon-pause'}});
 		this.btnTogglePauseEle.css('color',isPaused?'#00FF00':'#FF0000');
-
 	};
 	this.setError = function(msg) {
 		this.errorEle.html('<strong>'+msg+'</strong>');
@@ -354,22 +535,22 @@ $(function() {
 	$('#tabs').tabs({
 		activate: doResize
 	});
-	
+
 	$('button#showOptions').button({text:false,icons:{primary:'ui-icon-wrench'}}).click(function() {
 		self.port.emit('showOptions');
 	});
-
+	
 	if (self.options.prefs.nzbg_enabled)
 		onPrefChange(['nzbg_enabled',true]);
 	if (self.options.prefs.sab_enabled)
 		onPrefChange(['sab_enabled',true]);
 
-//	if (noSDK) {
-//		TabList[0].parseStatus(testNzbgStatus);
-//		TabList[0].parseQueue(testNzbgQueue);
-//		TabList[1].parseStatus(testSabStatus);
-//		$('#tabs').tabs('option', 'active', 2);
-//	}
+	if (noSDK) {
+		TabList[0].parseStatus(testNzbgStatus);
+		TabList[0].parseQueue(testNzbgQueue);
+		TabList[1].parseStatus(testSabStatus);
+		$('#tabs').tabs('option', 'active', 2);
+	}
 
-	refreshAll();
+	refreshAll();	
 });
