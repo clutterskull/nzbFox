@@ -129,6 +129,8 @@ self.port.on('hide',function() {
 	window.clearTimeout(refreshAll_timer);
 	refreshFreq = 5 * 60 * 1000;
 	refreshAll_timer = window.setTimeout(refreshAll,refreshFreq);
+	// Click on document to close open menus
+	$(document).click();
 });
 self.port.on('rpc-call-success',function({call,reply}) {
 //	log('rpc-call-success '+JSON.stringify(call)+' / '+JSON.stringify(reply));
@@ -206,13 +208,15 @@ function sab_tab(id,title) {
 					text: 'OK',
 					click: function() {
 						$(this).dialog('close');
-						var speedLimit = Number($(this).find('input#speedLimit').val());
+						var speedLimit = Number($(this).find('input').val());
 						self.port.emit('rpc-call',{target:'sab',id: _this.id, method:'config',params: {name:'speedlimit',value:(speedLimit == ''?0:speedLimit)},onSuccess: 'rpc-call-success',onFailure: 'rpc-call-failure'});
 					}
 				},
 				{text: 'Cancel', click: function() {$(this).dialog('close');}}
 			]
-		}).find('input#speedLimit').val(_this.lastStatus.queue.speedlimit);
+		}).keypress(function(e) {
+      if (e.keyCode == $.ui.keyCode.ENTER) $(this).parent().find('button:eq(1)').trigger('click');
+    }).find('input').val(_this.lastStatus.queue.speedlimit).select();
 	});
 	// Pause for
 	this.btnPauseFor5m = this.tab.find('li#pause-5m').click(function() {_this.rpcPauseFor(5)});
@@ -231,12 +235,14 @@ function sab_tab(id,title) {
 					text: 'OK',
 					click: function() {
 						$(this).dialog('close');
-						_this.rpcPauseFor(Number($(this).find('input#pauseFor').val()));
+						_this.rpcPauseFor(Number($(this).find('input').val()));
 					}
 				},
 				{text: 'Cancel', click: function() {$(this).dialog('close');}}
 			]
-		});
+		}).keypress(function(e) {
+      if (e.keyCode == $.ui.keyCode.ENTER) $(this).parent().find('button:eq(1)').trigger('click');
+    }).find('input').select();
 	});
 	// On finish (queue)
 	this.btnOnFinishNothing = this.tab.find('li#finish-nothing').click(function() {_this.rpcFinishAction('');});
@@ -247,8 +253,6 @@ function sab_tab(id,title) {
 		for (var i = 0; i < _this.lastStatus.queue.scripts.length; ++i)
 			if (_this.lastStatus.queue.scripts[i].endsWith('.py') || _this.lastStatus.queue.scripts[i].endsWith('.bat'))
 				options += '<option value="script_'+_this.lastStatus.queue.scripts[i]+'"'+((_this.lastStatus.queue.finishaction == 'script_'+_this.lastStatus.queue.scripts[i])?' selected':'')+'>'+_this.lastStatus.queue.scripts[i]+'</option>';
-
-		$('select#finishScript').html(options);
 
 		$('#dialogFinishScript').dialog({
 			autoOpen: true,
@@ -266,7 +270,7 @@ function sab_tab(id,title) {
 				},
 				{text: 'Cancel', click: function() {$(this).dialog('close');}}
 			]
-		});
+		}).find('select').html(options);
 	
 	});
 	
@@ -418,13 +422,15 @@ function nzbg_tab(id,title) {
 					text: 'OK',
 					click: function() {
 						$(this).dialog('close');
-						var speedLimit = Number($(this).find('input#speedLimit').val());
+						var speedLimit = Number($(this).find('input').val());
 						self.port.emit('rpc-call',{target:'nzbg',id: _this.id, method:'rate',params: [(speedLimit == ''?0:speedLimit)],onSuccess: 'rpc-call-success',onFailure: 'rpc-call-failure'});
 					}
 				},
 				{text: 'Cancel', click: function() {$(this).dialog('close');}}
 			]
-		}).find('input#speedLimit').val(_this.lastStatus.result.DownloadLimit / 1024);
+		}).keypress(function(e) {
+      if (e.keyCode == $.ui.keyCode.ENTER) $(this).parent().find('button:eq(1)').trigger('click');
+    }).find('input').val(_this.lastStatus.result.DownloadLimit / 1024).select();
 	});
 	// Pause for
 	this.btnPauseFor5m = this.tab.find('li#pause-5m').click(function() {_this.rpcPauseFor(5)});
@@ -443,12 +449,14 @@ function nzbg_tab(id,title) {
 					text: 'OK',
 					click: function() {
 						$(this).dialog('close');
-						_this.rpcPauseFor(Number($(this).find('input#pauseFor').val()));
+						_this.rpcPauseFor(Number($(this).find('input').val()));
 					}
 				},
 				{text: 'Cancel', click: function() {$(this).dialog('close');}}
 			]
-		});
+		}).keypress(function(e) {
+      if (e.keyCode == $.ui.keyCode.ENTER) $(this).parent().find('button:eq(1)').trigger('click');
+    }).find('input').select();
 	});
 
 	// Update jQuery UI with our new DOM elements & set active tab to our newly created tab
