@@ -97,33 +97,39 @@ for (let i = 0; i < indexers.length; ++i) {
 			let Title = $(
 				thisRow.find('a.title')[0] ||								// nzbs/nmatrix/oznzb/nzbgeek/nzbsu result table
 				thisRow.find('a.link')[0] ||								// dognzb result table
+				thisRow.find('a[href*="/details/"]')[0] ||	// nzbplanet top 24hr downloads page
+				$('div#content > center > h1')[0] || 				// nzbplanet details page
 				$('div#infohead > h1')[0] ||								// nzbs details page
 				$('h2')[0] ||																// nmatrix details page
 				$('div.span12 >h3')[0] || 									// nzb.su details page
 				$('div.container-index > font[size=5]')[0]	// nzbgeek details page
-			).text();
+			).text().trim();
 			let URL = window.location.protocol+'//'+apiURL+'/api?t=get&id='+dlkey+'&apikey='+apikey;
 
 			let Cat = $(
-				thisRow.find('td.less:first > a')[0] ||									// nzbs/nmatrix results table
-				thisRow.find('a[href^="geekseek.php?c="]')[0] ||				// nzbgeek results table
-				thisRow.find('a[href^="/browse?t="]')[0] ||							// oznzb results table
-				thisRow.find('div[align=right]')[0] ||									// dognzb results table
-				$('div#infohead > h2 > a')[0] || 												// nzbs details
-				$('div#show1').find('a[href*="?c="]')[0] || 						// nzbgeek details
-				$('div.span12 > a[href^="/browse?t="]')[0] ||						// nzb.su details page
-				$('dl.dl-horizontal').find('a[href^="/browse?t="]')[0]	// nmatrix details
-			).text().trim().toLowerCase().split(/[-(\s>\s)]+/); 			// newznab pages, split with " > " / "-"
-
+				thisRow.find('td.less:first > a')[0] ||											// nzbs/nmatrix results table
+				thisRow.find('a[href^="geekseek.php?c="]')[0] ||						// nzbgeek results table
+				thisRow.find('a[href^="/browse?t="]')[0] ||									// oznzb results table
+				thisRow.find('div[align=right]')[0] ||											// dognzb results table
+				$('div#infohead > h2 > a')[0] || 														// nzbs details
+				$('div#show1').find('a[href*="?c="]')[0] || 								// nzbgeek details
+				$('div.span12 > a[href^="/browse?t="]')[0] ||								// nzb.su details page
+				$('dl.dl-horizontal').find('a[href^="/browse?t="]')[0]			// nmatrix details
+			).text();
+			if (domain == 'nzbplanet.net') Cat = (thisRow.find('td.less:first > a').attr('title') || $('table#detailstable').find('a[href^="/browse?t="]').text() || '').substr(7); // nzbplanet only shows subcat, so get Cat1>Cat2 from link title
+			Cat = Cat.trim().toLowerCase().split(/[-(\s>\s)]+/); 			// newznab pages, split with " > " / "-"
+			
+			
+			
 			let Category = '';
 			if (Cat[0] == '') Cat[0] = String(window.location.pathname).toLowerCase().split('/')[1];
 			switch (Cat[0]) {
 				case 'tv': Category = prefs.cat_tv; break;
 				case 'movies': Category = prefs.cat_movies; break;
-				case 'console','gaming': Category = prefs.cat_games; break;
-				case 'apps': Category = prefs.cat_apps; break;
-				case 'xxx','adult': Category = prefs.cat_adult; break;
-				case 'music','audio': Category = prefs.cat_music; break;
+				case 'console': case 'games': Category = prefs.cat_games; break;
+				case 'apps': case 'pc': Category = prefs.cat_apps; break;
+				case 'xxx': case 'adult': Category = prefs.cat_adult; break;
+				case 'music': case 'audio': Category = prefs.cat_music; break;
 			}
 			switch (Cat[1]) {
 				case 'anime': Category = prefs.cat_anime;
