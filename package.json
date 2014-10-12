@@ -116,6 +116,13 @@
 		"value": "Movies"
 	},
 	{
+		"name": "cat_anime",
+		"title": "Anime Category",
+		"description": "",
+		"type": "string",
+		"value": "Anime"
+	},
+	{
 		"name": "cat_music",
 		"title": "Music Category",
 		"description": "",
@@ -130,11 +137,11 @@
 		"value": "Games"
 	},
 	{
-		"name": "cat_anime",
-		"title": "Anime Category",
+		"name": "cat_reading",
+		"title": "Reading Category",
 		"description": "",
 		"type": "string",
-		"value": "Anime"
+		"value": "Ebooks"
 	},
 	{
 		"name": "cat_apps",

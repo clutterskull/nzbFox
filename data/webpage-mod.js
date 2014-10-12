@@ -82,6 +82,9 @@ for (let i = 0; i < indexers.length; ++i) {
 				thisRow = $(this).closest('tr.HighlightTVRow2');
 				apiURL = 'api.nzbgeek.info';
 			}
+			if (domain == 'nzb.su') {
+				apiURL = 'api.nzb.su';
+			}
 
 			let apikey = (
 				document.getElementsByName('RSSTOKEN')[0] ||	// nzbs/nmatrix/oznzb/nzbsu
@@ -132,9 +135,10 @@ for (let i = 0; i < indexers.length; ++i) {
 				case 'music': case 'audio': Category = prefs.cat_music; break;
 			}
 			switch (Cat[1]) {
-				case 'anime': Category = prefs.cat_anime;
+				case 'anime': Category = prefs.cat_anime; break;
+				case 'ebook': case 'comics': Category = prefs.cat_reading; break;
 			}
-
+			
 			let downloadButton = CreateButton(index,Title,Category,URL,wrapHTML);
 			if (domain == 'dognzb.cr')
 				$(downloadButton).insertBefore($(this).closest('tr').find('a.link'));
