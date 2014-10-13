@@ -10,6 +10,24 @@
 	"version": "1.1.0",
 	
 	"preferences": [
+	
+	{
+		"name": "theme",
+		"type": "radio",
+		"title": "Panel Theme",
+		"value": "light",
+		"options": [
+		{
+			"value": "light",
+			"label": "Light"
+		},
+		{
+			"value": "dark",
+			"label": "Dark"
+		}
+		]
+	},
+	
 	{
 		"name": "nzbg_enabled",
 		"title": "Enable NZBGet",

@@ -31,6 +31,7 @@ if (noSDK) { // dummy code for when testing UI without add-on SDK
 	
 	var options = (new function() {
 		this.prefs = {
+			theme: 'dark',
 			nzbg_enabled: true,
 			sab_enabled: true,
 			
@@ -100,6 +101,10 @@ function doResize() {
 
 function onPrefChange([prefName,prefValue]) {
 	self.options.prefs[prefName] = prefValue;
+	
+	if (prefName == 'theme') {
+		$('#theme').attr('href','jquery-ui.theme.'+prefValue+'.min.css');
+	}else	
 	if (prefName == 'sab_enabled' || prefName == 'nzbg_enabled') {
 		if (prefValue) {
 			if (prefName == 'nzbg_enabled')
@@ -548,6 +553,7 @@ $(function() {
 		self.port.emit('showOptions');
 	});
 	
+	onPrefChange(['theme',self.options.prefs.theme]);
 	if (self.options.prefs.nzbg_enabled)
 		onPrefChange(['nzbg_enabled',true]);
 	if (self.options.prefs.sab_enabled)
