@@ -101,7 +101,7 @@ for (let i = 0; i < indexers.length; ++i) {
 				thisRow.find('a.title')[0] ||								// nzbs/nmatrix/oznzb/nzbgeek/nzbsu result table
 				thisRow.find('a.link')[0] ||								// dognzb result table
 				thisRow.find('a[href*="/details/"]')[0] ||	// nzbplanet top 24hr downloads page
-				$('div#content > center > h1')[0] || 				// nzbplanet details page
+				$('div#content').find('h1')[0] || 					// nzbplanet/generic details page
 				$('div#infohead > h1')[0] ||								// nzbs details page
 				$('h2')[0] ||																// nmatrix details page
 				$('div.span12 >h3')[0] || 									// nzb.su details page
@@ -117,7 +117,8 @@ for (let i = 0; i < indexers.length; ++i) {
 				$('div#infohead > h2 > a')[0] || 														// nzbs details
 				$('div#show1').find('a[href*="?c="]')[0] || 								// nzbgeek details
 				$('div.span12 > a[href^="/browse?t="]')[0] ||								// nzb.su details page
-				$('dl.dl-horizontal').find('a[href^="/browse?t="]')[0]			// nmatrix details
+				$('dl.dl-horizontal').find('a[href^="/browse?t="]')[0] ||		// nmatrix details
+				$('table#detailstable').find('a[href^="/browse?t="]')[0]		// generic newznab details
 			).text();
 			if (domain == 'nzbplanet.net') Cat = (thisRow.find('td.less:first > a').attr('title') || $('table#detailstable').find('a[href^="/browse?t="]').text() || '').substr(7); // nzbplanet only shows subcat, so get Cat1>Cat2 from link title
 			Cat = Cat.trim().toLowerCase().split(/[-(\s>\s)]+/); 			// newznab pages, split with " > " / "-"
@@ -136,7 +137,7 @@ for (let i = 0; i < indexers.length; ++i) {
 				case 'anime': Category = prefs.cat_anime; break;
 				case 'ebook': case 'comics': Category = prefs.cat_reading; break;
 			}
-			
+
 			let downloadButton = CreateButton(index,Title,Category,URL,wrapHTML);
 			if (domain == 'dognzb.cr')
 				$(downloadButton).insertBefore($(this).closest('tr').find('a.link'));

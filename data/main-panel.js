@@ -1,9 +1,9 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. 
- 
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
  		nzbFox (c) 2014 Nick Cooper - https://github.com/NickSC
- 
+
 */
 // todo: [Object object] was being passed by nzbget rpc error for invalid parameter
 
@@ -18,7 +18,7 @@ var refreshFreq = 5 * 60 * 1000; // 5 minutes
 var refreshAll_timer;
 var TabList = [];
 
-if (noSDK) { // dummy code for when testing UI without add-on SDK 
+if (noSDK) { // dummy code for when testing UI without add-on SDK
 	var port = (new function() {
 		this.events = [];
 		this.on = function (event,args) {
@@ -28,24 +28,24 @@ if (noSDK) { // dummy code for when testing UI without add-on SDK
 			console.log('emit "'+event+'" called with '+JSON.stringify(args));
 		}
 	});
-	
+
 	var options = (new function() {
 		this.prefs = {
 			theme: 'dark',
 			nzbg_enabled: true,
 			sab_enabled: true,
-			
+
 			nzbg_ip: '192.168.1.4',
 			nzbg_port: 8080,
 			nzbg_user: '',
 			nzbg_pass: '',
-			
+
 			sab_ip: '192.168.1.4',
 			sab_port: 8084,
-			sab_apikey: '123456',		
+			sab_apikey: '123456',
 		};
 	});
-	
+
 }
 //////////////////////////////////////////////////////////////////////////////
 
@@ -86,7 +86,7 @@ function addTab(tabType) {
 
 	if (typeof id == 'undefined') // insert at end of array
 		var id = TabList.length;
-	
+
 	if (tabType == 'nzbg')
 		TabList[id] = new nzbg_tab(id,'NZBGet');
 	else
@@ -101,10 +101,10 @@ function doResize() {
 
 function onPrefChange([prefName,prefValue]) {
 	self.options.prefs[prefName] = prefValue;
-	
+
 	if (prefName == 'theme') {
 		$('#theme').attr('href','jquery-ui.theme.'+prefValue+'.min.css');
-	}else	
+	}else
 	if (prefName == 'sab_enabled' || prefName == 'nzbg_enabled') {
 		if (prefValue) {
 			if (prefName == 'nzbg_enabled')
@@ -182,10 +182,10 @@ function sab_tab(id,title) {
 	this.btnTogglePauseEle = this.tab.find('#togglePause').button();
 	this.btnRefreshEle = this.tab.find('#refresh').button({icons:{primary: 'ui-icon-refresh'}});
 	this.btnOpenEle = this.tab.find('#open').button({text:false,icons:{primary: 'ui-icon-newwin'}});
-	// Menus	
+	// Menus
 	this.menuEle = this.tab.find('ul#menu').menu({position: {my: 'left bottom', at: 'right bottom'}}).hide();
 	this.btnTogglePauseMenuEle = this.tab.find('#toggleMenu').button({text:false,icons:{primary:'ui-icon-triangle-1-n'}});
-	
+
 	// Show Menu
 	this.tab.find('#toggleMenu').click(function() {
 		_this.menuEle.show().position({
@@ -276,14 +276,14 @@ function sab_tab(id,title) {
 				{text: 'Cancel', click: function() {$(this).dialog('close');}}
 			]
 		}).find('select').html(options);
-	
+
 	});
-	
+
 	// Update jQuery UI with our new DOM elements & set active tab to our newly created tab
 	this.tab.find('#btnSet').buttonset();
 	$('#tabs').tabs('refresh');
 	$('#tabs').tabs('option', 'active', 0);
-	
+
 	// Pause Button Click
 	this.btnTogglePauseEle.click(function() {
 		self.port.emit('rpc-call',{target:'sab',id: _this.id, method:(_this.lastStatus.queue.paused?'resume':'pause'),params: {},onSuccess: 'rpc-call-success',onFailure: 'rpc-call-failure'});
@@ -304,21 +304,21 @@ function sab_tab(id,title) {
 	this.refreshQueue = function() {}; // Not needed for sab
 	this.parseStatus = function(rpc){
 		this.lastStatus = rpc;
-		
+
 		var dlSpeed = rpc.queue.kbpersec+' KB/s';
 		var dlTotalMB = 0;
 		var dlRemainingMB = 0;
 		var dlName = 'N/A';
 		var dlTime = 'N/A';
 		var dlPercent = 0;
-		
+
 		if (rpc.queue.speedlimit > 0)
 			dlSpeed += ' ('+rpc.queue.speedlimit+' KB/s limit)';
 
 		this.btnOnFinishNothing.css('color','');
 		this.btnOnFinishShutdown.css('color','');
 		this.btnOnFinishScript.css('color','');
-		
+
 		if (!rpc.queue.finishaction)
 			this.btnOnFinishNothing.css('color','#FF8C00') // DarkOrange
 		else
@@ -326,8 +326,8 @@ function sab_tab(id,title) {
 			this.btnOnFinishShutdown.css('color','#FF8C00')
 		else
 		if (rpc.queue.finishaction.startsWith('script_'))
-			this.btnOnFinishScript.css('color','#FF8C00');	
-		
+			this.btnOnFinishScript.css('color','#FF8C00');
+
 		for (var i = 0; i < rpc.queue.slots.length; ++i)
 			if (rpc.queue.slots[i].status == 'Downloading' || (rpc.queue.slots[i].status == 'Queued' && rpc.queue.paused)) { // If download is active, or first in queue while paused
 				dlTime = rpc.queue.slots[i].timeleft.split(':')
@@ -337,7 +337,7 @@ function sab_tab(id,title) {
 				dlPercent = Math.round(rpc.queue.slots[i].percentage);
 				break
 			}
-		
+
 		this.dlSpeedEle.text(dlSpeed);
 		this.dlNameEle.text(dlName);
 		this.dlTimeEle.text(dlTime);
@@ -396,7 +396,7 @@ function nzbg_tab(id,title) {
 	this.btnTogglePauseEle = this.tab.find('#togglePause').button();
 	this.btnRefreshEle = this.tab.find('#refresh').button({icons:{primary: 'ui-icon-refresh'}});
 	this.btnOpenEle = this.tab.find('#open').button({text:false,icons:{primary: 'ui-icon-newwin'}});
-	// Menus	
+	// Menus
 	this.menuEle = this.tab.find('ul#menu').menu({position: {my: 'left bottom', at: 'right bottom'}}).hide();
 	this.btnTogglePauseMenuEle = this.tab.find('#toggleMenu').button({text:false,icons:{primary:'ui-icon-triangle-1-n'}});
 
@@ -468,7 +468,7 @@ function nzbg_tab(id,title) {
 	this.tab.find('#btnSet').buttonset();
 	$('#tabs').tabs('refresh');
 	$('#tabs').tabs('option', 'active', 0);
-    
+
 	// Pause Button Click
 	this.btnTogglePauseEle.click(function() {
 		self.port.emit('rpc-call',{target:'nzbg',id: _this.id, method:(_this.lastStatus.result.DownloadPaused?'resumedownload':'pausedownload'),params: [],onSuccess: 'rpc-call-success',onFailure: 'rpc-call-failure'});
@@ -482,7 +482,7 @@ function nzbg_tab(id,title) {
 	this.btnOpenEle.click(function() {
 		window.open((self.options.prefs.nzbg_ssl?'https':'http')+'://'+self.options.prefs.nzbg_ip+':'+self.options.prefs.nzbg_port);
 	});
-	
+
 	// Send 'status' RPC call to get current download speed & paused state
 	this.refreshStatus = function() {
 		self.port.emit('rpc-call',{target:'nzbg',id: this.id, method:'status',params:[], onSuccess: 'rpc-call-success',onFailure: 'rpc-call-failure' });
@@ -507,7 +507,7 @@ function nzbg_tab(id,title) {
 		var dlName = 'N/A';
 		var dlTime = 'N/A';
 		var dlPercent = 0;
-		
+
 		for (var i = 0; i < rpc.result.length; ++i)
 			if ((rpc.result[i].Status == 'DOWNLOADING') || (rpc.result[i].Status == 'QUEUED' && this.lastStatus.result.DownloadPaused)) { // If download is active, or first in queue while paused
 				dlTotalMB = (rpc.result[i].FileSizeMB - rpc.result[i].PausedSizeMB);
@@ -552,7 +552,7 @@ $(function() {
 	$('button#showOptions').button({text:false,icons:{primary:'ui-icon-wrench'}}).click(function() {
 		self.port.emit('showOptions');
 	});
-	
+
 	onPrefChange(['theme',self.options.prefs.theme]);
 	if (self.options.prefs.nzbg_enabled)
 		onPrefChange(['nzbg_enabled',true]);
@@ -566,5 +566,5 @@ $(function() {
 		$('#tabs').tabs('option', 'active', 2);
 	}
 
-	refreshAll();	
+	refreshAll();
 });

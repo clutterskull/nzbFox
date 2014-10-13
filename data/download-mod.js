@@ -1,9 +1,9 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- 
+
 		nzbFox (c) 2014 Nick Cooper - https://github.com/NickSC
-		
+
 */
 
 function log(msg) {self.port.emit('log',msg);}
@@ -24,8 +24,8 @@ if (dialog.mLauncher.MIMEInfo.MIMEType == 'application/x-nzb' || dialog.mLaunche
 	}
 
 	dialog.onOK_orig = dialog.onOK;
-	dialog.onOK = function() {	
-		if (modeGroup.selectedItem == send_nzbg || modeGroup.selectedItem == send_sab) {	
+	dialog.onOK = function() {
+		if (modeGroup.selectedItem == send_nzbg || modeGroup.selectedItem == send_sab) {
 			var data = {'url':dialog.mLauncher.source.spec,'target':modeGroup.selectedItem.value,'fileName':fileName};
 			self.port.emit('nzb-download', data);
 			modeGroup.selectedItem = document.getElementById('save');

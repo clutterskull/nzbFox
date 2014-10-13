@@ -181,6 +181,13 @@
 		"description": "Enables additional logging to web console.\nOnly enable if you know what you are doing!",
 		"type": "bool",
 		"value": false
+	},
+	{
+		"name": "custom_indexers",
+		"title": "Personal Newznab Indexers",
+		"description": "If you have your own Newznab indexer, enter the domain name here. Default template is recommended.\nUse ',' for multiple domains.\n(Example: myindexer.com,192.168.1.4,localhost)",
+		"type": "string",
+		"value": ""
 	}
 	]
 }
