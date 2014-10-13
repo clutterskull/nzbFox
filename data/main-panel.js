@@ -14,8 +14,9 @@ var testNzbgStatus = {"version":"1.1","result":{"RemainingSizeLo":828218836,"Rem
 var testNzbgQueue = {"version":"1.1","result":[{"FirstID":110,"LastID":110,"RemainingSizeLo":2092439922,"RemainingSizeHi":0,"RemainingSizeMB":1995,"PausedSizeLo":2092439922,"PausedSizeHi":0,"PausedSizeMB":1995,"RemainingFileCount":48,"RemainingParCount":11,"MinPostTime":1376846000,"MaxPostTime":1376848974,"MinPriority":0,"MaxPriority":0,"ActiveDownloads":0,"Status":"PAUSED","NZBID":110,"NZBName":"([AST] Oreimo S2 Episode 14,15+16 [1080p])","NZBNicename":"([AST] Oreimo S2 Episode 14,15+16 [1080p])","Kind":"NZB","URL":"http://fanzub.com/nzb/239636","NZBFilename":"([AST] Oreimo S2 Episode 14,15+16 [1080p]).nzb","DestDir":"/mnt/Files/Shared/Usenet/nzbget/tmp/inter/([AST] Oreimo S2 Episode 14,15+16 [1080p]).#111","FinalDir":"","Category":"Anime","ParStatus":"NONE","UnpackStatus":"NONE","MoveStatus":"NONE","ScriptStatus":"NONE","DeleteStatus":"NONE","MarkStatus":"NONE","UrlStatus":"SUCCESS","FileSizeLo":2106903144,"FileSizeHi":0,"FileSizeMB":2009,"FileCount":49,"TotalArticles":5344,"SuccessArticles":37,"FailedArticles":0,"Health":1000,"CriticalHealth":871,"DupeKey":"","DupeScore":0,"DupeMode":"SCORE","Deleted":false,"DownloadedSizeLo":14473138,"DownloadedSizeHi":0,"DownloadedSizeMB":13,"DownloadTimeSec":38,"PostTotalTimeSec":0,"ParTimeSec":0,"RepairTimeSec":0,"UnpackTimeSec":0,"Parameters":[{"Name":"*Unpack:","Value":"yes"},{"Name":"nzbToAniDB.py:","Value":"yes"},{"Name":"EMail.py:","Value":"yes"}],"ScriptStatuses":[],"ServerStats":[{"ServerID":1,"SuccessArticles":37,"FailedArticles":0}],"PostInfoText":"NONE","PostStageProgress":135143623,"PostStageTimeSec":0,"Log":[]},{"FirstID":113,"LastID":113,"RemainingSizeLo":147935384,"RemainingSizeHi":0,"RemainingSizeMB":141,"PausedSizeLo":52554802,"PausedSizeHi":0,"PausedSizeMB":50,"RemainingFileCount":15,"RemainingParCount":8,"MinPostTime":1412737286,"MaxPostTime":1412737295,"MinPriority":50,"MaxPriority":50,"ActiveDownloads":8,"Status":"DOWNLOADING","NZBID":113,"NZBName":"Sons.of.Anarchy.S07E05.HDTV.x264-2HD","NZBNicename":"Sons.of.Anarchy.S07E05.HDTV.x264-2HD","Kind":"NZB","URL":"","NZBFilename":"Sons.of.Anarchy.S07E05.HDTV.x264-2HD.nzb","DestDir":"/mnt/Files/Shared/Usenet/nzbget/tmp/inter/Sons.of.Anarchy.S07E05.HDTV.x264-2HD.#113","FinalDir":"","Category":"Series","ParStatus":"NONE","UnpackStatus":"NONE","MoveStatus":"NONE","ScriptStatus":"NONE","DeleteStatus":"NONE","MarkStatus":"NONE","UrlStatus":"NONE","FileSizeLo":496411808,"FileSizeHi":0,"FileSizeMB":473,"FileCount":37,"TotalArticles":659,"SuccessArticles":459,"FailedArticles":0,"Health":1000,"CriticalHealth":880,"DupeKey":"","DupeScore":0,"DupeMode":"SCORE","Deleted":false,"DownloadedSizeLo":348456927,"DownloadedSizeHi":0,"DownloadedSizeMB":332,"DownloadTimeSec":5813,"PostTotalTimeSec":0,"ParTimeSec":0,"RepairTimeSec":0,"UnpackTimeSec":0,"Parameters":[{"Name":"*Unpack:","Value":"yes"},{"Name":"EMail.py:","Value":"yes"},{"Name":"drone","Value":"ef65aad440834c19abc6665fc1adb9a3"}],"ScriptStatuses":[],"ServerStats":[{"ServerID":1,"SuccessArticles":459,"FailedArticles":0}],"PostInfoText":"NONE","PostStageProgress":135143623,"PostStageTimeSec":0,"Log":[]},{"FirstID":114,"LastID":114,"RemainingSizeLo":410572047,"RemainingSizeHi":0,"RemainingSizeMB":391,"PausedSizeLo":52669784,"PausedSizeHi":0,"PausedSizeMB":50,"RemainingFileCount":18,"RemainingParCount":5,"MinPostTime":1412738304,"MaxPostTime":1412738337,"MinPriority":50,"MaxPriority":50,"ActiveDownloads":0,"Status":"QUEUED","NZBID":114,"NZBName":"Chicago.Fire.S03E03.HDTV.x264-LOL","NZBNicename":"Chicago.Fire.S03E03.HDTV.x264-LOL","Kind":"NZB","URL":"","NZBFilename":"Chicago.Fire.S03E03.HDTV.x264-LOL.nzb","DestDir":"/mnt/Files/Shared/Usenet/nzbget/tmp/inter/Chicago.Fire.S03E03.HDTV.x264-LOL.#114","FinalDir":"","Category":"Series","ParStatus":"NONE","UnpackStatus":"NONE","MoveStatus":"NONE","ScriptStatus":"NONE","DeleteStatus":"NONE","MarkStatus":"NONE","UrlStatus":"NONE","FileSizeLo":410572047,"FileSizeHi":0,"FileSizeMB":391,"FileCount":18,"TotalArticles":1046,"SuccessArticles":0,"FailedArticles":0,"Health":1000,"CriticalHealth":852,"DupeKey":"","DupeScore":0,"DupeMode":"SCORE","Deleted":false,"DownloadedSizeLo":0,"DownloadedSizeHi":0,"DownloadedSizeMB":0,"DownloadTimeSec":0,"PostTotalTimeSec":0,"ParTimeSec":0,"RepairTimeSec":0,"UnpackTimeSec":0,"Parameters":[{"Name":"*Unpack:","Value":"yes"},{"Name":"EMail.py:","Value":"yes"},{"Name":"drone","Value":"de44103d24ae42778b0bf708dd537873"}],"ScriptStatuses":[],"ServerStats":[],"PostInfoText":"NONE","PostStageProgress":135143623,"PostStageTimeSec":0,"Log":[]},{"FirstID":115,"LastID":115,"RemainingSizeLo":432403081,"RemainingSizeHi":0,"RemainingSizeMB":412,"PausedSizeLo":57467090,"PausedSizeHi":0,"PausedSizeMB":54,"RemainingFileCount":19,"RemainingParCount":5,"MinPostTime":1412740955,"MaxPostTime":1412740981,"MinPriority":50,"MaxPriority":50,"ActiveDownloads":0,"Status":"QUEUED","NZBID":115,"NZBName":"Marvels.Agents.of.S.H.I.E.L.D.S02E03.PROPER.HDTV.XviD-EVO","NZBNicename":"Marvels.Agents.of.S.H.I.E.L.D.S02E03.PROPER.HDTV.XviD-EVO","Kind":"NZB","URL":"","NZBFilename":"Marvels.Agents.of.S.H.I.E.L.D.S02E03.PROPER.HDTV.XviD-EVO.nzb","DestDir":"/mnt/Files/Shared/Usenet/nzbget/tmp/inter/Marvels.Agents.of.S.H.I.E.L.D.S02E03.PROPER.HDTV.XviD-EVO.#115","FinalDir":"","Category":"Series","ParStatus":"NONE","UnpackStatus":"NONE","MoveStatus":"NONE","ScriptStatus":"NONE","DeleteStatus":"NONE","MarkStatus":"NONE","UrlStatus":"NONE","FileSizeLo":432403081,"FileSizeHi":0,"FileSizeMB":412,"FileCount":19,"TotalArticles":1102,"SuccessArticles":0,"FailedArticles":0,"Health":1000,"CriticalHealth":846,"DupeKey":"","DupeScore":0,"DupeMode":"SCORE","Deleted":false,"DownloadedSizeLo":0,"DownloadedSizeHi":0,"DownloadedSizeMB":0,"DownloadTimeSec":0,"PostTotalTimeSec":0,"ParTimeSec":0,"RepairTimeSec":0,"UnpackTimeSec":0,"Parameters":[{"Name":"*Unpack:","Value":"yes"},{"Name":"EMail.py:","Value":"yes"},{"Name":"drone","Value":"baf57e4cb02b4448a8c436217afafb7d"}],"ScriptStatuses":[],"ServerStats":[],"PostInfoText":"NONE","PostStageProgress":135143623,"PostStageTimeSec":0,"Log":[]}]};
 var testSabStatus = {"queue":{"active_lang":"en","session":"1c7b349a03d899c8a13cf30e5737d695","slots":[{"status":"Downloading","index":0,"eta":"01:07 AM Thu 09 Oct","missing":0,"avg_age":"416d","script":"None","msgid":"","verbosity":"","mb":"707.88","sizeleft":"297 MB","filename":"Oreimo S2","priority":"Normal","cat":"anime","mbleft":"297.45","timeleft":"01:07:30","percentage":"57","nzo_id":"SABnzbd_nzo_XBKl4_","has_rating":false,"unpackopts":"3","size":"708 MB"}],"speed":"723 K","size":"708 MB","rating_enable":false,"limit":5,"start":0,"diskspacetotal2":"1823.66","darwin":false,"last_warning":"","have_warnings":"0","noofslots":1,"newzbin_url":"www.newzbin2.es","pause_int":"0","categories":["*","anime","games","movies","music","private","series"],"pp_pause_event":false,"diskspacetotal1":"1823.66","mb":"707.88","newzbinDetails":true,"loadavg":"0.19 | 0.15 | 0.10 | V=336M R=130M","cache_max":"67108864","speedlimit":"500","webdir":"","left_quota":"0 ","uniconfig":"/mnt/Files/Shared/Usenet/sabnzbd/interfaces/Config/templates","paused":false,"isverbose":false,"restart_req":false,"power_options":false,"helpuri":"http://wiki.sabnzbd.org/","uptime":"7d","refresh_rate":"","my_home":"/mnt/Files/Shared/Usenet/sabnzbd","version":"0.7.18","my_lcldata":"/mnt/Files/Shared/Usenet/sabnzbd","color_scheme":"white","new_release":"","nt":false,"status":"Downloading","finish":1,"cache_art":"33","paused_all":false,"finishaction":null,"sizeleft":"297 MB","quota":"0 ","cache_size":"20 MB","mbleft":"297.45","diskspace2":"96.85","diskspace1":"96.85","scripts":["None","EMail.py","nzbToAniDB.py","anidb.cfg","Logger.py"],"timeleft":"0:07:01","have_quota":false,"nzb_quota":"","eta":"01:07AM Thu 09 Oct","kbpersec":"723.31","new_rel_url":"","queue_details":"0"}};
 
-var refreshFreq = 5 * 60 * 1000; // 5 minutes
+var refreshFreq = 2 * 60 * 1000; // 2 minutes
 var refreshAll_timer;
+var refreshIcon_timer;
 var TabList = [];
 
 if (noSDK) { // dummy code for when testing UI without add-on SDK
@@ -77,6 +78,28 @@ function refreshAll() {
 	refreshAll_timer = window.setTimeout(refreshAll,refreshFreq);
 }
 
+function refreshIcon() {
+	window.clearTimeout(refreshIcon_timer);
+	var isActive = false;
+	var isPaused = false;
+
+	for (var i = 0; i < TabList.length; ++i)
+		if (TabList[i]) {
+			isActive = isActive || TabList[i].active();
+			isPaused = isPaused || TabList[i].paused();
+		}
+
+	if (isActive)
+		self.port.emit('setIcon',{'16': './nzb-16-green.png','32': './nzb-32-green.png','64': './nzb-64-green.png'});
+	else
+	if (isPaused)
+		self.port.emit('setIcon',{'16': './nzb-16-orange.png','32': './nzb-32-orange.png','64': './nzb-64-orange.png'});
+	else
+		self.port.emit('setIcon',{'16': './nzb-16-gray.png','32': './nzb-32-gray.png','64': './nzb-64-gray.png'});
+		
+	refreshIcon_timer = window.setTimeout(refreshIcon,1000);
+}
+
 function addTab(tabType) {
 	for (var i = 0; i < TabList.length; ++i)
 		if (!TabList[i]) { // recycle a previously used id
@@ -104,6 +127,13 @@ function onPrefChange([prefName,prefValue]) {
 
 	if (prefName == 'theme') {
 		$('#theme').attr('href','jquery-ui.theme.'+prefValue+'.min.css');
+
+		if (prefValue == 'dark') {
+			$('.ui-progressbar-label').css('text-shadow','1px 1px 0 #000');
+		} else
+		if (prefValue == 'light') {
+			$('.ui-progressbar-label').css('text-shadow','1px 1px 0 #FFF');
+		}
 	}else
 	if (prefName == 'sab_enabled' || prefName == 'nzbg_enabled') {
 		if (prefValue) {
@@ -126,13 +156,13 @@ self.port.on('prefChange',onPrefChange);
 self.port.on('show',function() {
 	doResize();
 	// Reset auto-refresh timer to 3 seconds
-	refreshFreq = 3 * 1000;
+	refreshFreq = 3000;
 	refreshAll();
 });
 self.port.on('hide',function() {
-	// Reset auto-refresh timer to 5 minutes
+	// Reset auto-refresh timer to 2 minutes
 	window.clearTimeout(refreshAll_timer);
-	refreshFreq = 5 * 60 * 1000;
+	refreshFreq = 2 * 60 * 1000;
 	refreshAll_timer = window.setTimeout(refreshAll,refreshFreq);
 	// Click on document to close open menus
 	$(document).click();
@@ -364,6 +394,12 @@ function sab_tab(id,title) {
 		this.btnTogglePauseEle.button('option',{label: isPaused?'Resume':'Pause',icons:{primary:isPaused?'ui-icon-play':'ui-icon-pause'}});
 		this.btnTogglePauseEle.css('color',isPaused?'#00FF00':'#FF0000');
 	};
+	this.paused = function() {
+		return (this.lastStatus && this.lastStatus.queue.paused);
+	}
+	this.active = function() {
+		return (this.lastStatus && this.lastStatus.queue.kbpersec > 0);
+	}
 	this.setError = function(msg) {
 		this.errorEle.html('<strong>'+msg+'</strong>');
 	}
@@ -534,6 +570,12 @@ function nzbg_tab(id,title) {
 		this.btnTogglePauseEle.button('option',{label: isPaused?'Resume':'Pause',icons:{primary:isPaused?'ui-icon-play':'ui-icon-pause'}});
 		this.btnTogglePauseEle.css('color',isPaused?'#00FF00':'#FF0000');
 	};
+	this.paused = function() {
+		return (this.lastStatus && this.lastStatus.result.DownloadPaused);
+	}
+	this.active = function() {
+		return (this.lastStatus && this.lastStatus.result.DownloadRate > 0);
+	}
 	this.setError = function(msg) {
 		this.errorEle.html('<strong>'+msg+'</strong>');
 	}
@@ -567,4 +609,5 @@ $(function() {
 	}
 
 	refreshAll();
+	refreshIcon();
 });
