@@ -14,10 +14,8 @@ var testNzbgStatus = {"version":"1.1","result":{"RemainingSizeLo":828218836,"Rem
 var testNzbgQueue = {"version":"1.1","result":[{"FirstID":110,"LastID":110,"RemainingSizeLo":2092439922,"RemainingSizeHi":0,"RemainingSizeMB":1995,"PausedSizeLo":2092439922,"PausedSizeHi":0,"PausedSizeMB":1995,"RemainingFileCount":48,"RemainingParCount":11,"MinPostTime":1376846000,"MaxPostTime":1376848974,"MinPriority":0,"MaxPriority":0,"ActiveDownloads":0,"Status":"PAUSED","NZBID":110,"NZBName":"([AST] Oreimo S2 Episode 14,15+16 [1080p])","NZBNicename":"([AST] Oreimo S2 Episode 14,15+16 [1080p])","Kind":"NZB","URL":"http://fanzub.com/nzb/239636","NZBFilename":"([AST] Oreimo S2 Episode 14,15+16 [1080p]).nzb","DestDir":"/mnt/Files/Shared/Usenet/nzbget/tmp/inter/([AST] Oreimo S2 Episode 14,15+16 [1080p]).#111","FinalDir":"","Category":"Anime","ParStatus":"NONE","UnpackStatus":"NONE","MoveStatus":"NONE","ScriptStatus":"NONE","DeleteStatus":"NONE","MarkStatus":"NONE","UrlStatus":"SUCCESS","FileSizeLo":2106903144,"FileSizeHi":0,"FileSizeMB":2009,"FileCount":49,"TotalArticles":5344,"SuccessArticles":37,"FailedArticles":0,"Health":1000,"CriticalHealth":871,"DupeKey":"","DupeScore":0,"DupeMode":"SCORE","Deleted":false,"DownloadedSizeLo":14473138,"DownloadedSizeHi":0,"DownloadedSizeMB":13,"DownloadTimeSec":38,"PostTotalTimeSec":0,"ParTimeSec":0,"RepairTimeSec":0,"UnpackTimeSec":0,"Parameters":[{"Name":"*Unpack:","Value":"yes"},{"Name":"nzbToAniDB.py:","Value":"yes"},{"Name":"EMail.py:","Value":"yes"}],"ScriptStatuses":[],"ServerStats":[{"ServerID":1,"SuccessArticles":37,"FailedArticles":0}],"PostInfoText":"NONE","PostStageProgress":135143623,"PostStageTimeSec":0,"Log":[]},{"FirstID":113,"LastID":113,"RemainingSizeLo":147935384,"RemainingSizeHi":0,"RemainingSizeMB":141,"PausedSizeLo":52554802,"PausedSizeHi":0,"PausedSizeMB":50,"RemainingFileCount":15,"RemainingParCount":8,"MinPostTime":1412737286,"MaxPostTime":1412737295,"MinPriority":50,"MaxPriority":50,"ActiveDownloads":8,"Status":"DOWNLOADING","NZBID":113,"NZBName":"Sons.of.Anarchy.S07E05.HDTV.x264-2HD","NZBNicename":"Sons.of.Anarchy.S07E05.HDTV.x264-2HD","Kind":"NZB","URL":"","NZBFilename":"Sons.of.Anarchy.S07E05.HDTV.x264-2HD.nzb","DestDir":"/mnt/Files/Shared/Usenet/nzbget/tmp/inter/Sons.of.Anarchy.S07E05.HDTV.x264-2HD.#113","FinalDir":"","Category":"Series","ParStatus":"NONE","UnpackStatus":"NONE","MoveStatus":"NONE","ScriptStatus":"NONE","DeleteStatus":"NONE","MarkStatus":"NONE","UrlStatus":"NONE","FileSizeLo":496411808,"FileSizeHi":0,"FileSizeMB":473,"FileCount":37,"TotalArticles":659,"SuccessArticles":459,"FailedArticles":0,"Health":1000,"CriticalHealth":880,"DupeKey":"","DupeScore":0,"DupeMode":"SCORE","Deleted":false,"DownloadedSizeLo":348456927,"DownloadedSizeHi":0,"DownloadedSizeMB":332,"DownloadTimeSec":5813,"PostTotalTimeSec":0,"ParTimeSec":0,"RepairTimeSec":0,"UnpackTimeSec":0,"Parameters":[{"Name":"*Unpack:","Value":"yes"},{"Name":"EMail.py:","Value":"yes"},{"Name":"drone","Value":"ef65aad440834c19abc6665fc1adb9a3"}],"ScriptStatuses":[],"ServerStats":[{"ServerID":1,"SuccessArticles":459,"FailedArticles":0}],"PostInfoText":"NONE","PostStageProgress":135143623,"PostStageTimeSec":0,"Log":[]},{"FirstID":114,"LastID":114,"RemainingSizeLo":410572047,"RemainingSizeHi":0,"RemainingSizeMB":391,"PausedSizeLo":52669784,"PausedSizeHi":0,"PausedSizeMB":50,"RemainingFileCount":18,"RemainingParCount":5,"MinPostTime":1412738304,"MaxPostTime":1412738337,"MinPriority":50,"MaxPriority":50,"ActiveDownloads":0,"Status":"QUEUED","NZBID":114,"NZBName":"Chicago.Fire.S03E03.HDTV.x264-LOL","NZBNicename":"Chicago.Fire.S03E03.HDTV.x264-LOL","Kind":"NZB","URL":"","NZBFilename":"Chicago.Fire.S03E03.HDTV.x264-LOL.nzb","DestDir":"/mnt/Files/Shared/Usenet/nzbget/tmp/inter/Chicago.Fire.S03E03.HDTV.x264-LOL.#114","FinalDir":"","Category":"Series","ParStatus":"NONE","UnpackStatus":"NONE","MoveStatus":"NONE","ScriptStatus":"NONE","DeleteStatus":"NONE","MarkStatus":"NONE","UrlStatus":"NONE","FileSizeLo":410572047,"FileSizeHi":0,"FileSizeMB":391,"FileCount":18,"TotalArticles":1046,"SuccessArticles":0,"FailedArticles":0,"Health":1000,"CriticalHealth":852,"DupeKey":"","DupeScore":0,"DupeMode":"SCORE","Deleted":false,"DownloadedSizeLo":0,"DownloadedSizeHi":0,"DownloadedSizeMB":0,"DownloadTimeSec":0,"PostTotalTimeSec":0,"ParTimeSec":0,"RepairTimeSec":0,"UnpackTimeSec":0,"Parameters":[{"Name":"*Unpack:","Value":"yes"},{"Name":"EMail.py:","Value":"yes"},{"Name":"drone","Value":"de44103d24ae42778b0bf708dd537873"}],"ScriptStatuses":[],"ServerStats":[],"PostInfoText":"NONE","PostStageProgress":135143623,"PostStageTimeSec":0,"Log":[]},{"FirstID":115,"LastID":115,"RemainingSizeLo":432403081,"RemainingSizeHi":0,"RemainingSizeMB":412,"PausedSizeLo":57467090,"PausedSizeHi":0,"PausedSizeMB":54,"RemainingFileCount":19,"RemainingParCount":5,"MinPostTime":1412740955,"MaxPostTime":1412740981,"MinPriority":50,"MaxPriority":50,"ActiveDownloads":0,"Status":"QUEUED","NZBID":115,"NZBName":"Marvels.Agents.of.S.H.I.E.L.D.S02E03.PROPER.HDTV.XviD-EVO","NZBNicename":"Marvels.Agents.of.S.H.I.E.L.D.S02E03.PROPER.HDTV.XviD-EVO","Kind":"NZB","URL":"","NZBFilename":"Marvels.Agents.of.S.H.I.E.L.D.S02E03.PROPER.HDTV.XviD-EVO.nzb","DestDir":"/mnt/Files/Shared/Usenet/nzbget/tmp/inter/Marvels.Agents.of.S.H.I.E.L.D.S02E03.PROPER.HDTV.XviD-EVO.#115","FinalDir":"","Category":"Series","ParStatus":"NONE","UnpackStatus":"NONE","MoveStatus":"NONE","ScriptStatus":"NONE","DeleteStatus":"NONE","MarkStatus":"NONE","UrlStatus":"NONE","FileSizeLo":432403081,"FileSizeHi":0,"FileSizeMB":412,"FileCount":19,"TotalArticles":1102,"SuccessArticles":0,"FailedArticles":0,"Health":1000,"CriticalHealth":846,"DupeKey":"","DupeScore":0,"DupeMode":"SCORE","Deleted":false,"DownloadedSizeLo":0,"DownloadedSizeHi":0,"DownloadedSizeMB":0,"DownloadTimeSec":0,"PostTotalTimeSec":0,"ParTimeSec":0,"RepairTimeSec":0,"UnpackTimeSec":0,"Parameters":[{"Name":"*Unpack:","Value":"yes"},{"Name":"EMail.py:","Value":"yes"},{"Name":"drone","Value":"baf57e4cb02b4448a8c436217afafb7d"}],"ScriptStatuses":[],"ServerStats":[],"PostInfoText":"NONE","PostStageProgress":135143623,"PostStageTimeSec":0,"Log":[]}]};
 var testSabStatus = {"queue":{"active_lang":"en","session":"1c7b349a03d899c8a13cf30e5737d695","slots":[{"status":"Downloading","index":0,"eta":"01:07 AM Thu 09 Oct","missing":0,"avg_age":"416d","script":"None","msgid":"","verbosity":"","mb":"707.88","sizeleft":"297 MB","filename":"Oreimo S2","priority":"Normal","cat":"anime","mbleft":"297.45","timeleft":"01:07:30","percentage":"57","nzo_id":"SABnzbd_nzo_XBKl4_","has_rating":false,"unpackopts":"3","size":"708 MB"}],"speed":"723 K","size":"708 MB","rating_enable":false,"limit":5,"start":0,"diskspacetotal2":"1823.66","darwin":false,"last_warning":"","have_warnings":"0","noofslots":1,"newzbin_url":"www.newzbin2.es","pause_int":"0","categories":["*","anime","games","movies","music","private","series"],"pp_pause_event":false,"diskspacetotal1":"1823.66","mb":"707.88","newzbinDetails":true,"loadavg":"0.19 | 0.15 | 0.10 | V=336M R=130M","cache_max":"67108864","speedlimit":"500","webdir":"","left_quota":"0 ","uniconfig":"/mnt/Files/Shared/Usenet/sabnzbd/interfaces/Config/templates","paused":false,"isverbose":false,"restart_req":false,"power_options":false,"helpuri":"http://wiki.sabnzbd.org/","uptime":"7d","refresh_rate":"","my_home":"/mnt/Files/Shared/Usenet/sabnzbd","version":"0.7.18","my_lcldata":"/mnt/Files/Shared/Usenet/sabnzbd","color_scheme":"white","new_release":"","nt":false,"status":"Downloading","finish":1,"cache_art":"33","paused_all":false,"finishaction":null,"sizeleft":"297 MB","quota":"0 ","cache_size":"20 MB","mbleft":"297.45","diskspace2":"96.85","diskspace1":"96.85","scripts":["None","EMail.py","nzbToAniDB.py","anidb.cfg","Logger.py"],"timeleft":"0:07:01","have_quota":false,"nzb_quota":"","eta":"01:07AM Thu 09 Oct","kbpersec":"723.31","new_rel_url":"","queue_details":"0"}};
 
-var refreshFreq = 2 * 60 * 1000; // 2 minutes
-var refreshAll_timer;
-var refreshIcon_timer;
 var TabList = [];
+var panelVisible = false;
 
 if (noSDK) { // dummy code for when testing UI without add-on SDK
 	var port = (new function() {
@@ -69,35 +67,80 @@ function timeLeftString(secs) {
 	if (m > 0) return m+' minute'+(m > 1?'s':'')+(m == 1 && s > 0?', '+s+' second'+(s > 1?'s':''):'');
 	return s+' second'+(s > 1?'s':'');
 }
+function timeLeftShort(secs) {
+	var d = Math.floor(secs / 86400);
+	var h = Math.floor((secs % 86400) / 3600);
+	var m = Math.floor((secs / 60) % 60);
+	var s = Math.floor(secs % 60);
+	if (d > 0) return d+'d';
+	if (h > 0) return h+'h';
+	if (m > 0) return m+'m';
+	return s+'s';
+}
 
+var progressWidgetVisible = false;
+function showProgressWidget() {
+	self.port.emit('showProgressWidget');
+	progressWidgetVisible = true;
+}
+function hideProgressWidget() {
+	self.port.emit('hideProgressWidget');
+	progressWidgetVisible = false;
+}
+function updateProgressWidget(percentage,timeleft) {
+	if (progressWidgetVisible)
+		self.port.emit('updateProgressWidget',[percentage,timeleft]);
+}
+
+var refreshAll_timer;
 function refreshAll() {
 	window.clearTimeout(refreshAll_timer);
 	for (var i = 0; i < TabList.length; ++i)
 		if (TabList[i])
 			TabList[i].refreshStatus(); //.btnRefreshEle.click(); not being called because click() closes menu
-	refreshAll_timer = window.setTimeout(refreshAll,refreshFreq);
+	refreshAll_timer = window.setTimeout(refreshAll,(progressWidgetVisible || panelVisible)?3000:2*60*1000); // 3 sec refresh while visible/downloading, 2 mins while idle.
+	
 }
 
+var refreshIcon_timer;
 function refreshIcon() {
 	window.clearTimeout(refreshIcon_timer);
 	var isActive = false;
 	var isPaused = false;
 
+	var dlPercent;
+	var dlTime;
+
 	for (var i = 0; i < TabList.length; ++i)
 		if (TabList[i]) {
 			isActive = isActive || TabList[i].active();
 			isPaused = isPaused || TabList[i].paused();
+			
+			if (TabList[i].dlSpeed > 0 && !dlPercent && !dlTime) {
+				dlPercent = TabList[i].dlPercent;
+				dlTime = timeLeftShort(TabList[i].dlTimeSecs);
+			}
 		}
 
-	if (isActive)
+	if (isActive) {
 		self.port.emit('setIcon',{'16': './nzb-16-green.png','32': './nzb-32-green.png','64': './nzb-64-green.png'});
-	else
-	if (isPaused)
+		if (!progressWidgetVisible)
+			showProgressWidget();
+		if (progressWidgetVisible && dlPercent && dlTime)
+			updateProgressWidget(dlPercent,dlTime);
+
+	} else
+	if (isPaused) {
 		self.port.emit('setIcon',{'16': './nzb-16-orange.png','32': './nzb-32-orange.png','64': './nzb-64-orange.png'});
-	else
+		if (progressWidgetVisible)
+			hideProgressWidget();
+	} else {
 		self.port.emit('setIcon',{'16': './nzb-16-gray.png','32': './nzb-32-gray.png','64': './nzb-64-gray.png'});
+		if (progressWidgetVisible)
+			hideProgressWidget();
+	}
 		
-	refreshIcon_timer = window.setTimeout(refreshIcon,1000);
+	refreshIcon_timer = window.setTimeout(refreshIcon,3000);
 }
 
 function addTab(tabType) {
@@ -156,14 +199,12 @@ self.port.on('prefChange',onPrefChange);
 self.port.on('show',function() {
 	doResize();
 	// Reset auto-refresh timer to 3 seconds
-	refreshFreq = 3000;
+	panelVisible = true;
 	refreshAll();
 });
 self.port.on('hide',function() {
 	// Reset auto-refresh timer to 2 minutes
-	window.clearTimeout(refreshAll_timer);
-	refreshFreq = 2 * 60 * 1000;
-	refreshAll_timer = window.setTimeout(refreshAll,refreshFreq);
+	panelVisible = false;
 	// Click on document to close open menus
 	$(document).click();
 });
@@ -196,6 +237,11 @@ function sab_tab(id,title) {
 	this.id = id;
 	this.lastStatus;
 	this.lastQueue;
+
+	// Last parse unformatted results stored for progress widget
+	this.dlSpeed = 0;
+	this.dlTimeSecs  = 0;
+	this.dlPercent = 0;
 
 	this.tabHeader = $('<li><a href="#tabs-'+id+'">'+title+'</a></li>');
 									 $('#tabList').append(this.tabHeader);
@@ -334,7 +380,10 @@ function sab_tab(id,title) {
 	this.refreshQueue = function() {}; // Not needed for sab
 	this.parseStatus = function(rpc){
 		this.lastStatus = rpc;
-
+		this.dlSpeed = rpc.queue.kbpersec;
+		this.dlTimeSecs  = 0;
+		this.dlPercent = 0;
+		
 		var dlSpeed = rpc.queue.kbpersec+' KB/s';
 		var dlTotalMB = 0;
 		var dlRemainingMB = 0;
@@ -362,9 +411,11 @@ function sab_tab(id,title) {
 			if (rpc.queue.slots[i].status == 'Downloading' || (rpc.queue.slots[i].status == 'Queued' && rpc.queue.paused)) { // If download is active, or first in queue while paused
 				dlTime = rpc.queue.slots[i].timeleft.split(':')
 				dlTime = (+dlTime[0]) * 60 * 60 + (+dlTime[1]) * 60 + (+dlTime[2])
+				this.dlTimeSecs  = dlTime;
 				dlName = rpc.queue.slots[i].filename+((rpc.queue.slots[i].cat != '*') ? ' ('+rpc.queue.slots[i].cat+')':'');
 				dlTime = (rpc.queue.kbpersec > 0?timeLeftString(dlTime):'N/A')+' ('+rpc.queue.slots[i].sizeleft+')';
 				dlPercent = Math.round(rpc.queue.slots[i].percentage);
+				this.dlPercent = dlPercent;
 				break
 			}
 
@@ -416,6 +467,11 @@ function nzbg_tab(id,title) {
 	this.id = id;
 	this.lastStatus;
 	this.lastQueue;
+
+	// Last parse unformatted results stored for progress widget
+	this.dlSpeed = 0;
+	this.dlTimeSecs  = 0;
+	this.dlPercent = 0;
 
 	this.tabHeader = $('<li><a href="#tabs-'+id+'">'+title+'</a></li>');
 									 $('#tabList').append(this.tabHeader);
@@ -529,6 +585,7 @@ function nzbg_tab(id,title) {
 	}
 	this.parseStatus = function(rpc) {
 		this.lastStatus = rpc;
+		this.dlSpeed = Math.floor(rpc.result.DownloadRate / 1024); // Minimum KB
 		var dlSpeed = bytesToReadable(rpc.result.DownloadRate,1)+'/s';
 		if (rpc.result.DownloadLimit > 0)
 			dlSpeed += ' ('+bytesToReadable(rpc.result.DownloadLimit,0)+'/s limit)';
@@ -537,6 +594,9 @@ function nzbg_tab(id,title) {
 	};
 	this.parseQueue = function(rpc) {
 		this.lastQueue = rpc;
+//		this.dlSpeed = 0; // set in parseStatus
+		this.dlTimeSecs  = 0;
+		this.dlPercent = 0;
 
 		var dlTotalMB = 0;
 		var dlRemainingMB = 0;
@@ -549,8 +609,10 @@ function nzbg_tab(id,title) {
 				dlTotalMB = (rpc.result[i].FileSizeMB - rpc.result[i].PausedSizeMB);
 				dlRemainingMB = (rpc.result[i].RemainingSizeMB - rpc.result[i].PausedSizeMB);
 				dlPercent =  Math.floor((dlTotalMB - dlRemainingMB) / dlTotalMB * 100);
+				this.dlPercent = dlPercent;
 				dlName = rpc.result[i].NZBName+((rpc.result[i].Category != '') ? ' ('+rpc.result[i].Category+')':'');
-				dlTime = (this.lastStatus.result.DownloadRate > 0?timeLeftString((dlRemainingMB * 1024 / (this.lastStatus.result.DownloadRate / 1024))):'N/A')+' ('+dlRemainingMB+' MB)';
+				this.dlTimeSecs = (dlRemainingMB * 1024 / (this.dlSpeed / 1024));
+				dlTime = (this.dlSpeed > 0?timeLeftString(this.dlTimeSecs):'N/A')+' ('+dlRemainingMB+' MB)';
 				break;
 			}
 
