@@ -99,7 +99,7 @@ function refreshAll() {
 		if (TabList[i])
 			TabList[i].refreshStatus(); //.btnRefreshEle.click(); not being called because click() closes menu
 	refreshAll_timer = window.setTimeout(refreshAll,(progressWidgetVisible || panelVisible)?3000:2*60*1000); // 3 sec refresh while visible/downloading, 2 mins while idle.
-	
+
 }
 
 var refreshIcon_timer;
@@ -115,7 +115,7 @@ function refreshIcon() {
 		if (TabList[i]) {
 			isActive = isActive || TabList[i].active();
 			isPaused = isPaused || TabList[i].paused();
-			
+
 			if (TabList[i].dlSpeed > 0 && !dlPercent && !dlTime) {
 				dlPercent = TabList[i].dlPercent;
 				dlTime = timeLeftShort(TabList[i].dlTimeSecs);
@@ -128,7 +128,6 @@ function refreshIcon() {
 			showProgressWidget();
 		if (progressWidgetVisible && dlPercent && dlTime)
 			updateProgressWidget(dlPercent,dlTime);
-
 	} else
 	if (isPaused) {
 		self.port.emit('setIcon',{'16': './nzb-16-orange.png','32': './nzb-32-orange.png','64': './nzb-64-orange.png'});
@@ -139,7 +138,7 @@ function refreshIcon() {
 		if (progressWidgetVisible)
 			hideProgressWidget();
 	}
-		
+
 	refreshIcon_timer = window.setTimeout(refreshIcon,3000);
 }
 
@@ -383,7 +382,7 @@ function sab_tab(id,title) {
 		this.dlSpeed = rpc.queue.kbpersec;
 		this.dlTimeSecs  = 0;
 		this.dlPercent = 0;
-		
+
 		var dlSpeed = rpc.queue.kbpersec+' KB/s';
 		var dlTotalMB = 0;
 		var dlRemainingMB = 0;
