@@ -183,6 +183,13 @@
 		"value": false
 	},
 	{
+		"name": "connection_timeout",
+		"title": "Connection Timeout",
+		"description": "Seconds. Time to wait for remote download client to respond to API calls. Default 1 second\nMust be lower than active refresh speed.",
+		"type": "integer",
+		"value": 1
+	},
+	{
 		"name": "refresh_active",
 		"title": "Refresh Speed while Active",
 		"description": "Seconds. While the UI Panel is visible or an NZB is downloading, nzbFox will refresh your download client at this speed. Default 3 seconds",
