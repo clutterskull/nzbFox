@@ -183,6 +183,20 @@
 		"value": false
 	},
 	{
+		"name": "refresh_active",
+		"title": "Refresh Speed while Active",
+		"description": "Seconds. While the UI Panel is visible or an NZB is downloading, nzbFox will refresh your download client at this speed. Default 3 seconds",
+		"type": "integer",
+		"value": 3
+	},
+	{
+		"name": "refresh_idle",
+		"title": "Refresh Speed while Idle",
+		"description": "Seconds. While the UI Panel is hidden and an NZB is not downloading, nzbFox will refresh your download client at this speed. Default 2 minutes",
+		"type": "integer",
+		"value": 120
+	},
+	{
 		"name": "custom_indexers",
 		"title": "Personal Newznab Indexers",
 		"description": "If you have your own Newznab indexer, enter the domain name here. Default template is recommended.\nUse ',' for multiple domains.\n(Example: myindexer.com,192.168.1.4,localhost)",

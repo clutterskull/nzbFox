@@ -98,7 +98,7 @@ function refreshAll() {
 	for (var i = 0; i < TabList.length; ++i)
 		if (TabList[i])
 			TabList[i].refreshStatus(); //.btnRefreshEle.click(); not being called because click() closes menu
-	refreshAll_timer = window.setTimeout(refreshAll,(progressWidgetVisible || panelVisible)?3000:2*60*1000); // 3 sec refresh while visible/downloading, 2 mins while idle.
+	refreshAll_timer = window.setTimeout(refreshAll,(progressWidgetVisible || panelVisible)?self.options.prefs.refresh_active * 1000:self.options.prefs.refresh_idle * 1000); // 3 sec refresh while visible/downloading, 2 mins while idle.
 
 }
 
@@ -197,12 +197,10 @@ self.port.on('prefChange',onPrefChange);
 
 self.port.on('show',function() {
 	doResize();
-	// Reset auto-refresh timer to 3 seconds
 	panelVisible = true;
 	refreshAll();
 });
 self.port.on('hide',function() {
-	// Reset auto-refresh timer to 2 minutes
 	panelVisible = false;
 	// Click on document to close open menus
 	$(document).click();
