@@ -30,7 +30,7 @@ if (noSDK) { // dummy code for when testing UI without add-on SDK
 
 	var options = (new function() {
 		this.prefs = {
-			theme: 'dark',
+			theme: 'light',
 			nzbg_enabled: true,
 			sab_enabled: true,
 
@@ -92,14 +92,10 @@ function updateProgressWidget(percentage,timeleft) {
 		self.port.emit('updateProgressWidget',[percentage,timeleft]);
 }
 
-var refreshAll_timer;
 function refreshAll() {
-	window.clearTimeout(refreshAll_timer);
 	for (var i = 0; i < TabList.length; ++i)
 		if (TabList[i])
 			TabList[i].refreshStatus(); //.btnRefreshEle.click(); not being called because click() closes menu
-	refreshAll_timer = window.setTimeout(refreshAll,(progressWidgetVisible || panelVisible)?self.options.prefs.refresh_active * 1000:self.options.prefs.refresh_idle * 1000); // 3 sec refresh while visible/downloading, 2 mins while idle.
-
 }
 
 var refreshIcon_timer;
@@ -209,6 +205,10 @@ self.port.on('rpc-call-success',function({call,reply}) {
 //	log('rpc-call-success '+JSON.stringify(call)+' / '+JSON.stringify(reply));
 	if (!TabList[call.id]) return;
 	TabList[call.id].setError('');
+
+	// 3 sec refresh while visible/downloading, 2 mins while idle.
+	TabList[call.id].refresh_timer = 	window.setTimeout(TabList[call.id].refreshStatus,(progressWidgetVisible || panelVisible)?self.options.prefs.refresh_active * 1000:self.options.prefs.refresh_idle * 1000);
+
 	if (call.method == 'status' || call.method == 'queue') {
 		TabList[call.id].parseStatus(reply);
 		TabList[call.id].refreshQueue();
@@ -225,8 +225,11 @@ self.port.on('rpc-call-success',function({call,reply}) {
 });
 self.port.on('rpc-call-failure',function({call,reply}) {
 	log('rpc-call-failure '+JSON.stringify(call)+' / '+JSON.stringify(reply));
-	if (TabList[call.id])
-		TabList[call.id].setError(reply.message);
+	if (TabList[call.id]) {
+		TabList[call.id].setError(reply.message);	
+		// 3 sec refresh while visible/downloading, 2 mins while idle.
+		TabList[call.id].refresh_timer = 	window.setTimeout(TabList[call.id].refreshStatus,(progressWidgetVisible || panelVisible)?self.options.prefs.refresh_active * 1000:self.options.prefs.refresh_idle * 1000);
+	}
 });
 
 function sab_tab(id,title) {
@@ -234,6 +237,7 @@ function sab_tab(id,title) {
 	this.id = id;
 	this.lastStatus;
 	this.lastQueue;
+	this.refresh_timer;
 
 	// Last parse unformatted results stored for progress widget
 	this.dlSpeed = 0;
@@ -372,7 +376,8 @@ function sab_tab(id,title) {
 	});
 	// Send 'queue' RPC call which contains all the info we need (labeled as Status for parity with nzbget)
 	this.refreshStatus = function() {
-		self.port.emit('rpc-call',{target:'sab',id: this.id, method:'queue',params:{start:0,limit:5}, onSuccess: 'rpc-call-success',onFailure: 'rpc-call-failure' });
+		window.clearTimeout(_this.refresh_timer);
+		self.port.emit('rpc-call',{target:'sab',id: _this.id, method:'queue',params:{start:0,limit:5}, onSuccess: 'rpc-call-success',onFailure: 'rpc-call-failure' });
 	};
 	this.refreshQueue = function() {}; // Not needed for sab
 	this.parseStatus = function(rpc){
@@ -438,7 +443,7 @@ function sab_tab(id,title) {
 		self.port.emit('rpc-call',{target:'sab',id: _this.id, method:'config',params: {name:'set_pause',value:mins},onSuccess: 'rpc-call-success',onFailure: 'rpc-call-failure'});
 		this.btnRefreshEle.click();
 	}
-	this.setPaused = function(isPaused){
+	this.setPaused = function(isPaused) {
 		this.btnTogglePauseEle.button('option',{label: isPaused?'Resume':'Pause',icons:{primary:isPaused?'ui-icon-play':'ui-icon-pause'}});
 		this.btnTogglePauseEle.css('color',isPaused?'#00FF00':'#FF0000');
 	};
@@ -452,6 +457,7 @@ function sab_tab(id,title) {
 		this.errorEle.html('<strong>'+msg+'</strong>');
 	}
 	this.remove = function() {
+		window.clearTimeout(this.refresh_timer);
 		this.tabHeader.remove();
 		this.tab.remove();
 		$('#tabs').tabs('refresh');
@@ -464,6 +470,7 @@ function nzbg_tab(id,title) {
 	this.id = id;
 	this.lastStatus;
 	this.lastQueue;
+	this.refresh_timer;
 
 	// Last parse unformatted results stored for progress widget
 	this.dlSpeed = 0;
@@ -574,11 +581,13 @@ function nzbg_tab(id,title) {
 
 	// Send 'status' RPC call to get current download speed & paused state
 	this.refreshStatus = function() {
-		self.port.emit('rpc-call',{target:'nzbg',id: this.id, method:'status',params:[], onSuccess: 'rpc-call-success',onFailure: 'rpc-call-failure' });
+		window.clearTimeout(_this.refresh_timer);
+		self.port.emit('rpc-call',{target:'nzbg',id: _this.id, method:'status',params:[], onSuccess: 'rpc-call-success',onFailure: 'rpc-call-failure' });
 	}
 	// Send 'listgroups' RPC call to get currently active download
 	this.refreshQueue = function() {
-		self.port.emit('rpc-call',{target:'nzbg',id: this.id, method:'listgroups',params:[0], onSuccess: 'rpc-call-success',onFailure: 'rpc-call-failure' });
+		window.clearTimeout(_this.refresh_timer);
+		self.port.emit('rpc-call',{target:'nzbg',id: _this.id, method:'listgroups',params:[0], onSuccess: 'rpc-call-success',onFailure: 'rpc-call-failure' });
 	}
 	this.parseStatus = function(rpc) {
 		this.lastStatus = rpc;
@@ -639,6 +648,7 @@ function nzbg_tab(id,title) {
 		this.errorEle.html('<strong>'+msg+'</strong>');
 	}
 	this.remove = function() {
+		window.clearTimeout(this.refresh_timer);
 		this.tabHeader.remove();
 		this.tab.remove();
 		$('#tabs').tabs('refresh');
