@@ -6,14 +6,14 @@
 
 */
 
-var prefs 			= self.options.prefs;
-var indexers		= self.options.indexers;
+var prefs 				= self.options.prefs;
+var indexers			= self.options.indexers;
 var imgNZBG 			= self.options.dataURL+'nzbget.png';
-var imgNZBG_Pass = self.options.dataURL+'nzbget_pass.png';
-var imgNZBG_Fail = self.options.dataURL+'nzbget_fail.png';
-var imgSAB 			= self.options.dataURL+'sab.png';
-var imgSAB_Pass = self.options.dataURL+'sab_pass.png';
-var imgSAB_Fail = self.options.dataURL+'sab_fail.png';
+var imgNZBG_Pass	= self.options.dataURL+'nzbget_pass.png';
+var imgNZBG_Fail	= self.options.dataURL+'nzbget_fail.png';
+var imgSAB 				= self.options.dataURL+'sab.png';
+var imgSAB_Pass 	= self.options.dataURL+'sab_pass.png';
+var imgSAB_Fail 	= self.options.dataURL+'sab_fail.png';
 
 self.port.on('nzbget-added',function(data) {
 	if (data.success) {
