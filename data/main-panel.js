@@ -117,6 +117,7 @@ function nzbgStatusToString(nzbgStatus) {
 
 function tabStartTimer(id) {
 	// 3 sec refresh while visible/downloading, 2 mins while idle.
+	window.clearTimeout(TabList[id].refresh_timer);
 	var refreshRate = (progressWidgetVisible || panelVisible) ? self.options.prefs.refresh_active : self.options.prefs.refresh_idle;
 	TabList[id].refresh_timer = window.setTimeout(function() {TabList[id].refreshStatus(refreshRate)},(refreshRate > 0?refreshRate * 1000:5000));
 	// If rate > 0, proceed as normal. If 0, do timer anyway with 5sec interval, pass rate to refreshStatus, where refreshStatus will ignore if rate is 0.
@@ -239,9 +240,8 @@ self.port.on('rpc-call-success',function({call,reply}) {
 	if (!TabList[call.id]) return;
 	TabList[call.id].setError('');
 
-	tabStartTimer(call.id);
-	
 	if (call.method == 'status' || call.method == 'queue') {
+		tabStartTimer(call.id);
 		TabList[call.id].parseStatus(reply);
 		TabList[call.id].refreshQueue();
 	} else
@@ -249,6 +249,7 @@ self.port.on('rpc-call-success',function({call,reply}) {
 		TabList[call.id].parseHistory(reply);
 	}
 	if (call.method == 'listgroups'){
+		tabStartTimer(call.id);
 		TabList[call.id].parseQueue(reply);
 	} else
 	if (call.method == 'pausedownload' || call.method == 'pause') {
@@ -262,7 +263,8 @@ self.port.on('rpc-call-failure',function({call,reply}) {
 	log('rpc-call-failure '+JSON.stringify(call)+' / '+JSON.stringify(reply));
 	if (TabList[call.id]) {
 		TabList[call.id].setError(reply.message);
-		tabStartTimer(call.id);
+		if (call.method == 'status' || call.method == 'queue' || call.method == 'listgroups') tabStartTimer(call.id);
+		if (call.method == 'history') TabList[call.id].history_timer = window.setTimeout(TabList[call.id].refreshHistory,	self.options.prefs.refresh_history*1000);
 	}
 });
 
@@ -810,6 +812,9 @@ $(function() {
 			TabList[0].histLastID = 'asdf';
 		});
 
-	refreshAll(true);
-	refreshIcon();
+	window.setTimeout(function() {
+		refreshAll(true);
+		refreshIcon();
+	},1000);
+	
 });
