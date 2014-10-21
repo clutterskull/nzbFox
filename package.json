@@ -7,14 +7,14 @@
 	"icon": "data/nzb-64-green.png",
 	"author": "Enesce",
 	"license": "MPL 2.0",
-	"version": "1.2.1",
-	
+	"version": "1.2.2",
+
 	"preferences": [
-	
+
 	{
 		"name": "theme",
-		"type": "radio",
 		"title": "Panel Theme",
+		"type": "radio",
 		"value": "light",
 		"options": [
 		{
@@ -27,7 +27,14 @@
 		}
 		]
 	},
-	
+	{
+		"name": "dl_notifications",
+		"title": "Enable Download Notifications",
+		"description": "",
+		"type": "bool",
+		"value": true
+	},
+
 	{
 		"name": "nzbg_enabled",
 		"title": "Enable NZBGet",
@@ -76,7 +83,7 @@
 		"type": "control",
 		"title": ""
 	},
-	
+
 	{
 		"name": "sab_enabled",
 		"title": "Enable SABnzbd+",
@@ -118,7 +125,7 @@
 		"type": "control",
 		"title": ""
 	},
-	
+
 	{
 		"name": "cat_tv",
 		"title": "TV Category",
@@ -202,6 +209,13 @@
 		"description": "Seconds. While the UI Panel is hidden and an NZB is not downloading, nzbFox will refresh your download client at this speed. Default 2 minutes",
 		"type": "integer",
 		"value": 120
+	},
+	{
+		"name": "refresh_history",
+		"title": "Refresh History Speed",
+		"description": "Seconds. How often to check remote history for finished downloads. Default 15 seconds",
+		"type": "integer",
+		"value": 15
 	},
 	{
 		"name": "custom_indexers",

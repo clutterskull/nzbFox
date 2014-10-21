@@ -13,9 +13,10 @@
 	<link href="jquery-ui.structure.min.css" rel="stylesheet">
 	<link id="theme" href="jquery-ui.theme.light.min.css" rel="stylesheet">
 	<style type="text/css" media="all">
-		body {
+		html {
 			overflow: hidden;
 			font-size: 12px;
+			width: 500px
 		}
 		div.nzbFox {
 			display: inline;
@@ -48,7 +49,6 @@
 	</style>
 </head>
 <body>
-
 
 <div id="tabs">
 	<ul id="tabList">
@@ -128,6 +128,12 @@
 
 <div id="dialogFinishScript" title="Finish script" class="template">
 		<p><select class="text ui-widget-content ui-corner-all"></select></p>
+</div>
+
+<div id="dev" style="display: none">
+	<button id="test1">Refresh Histories</button>
+	<button id="test2">Log last API result</button>
+	<button id="test3">histLastID 'asdf'</button>
 </div>
 
 </body>

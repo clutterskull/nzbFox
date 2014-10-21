@@ -1,0 +1,68 @@
+<!--
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+		nzbFox (c) 2014 Nick Cooper - https://github.com/NickSC
+
+-->
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<link href="jquery-ui.structure.min.css" rel="stylesheet">
+	<link id="theme" href="jquery-ui.theme.light.min.css" rel="stylesheet">
+	<style type="text/css" media="all">
+		html {
+			font-size: 12px;
+			width: 450px;
+		}
+		div.nzbFox {
+			display: inline;
+		}
+		div#notification {
+	    overflow:hidden;
+		}
+		#header {
+			text-align: center;
+			font-weight: bold;
+		}
+		#stats {
+			font-size: 0.7em;
+		}
+		#open {
+			margin: 4px;
+		}
+		#name {
+<!--			overflow:hidden;-->
+<!--			white-space:nowrap;-->
+		}
+		#icon {
+			vertical-align: top;
+		}
+		td img { <!-- Define HxW else overflow on first notification is shown -->
+			min-height: 32px;
+			min-width: 32px;
+		}
+	</style>
+</head>
+<body>
+
+<div id="notification" class="ui-widget ui-widget-content ui-corner-all">
+	<div id="header">...</div>
+	<hr/>
+	<table>
+		<tr>
+			<td rowspan="3"><img id="icon" src="" /></td>
+			<td>
+				<div id="name">...</div>
+				<div id="stats">...</div>
+			</td>
+		</tr>
+	</table>
+	<hr/>
+	<button id="open" style="float:right">...</button>
+</div>
+
+</body>
+</html>

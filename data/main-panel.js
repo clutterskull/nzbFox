@@ -10,10 +10,6 @@
 //////////////////////////////////////////////////////////////////////////////
 var noSDK = (typeof self.port == 'undefined');
 
-var testNzbgStatus = {"version":"1.1","result":{"RemainingSizeLo":125844603,"RemainingSizeHi":0,"RemainingSizeMB":120,"ForcedSizeLo":0,"ForcedSizeHi":0,"ForcedSizeMB":0,"DownloadedSizeLo":171300276,"DownloadedSizeHi":0,"DownloadedSizeMB":163,"ArticleCacheLo":8832000,"ArticleCacheHi":0,"ArticleCacheMB":8,"DownloadRate":687571,"AverageDownloadRate":572910,"DownloadLimit":0,"ThreadCount":15,"ParJobCount":0,"PostJobCount":0,"UrlCount":0,"UpTimeSec":13964,"DownloadTimeSec":299,"ServerPaused":false,"DownloadPaused":false,"Download2Paused":false,"ServerStandBy":false,"PostPaused":false,"ScanPaused":false,"FreeDiskSpaceLo":1667100672,"FreeDiskSpaceHi":10,"FreeDiskSpaceMB":42549,"ServerTime":1413272739,"ResumeTime":0,"FeedActive":false,"NewsServers":[{"ID":1,"Active":true},{"ID":2,"Active":true},{"ID":3,"Active":true},{"ID":4,"Active":true}]}};
-var testNzbgQueue = {"version":"1.1","result":[{"FirstID":157,"LastID":157,"RemainingSizeLo":142058794,"RemainingSizeHi":0,"RemainingSizeMB":135,"PausedSizeLo":16214191,"PausedSizeHi":0,"PausedSizeMB":15,"RemainingFileCount":22,"RemainingParCount":8,"MinPostTime":1392754127,"MaxPostTime":1392754396,"MinPriority":0,"MaxPriority":0,"ActiveDownloads":8,"Status":"DOWNLOADING","NZBID":157,"NZBName":"Debian Gnu Linux 8 Jessie Testing I386-NETINSTALL","NZBNicename":"Debian Gnu Linux 8 Jessie Testing I386-NETINSTALL","Kind":"NZB","URL":"https://api.dognzb.cr/api?t=get&id=b24202c4972b1ecb49e6e32500cbb4e0&apikey=56de11ebfa80b83f6e8aaef7f74a8e5a","NZBFilename":"Debian Gnu Linux 8 Jessie Testing I386-NETINSTALL.nzb","DestDir":"/mnt/Files/Shared/Usenet/nzbget/tmp/inter/Debian Gnu Linux 8 Jessie Testing I386-NETINSTALL.#157","FinalDir":"","Category":"","ParStatus":"NONE","UnpackStatus":"NONE","MoveStatus":"NONE","ScriptStatus":"NONE","DeleteStatus":"NONE","MarkStatus":"NONE","UrlStatus":"SUCCESS","FileSizeLo":311269535,"FileSizeHi":0,"FileSizeMB":296,"FileCount":37,"TotalArticles":804,"SuccessArticles":435,"FailedArticles":0,"Health":1000,"CriticalHealth":944,"DupeKey":"","DupeScore":0,"DupeMode":"SCORE","Deleted":false,"DownloadedSizeLo":169389593,"DownloadedSizeHi":0,"DownloadedSizeMB":161,"DownloadTimeSec":231,"PostTotalTimeSec":0,"ParTimeSec":0,"RepairTimeSec":0,"UnpackTimeSec":0,"Parameters":[{"Name":"*DNZB:Details","Value":"https://dognzb.cr/details/b24202c4972b1ecb49e6e32500cbb4e0"},{"Name":"*DNZB:Failure","Value":"https://dognzb.cr/fail/b24202c4972b1ecb49e6e32500cbb4e0/56de11ebfa80b83f6e8aaef7f74a8e5a"},{"Name":"*DNZB:NFO","Value":"https://dognzb.cr/nfo/b24202c4972b1ecb49e6e32500cbb4e0"},{"Name":"*Unpack:","Value":"yes"},{"Name":"EMail.py:","Value":"yes"}],"ScriptStatuses":[],"ServerStats":[{"ServerID":1,"SuccessArticles":435,"FailedArticles":0}],"PostInfoText":"NONE","PostStageProgress":135143623,"PostStageTimeSec":0,"Log":[]}]};
-var testSabStatus = {"queue":{"active_lang":"en","session":"1c7b349a03d899c8a13cf30e5737d695","slots":[{"status":"Downloading","index":0,"eta":"05:37 PM Tue 14 Oct","missing":0,"avg_age":"237d","script":"None","msgid":"","verbosity":"","mb":"296.85","sizeleft":"124 MB","filename":"Debian Gnu Linux 8 Jessie Testing I386-NETINSTALL","priority":"Normal","cat":"apps","mbleft":"123.77","timeleft":"0:03:02","percentage":"58","nzo_id":"SABnzbd_nzo_xK2b8f","has_rating":false,"unpackopts":"3","size":"297 MB"}],"speed":"696 K","size":"297 MB","rating_enable":false,"limit":5,"start":0,"diskspacetotal2":"1823.66","darwin":false,"last_warning":"","have_warnings":"0","noofslots":1,"newzbin_url":"www.newzbin2.es","pause_int":"0","categories":["*","anime","games","movies","music","private","series"],"pp_pause_event":false,"diskspacetotal1":"1823.66","mb":"296.85","newzbinDetails":true,"loadavg":"0.18 | 0.11 | 0.07 | V=389M R=181M","cache_max":"67108864","speedlimit":"","webdir":"","left_quota":"0 ","uniconfig":"/mnt/Files/Shared/Usenet/sabnzbd/interfaces/Config/templates","paused":false,"isverbose":false,"restart_req":false,"power_options":false,"helpuri":"http://wiki.sabnzbd.org/","uptime":"1d","refresh_rate":"","my_home":"/mnt/Files/Shared/Usenet/sabnzbd","version":"0.7.18","my_lcldata":"/mnt/Files/Shared/Usenet/sabnzbd","color_scheme":"white","new_release":"","nt":false,"status":"Downloading","finish":1,"cache_art":"5","paused_all":false,"finishaction":null,"sizeleft":"124 MB","quota":"0 ","cache_size":"2 MB","mbleft":"123.77","diskspace2":"41.71","diskspace1":"41.71","scripts":["None","EMail.py","nzbToAniDB.py","anidb.cfg","Logger.py"],"timeleft":"0:03:02","have_quota":false,"nzb_quota":"","eta":"05:37 PM Tue 14 Oct","kbpersec":"696.31","new_rel_url":"","queue_details":"1"}};
-
 var TabList = [];
 var panelVisible = false;
 
@@ -35,12 +31,12 @@ if (noSDK) { // dummy code for when testing UI without add-on SDK
 			sab_enabled: true,
 
 			nzbg_ip: '192.168.1.4',
-			nzbg_port: 8080,
+			nzbg_port: 8085,
 			nzbg_user: '',
 			nzbg_pass: '',
 
 			sab_ip: '192.168.1.4',
-			sab_port: 8084,
+			sab_port: 8080,
 			sab_apikey: '123456',
 		};
 	});
@@ -50,6 +46,8 @@ if (noSDK) { // dummy code for when testing UI without add-on SDK
 
 function log(msg) {self.port.emit('log',msg);}
 
+function time() {return Math.round((new Date()).getTime() / 1000)}
+
 function bytesToReadable(bytes,decimal) {
 	var s = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
 	if (bytes == 0) return '0 '+s[0];
@@ -57,17 +55,17 @@ function bytesToReadable(bytes,decimal) {
 	return (bytes / Math.pow(1024, e)).toFixed(decimal) + ' ' + s[e];
 }
 
-function timeLeftString(secs) {
+function timeToStringL(secs,twoResults=false) {
 	var d = Math.floor(secs / 86400);
 	var h = Math.floor((secs % 86400) / 3600);
 	var m = Math.floor((secs / 60) % 60);
 	var s = Math.floor(secs % 60);
 	if (d > 0) return d+' day'+(d > 1?'s':'')+', '+h+' hour'+(h > 1?'s':'');
 	if (h > 0) return h+' hour'+(h > 1?'s':'')+', '+m+' minute'+(m > 1?'s':'');
-	if (m > 0) return m+' minute'+(m > 1?'s':'')+(m == 1 && s > 0?', '+s+' second'+(s > 1?'s':''):'');
+	if (m > 0) return m+' minute'+(m > 1?'s':'')+((m == 1 && s > 0) || twoResults?', '+s+' second'+(s > 1?'s':''):'');
 	return s+' second'+(s > 1?'s':'');
 }
-function timeLeftShort(secs) {
+function timeToStringS(secs) {
 	var d = Math.floor(secs / 86400);
 	var h = Math.floor((secs % 86400) / 3600);
 	var m = Math.floor((secs / 60) % 60);
@@ -92,10 +90,45 @@ function updateProgressWidget(percentage,timeleft) {
 		self.port.emit('updateProgressWidget',[percentage,timeleft]);
 }
 
-function refreshAll() {
+function nzbgStatusToString(nzbgStatus) {
+	switch (nzbgStatus) {
+		case 'FAILURE/BAD': return 'Marked as BAD by user';
+		case 'SUCCESS/GOOD': return 'Marked as GOOD by user';
+		case 'FAILURE/HEALTH': return 'The download was aborted by health check';
+		case 'DELETED/MANUAL': return 'Deleted by user';
+		case 'DELETED/DUPE': return 'Deleted by duplicate check';
+		case 'FAILURE/PAR': return 'The par-check has failed';
+		case 'FAILURE/UNPACK': return 'The unpack has failed and there are no par-files';
+		case 'FAILURE/MOVE': return 'Error while moving files from temporary folder to destination';
+		case 'WARNING/DAMAGED': return 'Par-check required, but disabled in settings';
+		case 'WARNING/REPAIRABLE': return 'Files are damaged, but repair is disabled in settings';
+		case 'FAILURE/HEALTH': return 'Health is critical, no par files available, no files unpacked';
+		case 'WARNING/HEALTH': return 'Health is less than 100%, no par files available, no files unpacked';
+		case 'SUCCESS/HEALTH': return 'Downloaded successfully, no par files available, no files unpacked';
+		case 'WARNING/SPACE': return 'Unpack has failed due to not enough space on the drive';
+		case 'WARNING/PASSWORD': return 'Unpack has failed because the password was not provided or was wrong';
+		case 'SUCCESS/ALL': return 'Downloaded successfully';
+		case 'SUCCESS/UNPACK': return 'Downloaded successfully, no post-processing';
+		case 'SUCCESS/PAR': return 'Downloaded successfully, no unpack required';
+		case 'WARNING/SCRIPT': return 'Downloaded successfully, but a post-processing script has failed';
+		default: return nzbgStatus;
+	}
+}
+
+function tabStartTimer(id) {
+	// 3 sec refresh while visible/downloading, 2 mins while idle.
+	var refreshRate = (progressWidgetVisible || panelVisible) ? self.options.prefs.refresh_active : self.options.prefs.refresh_idle;
+	TabList[id].refresh_timer = window.setTimeout(function() {TabList[id].refreshStatus(refreshRate)},(refreshRate > 0?refreshRate * 1000:5000));
+	// If rate > 0, proceed as normal. If 0, do timer anyway with 5sec interval, pass rate to refreshStatus, where refreshStatus will ignore if rate is 0.
+	// Messy late night logic, due to "Active" rate is 0, but idle rate is not - idle timer wont get created otherwise
+}
+
+function refreshAll(doHistory=false) {
 	for (var i = 0; i < TabList.length; ++i)
-		if (TabList[i])
+		if (TabList[i]) {
 			TabList[i].refreshStatus(); //.btnRefreshEle.click(); not being called because click() closes menu
+			if (doHistory) TabList[i].refreshHistory();
+		}
 }
 
 var refreshIcon_timer;
@@ -114,7 +147,7 @@ function refreshIcon() {
 
 			if (TabList[i].dlSpeed > 0 && !dlPercent && !dlTime) {
 				dlPercent = TabList[i].dlPercent;
-				dlTime = timeLeftShort(TabList[i].dlTimeSecs);
+				dlTime = timeToStringS(TabList[i].dlTimeSecs);
 			}
 		}
 
@@ -206,13 +239,15 @@ self.port.on('rpc-call-success',function({call,reply}) {
 	if (!TabList[call.id]) return;
 	TabList[call.id].setError('');
 
-	// 3 sec refresh while visible/downloading, 2 mins while idle.
-	TabList[call.id].refresh_timer = 	window.setTimeout(TabList[call.id].refreshStatus,(progressWidgetVisible || panelVisible)?self.options.prefs.refresh_active * 1000:self.options.prefs.refresh_idle * 1000);
-
+	tabStartTimer(call.id);
+	
 	if (call.method == 'status' || call.method == 'queue') {
 		TabList[call.id].parseStatus(reply);
 		TabList[call.id].refreshQueue();
 	} else
+	if (call.method == 'history') {
+		TabList[call.id].parseHistory(reply);
+	}
 	if (call.method == 'listgroups'){
 		TabList[call.id].parseQueue(reply);
 	} else
@@ -226,9 +261,8 @@ self.port.on('rpc-call-success',function({call,reply}) {
 self.port.on('rpc-call-failure',function({call,reply}) {
 	log('rpc-call-failure '+JSON.stringify(call)+' / '+JSON.stringify(reply));
 	if (TabList[call.id]) {
-		TabList[call.id].setError(reply.message);	
-		// 3 sec refresh while visible/downloading, 2 mins while idle.
-		TabList[call.id].refresh_timer = 	window.setTimeout(TabList[call.id].refreshStatus,(progressWidgetVisible || panelVisible)?self.options.prefs.refresh_active * 1000:self.options.prefs.refresh_idle * 1000);
+		TabList[call.id].setError(reply.message);
+		tabStartTimer(call.id);
 	}
 });
 
@@ -237,12 +271,16 @@ function sab_tab(id,title) {
 	this.id = id;
 	this.lastStatus;
 	this.lastQueue;
+	this.lastHistory;
 	this.refresh_timer;
+	this.history_timer;
 
 	// Last parse unformatted results stored for progress widget
 	this.dlSpeed = 0;
 	this.dlTimeSecs  = 0;
 	this.dlPercent = 0;
+
+	this.histLastID = '';
 
 	this.tabHeader = $('<li><a href="#tabs-'+id+'">'+title+'</a></li>');
 									 $('#tabList').append(this.tabHeader);
@@ -375,11 +413,17 @@ function sab_tab(id,title) {
 		window.open((self.options.prefs.sab_ssl?'https':'http')+'://'+self.options.prefs.sab_ip+':'+self.options.prefs.sab_port);
 	});
 	// Send 'queue' RPC call which contains all the info we need (labeled as Status for parity with nzbget)
-	this.refreshStatus = function() {
+	this.refreshStatus = function(refreshRate) {
 		window.clearTimeout(_this.refresh_timer);
-		self.port.emit('rpc-call',{target:'sab',id: _this.id, method:'queue',params:{start:0,limit:5}, onSuccess: 'rpc-call-success',onFailure: 'rpc-call-failure' });
+		if (refreshRate == 0) tabStartTimer(_this.id); else
+		self.port.emit('rpc-call',{target:'sab',id: _this.id, method:'queue',params:{limit:5}, onSuccess: 'rpc-call-success',onFailure: 'rpc-call-failure' });
 	};
 	this.refreshQueue = function() {}; // Not needed for sab
+	this.refreshHistory = function() {
+		window.clearTimeout(_this.history_timer);
+		if (self.options.prefs.dl_notifications)
+			self.port.emit('rpc-call',{target:'sab',id: _this.id, method:'history',params:{limit:1}, onSuccess: 'rpc-call-success',onFailure: 'rpc-call-failure' });
+	}
 	this.parseStatus = function(rpc){
 		this.lastStatus = rpc;
 		this.dlSpeed = rpc.queue.kbpersec;
@@ -415,7 +459,7 @@ function sab_tab(id,title) {
 				dlTime = (+dlTime[0]) * 60 * 60 + (+dlTime[1]) * 60 + (+dlTime[2])
 				this.dlTimeSecs  = dlTime;
 				dlName = rpc.queue.slots[i].filename+((rpc.queue.slots[i].cat != '*') ? ' ('+rpc.queue.slots[i].cat+')':'');
-				dlTime = (rpc.queue.kbpersec > 0?timeLeftString(dlTime):'N/A')+' ('+rpc.queue.slots[i].sizeleft+')';
+				dlTime = (rpc.queue.kbpersec > 0?timeToStringL(dlTime):'N/A')+' ('+rpc.queue.slots[i].sizeleft+')';
 				dlPercent = Math.round(rpc.queue.slots[i].percentage);
 				this.dlPercent = dlPercent;
 				break
@@ -429,6 +473,39 @@ function sab_tab(id,title) {
 		this.setPaused(rpc.queue.paused);
 		doResize();
 	};
+	this.parseHistory = function(rpc) {
+		this.history_timer = window.setTimeout(this.refreshHistory,	self.options.prefs.refresh_history*1000);
+		this.lastHistory = rpc;
+		log('Parsing SABnzbd+ history, items = '+rpc.history.slots.length);
+		if (rpc.history.slots.length == 0) return;
+		if (this.histLastID == '') {
+			// First parse of history, set last ID but dont notify
+			this.histLastID = rpc.history.slots[0].nzo_id;
+		} else
+		if (rpc.history.slots[0].nzo_id != this.histLastID && (time() - rpc.history.slots[0].completed) < 5*60 /* finished in last 5 mins */ && (rpc.history.slots[0].status == 'Completed' || rpc.history.slots[0].status == 'Failed')) {
+			// Latest downloaded item nzo_id has changed. Perform notify
+
+			var dlStatus = rpc.history.slots[0].status;
+			var dlName = rpc.history.slots[0].name;
+			var dlStats = rpc.history.slots[0].size+' - ';
+
+			for (var i = 0; i < rpc.history.slots[0].stage_log.length; ++i)
+				if (rpc.history.slots[0].stage_log[i].name == 'Download') {
+					dlStats += rpc.history.slots[0].stage_log[i].actions[0]; // Downloaded in _ at an average of _ KB/s
+				} else
+				if (rpc.history.slots[0].stage_log[i].name == 'Unpack') {
+					dlStats += '<br/>'+(rpc.history.slots[0].stage_log[i].actions[0].split('] ').pop()); // Extract text outside of square brackets
+				}
+
+			if (rpc.history.slots[0].fail_message != '')
+				dlStats += '<br/><font color="red">'+rpc.history.slots[0].fail_message+'</font>';
+
+			log('--- DOWNLOAD NOTIFY "'+dlName+'", finished '+(time() - rpc.history.slots[0].completed)+' seconds ago');
+			self.port.emit('showNotification',['sab','Download '+dlStatus,'nzb-32-'+(dlStatus == 'Completed'?'green':'orange')+'.png',dlName,dlStats]);
+			this.histLastID = rpc.history.slots[0].nzo_id;
+		}
+
+	}
 	this.rpcFinishAction = function(action) {
 		// Finish action is not accessible via SAB's API. So we must emulate the request through web interface
 		var url = (self.options.prefs.sab_ssl?'https':'http')+'://'+self.options.prefs.sab_ip+':'+self.options.prefs.sab_port+'/queue/change_queue_complete_action?action='+action+'&session='+self.options.prefs.sab_apikey;
@@ -441,7 +518,6 @@ function sab_tab(id,title) {
 	}
 	this.rpcPauseFor = function(mins) {
 		self.port.emit('rpc-call',{target:'sab',id: _this.id, method:'config',params: {name:'set_pause',value:mins},onSuccess: 'rpc-call-success',onFailure: 'rpc-call-failure'});
-		this.btnRefreshEle.click();
 	}
 	this.setPaused = function(isPaused) {
 		this.btnTogglePauseEle.button('option',{label: isPaused?'Resume':'Pause',icons:{primary:isPaused?'ui-icon-play':'ui-icon-pause'}});
@@ -457,6 +533,7 @@ function sab_tab(id,title) {
 		this.errorEle.html('<strong>'+msg+'</strong>');
 	}
 	this.remove = function() {
+		window.clearTimeout(this.history_timer);
 		window.clearTimeout(this.refresh_timer);
 		this.tabHeader.remove();
 		this.tab.remove();
@@ -470,12 +547,16 @@ function nzbg_tab(id,title) {
 	this.id = id;
 	this.lastStatus;
 	this.lastQueue;
+	this.lastHistory;
 	this.refresh_timer;
+	this.history_timer;
 
 	// Last parse unformatted results stored for progress widget
 	this.dlSpeed = 0;
 	this.dlTimeSecs  = 0;
 	this.dlPercent = 0;
+
+	this.histLastID = '';
 
 	this.tabHeader = $('<li><a href="#tabs-'+id+'">'+title+'</a></li>');
 									 $('#tabList').append(this.tabHeader);
@@ -578,16 +659,21 @@ function nzbg_tab(id,title) {
 	this.btnOpenEle.click(function() {
 		window.open((self.options.prefs.nzbg_ssl?'https':'http')+'://'+self.options.prefs.nzbg_ip+':'+self.options.prefs.nzbg_port);
 	});
-
 	// Send 'status' RPC call to get current download speed & paused state
-	this.refreshStatus = function() {
+	this.refreshStatus = function(refreshRate) {
 		window.clearTimeout(_this.refresh_timer);
+		if (refreshRate == 0) tabStartTimer(_this.id); else
 		self.port.emit('rpc-call',{target:'nzbg',id: _this.id, method:'status',params:[], onSuccess: 'rpc-call-success',onFailure: 'rpc-call-failure' });
 	}
 	// Send 'listgroups' RPC call to get currently active download
 	this.refreshQueue = function() {
 		window.clearTimeout(_this.refresh_timer);
-		self.port.emit('rpc-call',{target:'nzbg',id: _this.id, method:'listgroups',params:[0], onSuccess: 'rpc-call-success',onFailure: 'rpc-call-failure' });
+		self.port.emit('rpc-call',{target:'nzbg',id: _this.id, method:'listgroups',params:[5], onSuccess: 'rpc-call-success',onFailure: 'rpc-call-failure' });
+	}
+	this.refreshHistory = function() {
+		window.clearTimeout(_this.history_timer);
+		if (self.options.prefs.dl_notifications)
+			self.port.emit('rpc-call',{target:'nzbg',id: _this.id, method:'history',params:[false], onSuccess: 'rpc-call-success',onFailure: 'rpc-call-failure' });
 	}
 	this.parseStatus = function(rpc) {
 		this.lastStatus = rpc;
@@ -618,7 +704,7 @@ function nzbg_tab(id,title) {
 				this.dlPercent = dlPercent;
 				dlName = rpc.result[i].NZBName+((rpc.result[i].Category != '') ? ' ('+rpc.result[i].Category+')':'');
 				this.dlTimeSecs = (dlRemainingMB * 1024 / (this.dlSpeed / 1024));
-				dlTime = (this.dlSpeed > 0?timeLeftString(this.dlTimeSecs):'N/A')+' ('+dlRemainingMB+' MB)';
+				dlTime = (this.dlSpeed > 0?timeToStringL(this.dlTimeSecs):'N/A')+' ('+dlRemainingMB+' MB)';
 				break;
 			}
 
@@ -628,11 +714,41 @@ function nzbg_tab(id,title) {
 		this.dlProgressLabelEle.text(dlPercent+'%');
 		doResize();
 	};
+	this.parseHistory = function(rpc) {
+		this.history_timer = window.setTimeout(this.refreshHistory,	self.options.prefs.refresh_history*1000);
+		this.lastHistory = rpc;
+		log('Parsing NZBGet history, items = '+rpc.result.length);
+		for (var i = 0; i < rpc.result.length; ++i) {
+			var dlStatus = rpc.result[i].Status.split('/').shift();
+
+			if (rpc.result[i].Kind == 'NZB' && (dlStatus == 'SUCCESS' || dlStatus == 'FAILURE' || dlStatus == 'WARNING')) {
+				if (this.histLastID == '') {
+					this.histLastID = rpc.result[i].NZBID;
+					break;
+				} else
+				if (rpc.result[i].NZBID != this.histLastID && (time() - rpc.result[i].HistoryTime) < 5*60 /* finished in last 5 mins */) {
+					// Latest downloaded item NZBID has changed. Perform notify
+					var dlName = rpc.result[i].Name;
+					var dlSpeed = rpc.result[i].DownloadTimeSec > 0 ? ((rpc.result[i].DownloadedSizeMB  > 1024?(rpc.result[i].DownloadedSizeMB * 1024 * 1024):rpc.result[i].DownloadedSizeLo) / rpc.result[i].DownloadTimeSec) : 0;
+					var dlStats = rpc.result[i].DownloadedSizeMB+' MB - Downloaded in '+timeToStringL(rpc.result[i].DownloadTimeSec,true)+' at an average of '+bytesToReadable(dlSpeed)+'/s';
+					if (rpc.result[i].UnpackTimeSec > 0)
+						dlStats += '<br/>Unpacked in '+timeToStringL(rpc.result[i].UnpackTimeSec);
+
+					if (dlStatus != 'SUCCESS')
+						dlStats += '<br/><font color="red">'+nzbgStatusToString(rpc.result[i].Status)+'</font>';
+
+					log('--- DOWNLOAD NOTIFY "'+dlName+'", finished '+(time() - rpc.result[i].HistoryTime)+' seconds ago');
+					self.port.emit('showNotification',['nzbg','Download '+dlStatus,'nzb-32-'+(dlStatus == 'SUCCESS'?'green':'orange')+'.png',dlName,dlStats]);
+					this.histLastID = rpc.result[i].NZBID;
+				}
+				break;
+			}
+		}
+	}
 	this.rpcFinishAction = function(action) {} // Not Implemented in NZBGet
 	this.rpcPauseFor = function(mins) {
 		self.port.emit('rpc-call',{target:'nzbg',id: _this.id, method:'pausedownload',params: [],onSuccess: 'rpc-call-success',onFailure: 'rpc-call-failure'}); // Must pause first, resume rpc will only work on already paused events
 		self.port.emit('rpc-call',{target:'nzbg',id: _this.id, method:'scheduleresume',params: [mins * 60],onSuccess: 'rpc-call-success',onFailure: 'rpc-call-failure'});
-		this.btnRefreshEle.click();
 	}
 	this.setPaused = function(isPaused) {
 		this.btnTogglePauseEle.button('option',{label: isPaused?'Resume':'Pause',icons:{primary:isPaused?'ui-icon-play':'ui-icon-pause'}});
@@ -648,6 +764,7 @@ function nzbg_tab(id,title) {
 		this.errorEle.html('<strong>'+msg+'</strong>');
 	}
 	this.remove = function() {
+		window.clearTimeout(this.history_timer);
 		window.clearTimeout(this.refresh_timer);
 		this.tabHeader.remove();
 		this.tab.remove();
@@ -673,10 +790,26 @@ $(function() {
 	if (noSDK) {
 		TabList[0].parseStatus(testNzbgStatus);
 		TabList[0].parseQueue(testNzbgQueue);
+		TabList[0].parseHistory(testNzbgetHistory);
+
 		TabList[1].parseStatus(testSabStatus);
-		$('#tabs').tabs('option', 'active', 2);
+		TabList[1].parseHistory(testSabHistory1);
+
+		$('#tabs').tabs('option', 'active', 1);
 	}
 
-	refreshAll();
+	if (self.options.prefs.dev) $('#dev').show();
+		$('#test1').click(function() {
+			TabList[0].refreshHistory();
+	//		TabList[1].refreshHistory();
+		});
+		$('#test2').click(function() {
+			console.log(JSON.stringify(TabList[0].lastHistory));
+		});
+		$('#test3').click(function() {
+			TabList[0].histLastID = 'asdf';
+		});
+
+	refreshAll(true);
 	refreshIcon();
 });
