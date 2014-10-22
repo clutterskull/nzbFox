@@ -158,8 +158,11 @@ function refreshIcon() {
 
 	if (isActive) {
 		self.port.emit('setIcon',{'16': './nzb-16-green.png','32': './nzb-32-green.png','64': './nzb-64-green.png'});
-		if (!progressWidgetVisible)
+		if (!progressWidgetVisible) {
 			showProgressWidget();
+			// Refresh status timers
+			refreshAll();
+		}
 		if (progressWidgetVisible && dlPercent && dlTime)
 			updateProgressWidget(dlPercent,dlTime);
 	} else
