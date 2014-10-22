@@ -22,10 +22,9 @@ if (noSDK) { // dummy code for when testing UI without add-on SDK
 		this.target = 'sab';
 		this.title = 'Download Success';
 		this.icon = 'nzb-32-green.png';
-//		this.dlName = 'Crystal Lake Memories - Die ganze Geschichte von Freitag der 13 DiSC1 German DOKU WS BDRiP x264-SMAHD';
-		this.dlName = 'Doctor Who 2005.8x09.Flatline.720p HDTV x264-FoV';
+//		this.dlName = 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa.';
+		this.dlName = 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit';
 		this.dlStats = '962 MB - Downloaded in 22 minutes 28 seconds at an average of 731 KB/s<br/>Unpacked in 32 seconds<br/>Unpack has failed because the password was not provided or was wrong';
-//		this.dlError = 'Repair failed, not enough repair blocks (48 short)';
 
 		this.prefs = {
 			theme: 'light',
@@ -50,15 +49,15 @@ function doResize() {
 
 $(function() {
 	$('#theme').attr('href','jquery-ui.theme.'+self.options.prefs.theme+'.min.css');
-	
+
 	var openLabel = 'Open Client';
-	
+
 	if (self.options.target == 'sab')
 		openLabel = 'Open SABnzbd+';
 	else
 	if (self.options.target == 'nzbg')
 		openLabel = 'Open NZBGet';
-	
+
 	$('#header').text(self.options.title);
 	$('#icon').attr('src',self.options.icon);
 	$('#name').text(self.options.dlName);
@@ -70,6 +69,6 @@ $(function() {
 		if (self.options.target == 'nzbg')
 			window.open((self.options.prefs.nzbg_ssl?'https':'http')+'://'+self.options.prefs.nzbg_ip+':'+self.options.prefs.nzbg_port);
 	});
-	
+
 	doResize();
 });

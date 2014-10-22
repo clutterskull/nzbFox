@@ -115,7 +115,11 @@ function nzbgStatusToString(nzbgStatus) {
 	}
 }
 
-function tabStartTimer(id) {
+function tabStartHistoryTimer(id) {
+	window.clearTimeout(TabList[id].history_timer);
+	TabList[id].history_timer = window.setTimeout(TabList[id].refreshHistory,	self.options.prefs.refresh_history*1000);
+}
+function tabStartStatusTimer(id) {
 	// 3 sec refresh while visible/downloading, 2 mins while idle.
 	window.clearTimeout(TabList[id].refresh_timer);
 	var refreshRate = (progressWidgetVisible || panelVisible) ? self.options.prefs.refresh_active : self.options.prefs.refresh_idle;
@@ -183,11 +187,21 @@ function addTab(tabType) {
 		var id = TabList.length;
 
 	if (tabType == 'nzbg')
-		TabList[id] = new nzbg_tab(id,'NZBGet');
+		TabList[id] = new nzbg_tab(id,'NZBGet')
 	else
 	if (tabType == 'sab')
 		TabList[id] = new sab_tab(id,'SABnzbd+');
 
+	// Start timers & do initial refresh
+	// Delayed by 2 seconds due to FF startup issues with XHR (caused by load-order of other addons?)
+	window.setTimeout(function() {
+		tabStartStatusTimer(id);
+		tabStartHistoryTimer(id);
+		TabList[id].refreshStatus();
+		TabList[id].refreshHistory();
+	},2000);
+
+	return id;
 }
 
 function doResize() {
@@ -241,15 +255,16 @@ self.port.on('rpc-call-success',function({call,reply}) {
 	TabList[call.id].setError('');
 
 	if (call.method == 'status' || call.method == 'queue') {
-		tabStartTimer(call.id);
+		tabStartStatusTimer(call.id);
 		TabList[call.id].parseStatus(reply);
 		TabList[call.id].refreshQueue();
 	} else
 	if (call.method == 'history') {
+		tabStartHistoryTimer(call.id)
 		TabList[call.id].parseHistory(reply);
 	}
 	if (call.method == 'listgroups'){
-		tabStartTimer(call.id);
+		tabStartStatusTimer(call.id);
 		TabList[call.id].parseQueue(reply);
 	} else
 	if (call.method == 'pausedownload' || call.method == 'pause') {
@@ -263,8 +278,8 @@ self.port.on('rpc-call-failure',function({call,reply}) {
 	log('rpc-call-failure '+JSON.stringify(call)+' / '+JSON.stringify(reply));
 	if (TabList[call.id]) {
 		TabList[call.id].setError(reply.message);
-		if (call.method == 'status' || call.method == 'queue' || call.method == 'listgroups') tabStartTimer(call.id);
-		if (call.method == 'history') TabList[call.id].history_timer = window.setTimeout(TabList[call.id].refreshHistory,	self.options.prefs.refresh_history*1000);
+		if (call.method == 'status' || call.method == 'queue' || call.method == 'listgroups') tabStartStatusTimer(call.id);
+		if (call.method == 'history') tabStartHistoryTimer(call.id);
 	}
 });
 
@@ -416,12 +431,14 @@ function sab_tab(id,title) {
 	});
 	// Send 'queue' RPC call which contains all the info we need (labeled as Status for parity with nzbget)
 	this.refreshStatus = function(refreshRate) {
+		log('refreshStatus(sab,'+refreshRate+')');
 		window.clearTimeout(_this.refresh_timer);
-		if (refreshRate == 0) tabStartTimer(_this.id); else
+		if (refreshRate == 0) tabStartStatusTimer(_this.id); else
 		self.port.emit('rpc-call',{target:'sab',id: _this.id, method:'queue',params:{limit:5}, onSuccess: 'rpc-call-success',onFailure: 'rpc-call-failure' });
 	};
 	this.refreshQueue = function() {}; // Not needed for sab
 	this.refreshHistory = function() {
+		log('refreshHistory(sab)');
 		window.clearTimeout(_this.history_timer);
 		if (self.options.prefs.dl_notifications)
 			self.port.emit('rpc-call',{target:'sab',id: _this.id, method:'history',params:{limit:1}, onSuccess: 'rpc-call-success',onFailure: 'rpc-call-failure' });
@@ -476,7 +493,6 @@ function sab_tab(id,title) {
 		doResize();
 	};
 	this.parseHistory = function(rpc) {
-		this.history_timer = window.setTimeout(this.refreshHistory,	self.options.prefs.refresh_history*1000);
 		this.lastHistory = rpc;
 		log('Parsing SABnzbd+ history, items = '+rpc.history.slots.length);
 		if (rpc.history.slots.length == 0) return;
@@ -484,7 +500,7 @@ function sab_tab(id,title) {
 			// First parse of history, set last ID but dont notify
 			this.histLastID = rpc.history.slots[0].nzo_id;
 		} else
-		if (rpc.history.slots[0].nzo_id != this.histLastID && (time() - rpc.history.slots[0].completed) < 5*60 /* finished in last 5 mins */ && (rpc.history.slots[0].status == 'Completed' || rpc.history.slots[0].status == 'Failed')) {
+		if (rpc.history.slots[0].nzo_id != this.histLastID && (time() - rpc.history.slots[0].completed) < (self.options.prefs.refresh_history * 3) /* finished in past _ secs */ && (rpc.history.slots[0].status == 'Completed' || rpc.history.slots[0].status == 'Failed')) {
 			// Latest downloaded item nzo_id has changed. Perform notify
 
 			var dlStatus = rpc.history.slots[0].status;
@@ -663,16 +679,19 @@ function nzbg_tab(id,title) {
 	});
 	// Send 'status' RPC call to get current download speed & paused state
 	this.refreshStatus = function(refreshRate) {
+		log('refreshStatus(nzbg,'+refreshRate+')');
 		window.clearTimeout(_this.refresh_timer);
-		if (refreshRate == 0) tabStartTimer(_this.id); else
+		if (refreshRate == 0) tabStartStatusTimer(_this.id); else
 		self.port.emit('rpc-call',{target:'nzbg',id: _this.id, method:'status',params:[], onSuccess: 'rpc-call-success',onFailure: 'rpc-call-failure' });
 	}
 	// Send 'listgroups' RPC call to get currently active download
 	this.refreshQueue = function() {
+		log('refreshQueue(nzbg)');
 		window.clearTimeout(_this.refresh_timer);
 		self.port.emit('rpc-call',{target:'nzbg',id: _this.id, method:'listgroups',params:[5], onSuccess: 'rpc-call-success',onFailure: 'rpc-call-failure' });
 	}
 	this.refreshHistory = function() {
+		log('refreshHistory(nzbg)');
 		window.clearTimeout(_this.history_timer);
 		if (self.options.prefs.dl_notifications)
 			self.port.emit('rpc-call',{target:'nzbg',id: _this.id, method:'history',params:[false], onSuccess: 'rpc-call-success',onFailure: 'rpc-call-failure' });
@@ -717,7 +736,6 @@ function nzbg_tab(id,title) {
 		doResize();
 	};
 	this.parseHistory = function(rpc) {
-		this.history_timer = window.setTimeout(this.refreshHistory,	self.options.prefs.refresh_history*1000);
 		this.lastHistory = rpc;
 		log('Parsing NZBGet history, items = '+rpc.result.length);
 		for (var i = 0; i < rpc.result.length; ++i) {
@@ -728,7 +746,7 @@ function nzbg_tab(id,title) {
 					this.histLastID = rpc.result[i].NZBID;
 					break;
 				} else
-				if (rpc.result[i].NZBID != this.histLastID && (time() - rpc.result[i].HistoryTime) < 5*60 /* finished in last 5 mins */) {
+				if (rpc.result[i].NZBID != this.histLastID && (time() - rpc.result[i].HistoryTime) < (self.options.prefs.refresh_history * 3) /* finished in past _ secs */) {
 					// Latest downloaded item NZBID has changed. Perform notify
 					var dlName = rpc.result[i].Name;
 					var dlSpeed = rpc.result[i].DownloadTimeSec > 0 ? ((rpc.result[i].DownloadedSizeMB  > 1024?(rpc.result[i].DownloadedSizeMB * 1024 * 1024):rpc.result[i].DownloadedSizeLo) / rpc.result[i].DownloadTimeSec) : 0;
@@ -812,9 +830,6 @@ $(function() {
 			TabList[0].histLastID = 'asdf';
 		});
 
-	window.setTimeout(function() {
-		refreshAll(true);
-		refreshIcon();
-	},1000);
-	
+	refreshIcon();
+
 });
