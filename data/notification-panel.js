@@ -48,7 +48,7 @@ function doResize() {
 }
 
 $(function() {
-	$('#theme').attr('href','jquery-ui.theme.'+self.options.prefs.theme+'.min.css');
+	$('#theme').attr('href','nzbFox.ui.'+self.options.prefs.theme+'.css');
 
 	var openLabel = 'Open Client';
 

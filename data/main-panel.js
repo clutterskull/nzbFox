@@ -203,7 +203,7 @@ function addTab(tabType) {
 		TabList[id].refreshStatus();
 		TabList[id].refreshHistory();
 	},2000);
-
+	log('addTab('+tabType+') = '+id);
 	return id;
 }
 
@@ -215,14 +215,7 @@ function onPrefChange([prefName,prefValue]) {
 	self.options.prefs[prefName] = prefValue;
 
 	if (prefName == 'theme') {
-		$('#theme').attr('href','jquery-ui.theme.'+prefValue+'.min.css');
-
-		if (prefValue == 'dark') {
-			$('.ui-progressbar-label').css('text-shadow','1px 1px 0 #000');
-		} else
-		if (prefValue == 'light') {
-			$('.ui-progressbar-label').css('text-shadow','1px 1px 0 #FFF');
-		}
+		$('#theme').attr('href','nzbFox.ui.'+self.options.prefs.theme+'.css');
 	}else
 	if (prefName == 'sab_enabled' || prefName == 'nzbg_enabled') {
 		if (prefValue) {
@@ -256,6 +249,7 @@ self.port.on('rpc-call-success',function({call,reply}) {
 //	log('rpc-call-success '+JSON.stringify(call)+' / '+JSON.stringify(reply));
 	if (!TabList[call.id]) return;
 	TabList[call.id].setError('');
+	TabList[call.id].activity.hide();
 
 	if (call.method == 'status' || call.method == 'queue') {
 		tabStartStatusTimer(call.id);
@@ -280,6 +274,7 @@ self.port.on('rpc-call-success',function({call,reply}) {
 self.port.on('rpc-call-failure',function({call,reply}) {
 	log('rpc-call-failure '+JSON.stringify(call)+' / '+JSON.stringify(reply));
 	if (TabList[call.id]) {
+		TabList[call.id].activity.hide();
 		TabList[call.id].setError(reply.message);
 		if (call.method == 'status' || call.method == 'queue' || call.method == 'listgroups') tabStartStatusTimer(call.id);
 		if (call.method == 'history') tabStartHistoryTimer(call.id);
@@ -312,6 +307,7 @@ function sab_tab(id,title) {
 	this.dlTimeEle = this.tab.find('#dlTime');
 	this.dlProgressEle = this.tab.find('#dlProgress').progressbar({value: false});
 	this.dlProgressLabelEle = this.tab.find('#dlProgress-label');
+	this.activity = this.tab.find('#activity').hide();
 	this.errorEle = this.tab.find('#error');
 	// Buttons
 	this.btnTogglePauseEle = this.tab.find('#togglePause').button();
@@ -436,15 +432,19 @@ function sab_tab(id,title) {
 	this.refreshStatus = function(refreshRate) {
 		log('refreshStatus(sab,'+refreshRate+')');
 		window.clearTimeout(_this.refresh_timer);
-		if (refreshRate == 0) tabStartStatusTimer(_this.id); else
-		self.port.emit('rpc-call',{target:'sab',id: _this.id, method:'queue',params:{limit:5}, onSuccess: 'rpc-call-success',onFailure: 'rpc-call-failure' });
+		if (refreshRate == 0) tabStartStatusTimer(_this.id); else {
+			_this.activity.show();
+			self.port.emit('rpc-call',{target:'sab',id: _this.id, method:'queue',params:{limit:5}, onSuccess: 'rpc-call-success',onFailure: 'rpc-call-failure' });
+		}
 	};
 	this.refreshQueue = function() {}; // Not needed for sab
 	this.refreshHistory = function() {
 		log('refreshHistory(sab)');
 		window.clearTimeout(_this.history_timer);
-		if (self.options.prefs.dl_notifications)
+		if (self.options.prefs.dl_notifications) {
+			_this.activity.show();
 			self.port.emit('rpc-call',{target:'sab',id: _this.id, method:'history',params:{limit:1}, onSuccess: 'rpc-call-success',onFailure: 'rpc-call-failure' });
+		}
 	}
 	this.parseStatus = function(rpc){
 		this.lastStatus = rpc;
@@ -554,6 +554,7 @@ function sab_tab(id,title) {
 		this.errorEle.html('<strong>'+msg+'</strong>');
 	}
 	this.remove = function() {
+		log('remove(sab)');
 		window.clearTimeout(this.history_timer);
 		window.clearTimeout(this.refresh_timer);
 		this.tabHeader.remove();
@@ -589,6 +590,7 @@ function nzbg_tab(id,title) {
 	this.dlTimeEle = this.tab.find('#dlTime');
 	this.dlProgressEle = this.tab.find('#dlProgress').progressbar({value: false});
 	this.dlProgressLabelEle = this.tab.find('#dlProgress-label');
+	this.activity = this.tab.find('#activity').hide();
 	this.errorEle = this.tab.find('#error');
 	// Buttons
 	this.btnTogglePauseEle = this.tab.find('#togglePause').button();
@@ -684,20 +686,25 @@ function nzbg_tab(id,title) {
 	this.refreshStatus = function(refreshRate) {
 		log('refreshStatus(nzbg,'+refreshRate+')');
 		window.clearTimeout(_this.refresh_timer);
-		if (refreshRate == 0) tabStartStatusTimer(_this.id); else
-		self.port.emit('rpc-call',{target:'nzbg',id: _this.id, method:'status',params:[], onSuccess: 'rpc-call-success',onFailure: 'rpc-call-failure' });
+		if (refreshRate == 0) tabStartStatusTimer(_this.id); else {
+			_this.activity.show();
+			self.port.emit('rpc-call',{target:'nzbg',id: _this.id, method:'status',params:[], onSuccess: 'rpc-call-success',onFailure: 'rpc-call-failure' });
+		}
 	}
 	// Send 'listgroups' RPC call to get currently active download
 	this.refreshQueue = function() {
 		log('refreshQueue(nzbg)');
 		window.clearTimeout(_this.refresh_timer);
+		_this.activity.show();
 		self.port.emit('rpc-call',{target:'nzbg',id: _this.id, method:'listgroups',params:[5], onSuccess: 'rpc-call-success',onFailure: 'rpc-call-failure' });
 	}
 	this.refreshHistory = function() {
 		log('refreshHistory(nzbg)');
 		window.clearTimeout(_this.history_timer);
-		if (self.options.prefs.dl_notifications)
+		if (self.options.prefs.dl_notifications) {
+			_this.activity.show();
 			self.port.emit('rpc-call',{target:'nzbg',id: _this.id, method:'history',params:[false], onSuccess: 'rpc-call-success',onFailure: 'rpc-call-failure' });
+		}
 	}
 	this.parseStatus = function(rpc) {
 		this.lastStatus = rpc;
@@ -787,6 +794,7 @@ function nzbg_tab(id,title) {
 		this.errorEle.html('<strong>'+msg+'</strong>');
 	}
 	this.remove = function() {
+		log('remove(nzbg)');
 		window.clearTimeout(this.history_timer);
 		window.clearTimeout(this.refresh_timer);
 		this.tabHeader.remove();

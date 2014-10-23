@@ -1,0 +1,13 @@
+@import "jquery-ui.theme.light.min.css";
+
+.ui-progressbar-label {
+	text-shadow: 1px 1px 0 #FFF;
+}
+
+.icon-spinner {
+	height: 16px;
+	width: 16px;
+	background-image: url(images/spinner-light.gif);
+	vertical-align:middle;
+	display: inline-block;
+}
