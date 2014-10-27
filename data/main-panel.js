@@ -5,22 +5,18 @@
  		nzbFox (c) 2014 Nick Cooper - https://github.com/NickSC
 
 */
-// todo: [Object object] was being passed by nzbget rpc error for invalid parameter
+'use strict';
 
 //////////////////////////////////////////////////////////////////////////////
 var noSDK = (typeof self.port == 'undefined');
-
-var TabList = [];
-var panelVisible = false;
-
 if (noSDK) { // dummy code for when testing UI without add-on SDK
 	var port = (new function() {
 		this.events = [];
 		this.on = function (event,args) {
-			console.log('on "'+event+'" called with '+JSON.stringify(args));
+//			console.log('<- on "'+event+'" called with '+JSON.stringify(args));
 		}
 		this.emit = function (event,args) {
-			console.log('emit "'+event+'" called with '+JSON.stringify(args));
+//			console.log('-> emit "'+event+'" called with '+JSON.stringify(args));
 		}
 	});
 
@@ -44,17 +40,20 @@ if (noSDK) { // dummy code for when testing UI without add-on SDK
 }
 //////////////////////////////////////////////////////////////////////////////
 
-function log(msg) {self.port.emit('log',msg);}
-
-function time() {return Math.round((new Date()).getTime() / 1000)}
-
+function log(msg) {
+	if (noSDK)
+		console.log(msg)
+	else
+		self.port.emit('log',msg);
+};
+function resize() self.port.emit('resize',{width: parseInt(window.getComputedStyle(document.documentElement).width,10),height:parseInt(window.getComputedStyle(document.documentElement).height,10)});
+function time() {return Math.round((new Date()).getTime() / 1000)};
 function bytesToReadable(bytes,decimal) {
 	var s = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
 	if (bytes == 0) return '0 '+s[0];
 	var e = Math.floor(Math.log(bytes) / Math.log(1024));
 	return (bytes / Math.pow(1024, e)).toFixed(decimal) + ' ' + s[e];
 }
-
 function timeToStringL(secs,twoResults=false) {
 	var d = Math.floor(secs / 86400);
 	var h = Math.floor((secs % 86400) / 3600);
@@ -74,20 +73,6 @@ function timeToStringS(secs) {
 	if (h > 0) return h+'h';
 	if (m > 0) return m+'m';
 	return s+'s';
-}
-
-var progressWidgetVisible = false;
-function showProgressWidget() {
-	self.port.emit('showProgressWidget');
-	progressWidgetVisible = true;
-}
-function hideProgressWidget() {
-	self.port.emit('hideProgressWidget');
-	progressWidgetVisible = false;
-}
-function updateProgressWidget(percentage,timeleft) {
-	if (progressWidgetVisible)
-		self.port.emit('updateProgressWidget',[percentage,timeleft]);
 }
 
 function nzbgStatusToString(nzbgStatus) {
@@ -114,703 +99,713 @@ function nzbgStatusToString(nzbgStatus) {
 		default: return nzbgStatus;
 	}
 }
-
-function tabStartHistoryTimer(id) {
-	window.clearTimeout(TabList[id].history_timer);
-	TabList[id].history_timer = window.setTimeout(TabList[id].refreshHistory,	self.options.prefs.refresh_history*1000);
-}
-function tabStartStatusTimer(id) {
-	// 3 sec refresh while visible/downloading, 2 mins while idle.
-	window.clearTimeout(TabList[id].refresh_timer);
-	var refreshRate = (progressWidgetVisible || panelVisible) ? self.options.prefs.refresh_active : self.options.prefs.refresh_idle;
-	TabList[id].refresh_timer = window.setTimeout(function() {TabList[id].refreshStatus(refreshRate)},(refreshRate > 0?refreshRate * 1000:5000));
-	// If rate > 0, proceed as normal. If 0, do timer anyway with 5sec interval, pass rate to refreshStatus, where refreshStatus will ignore if rate is 0.
-	// Messy late night logic, due to "Active" rate is 0, but idle rate is not - idle timer wont get created otherwise
-}
-
-function refreshAll(doHistory=false) {
-	for (var i = 0; i < TabList.length; ++i)
-		if (TabList[i]) {
-			TabList[i].refreshStatus(); //.btnRefreshEle.click(); not being called because click() closes menu
-			if (doHistory) TabList[i].refreshHistory();
-		}
-}
-
-var refreshIcon_timer;
-function refreshIcon() {
-	window.clearTimeout(refreshIcon_timer);
-	var isActive = false;
-	var isPaused = false;
-
-	var dlPercent;
-	var dlTime;
-
-	for (var i = 0; i < TabList.length; ++i)
-		if (TabList[i]) {
-			isActive = isActive || TabList[i].active();
-			isPaused = isPaused || TabList[i].paused();
-
-			if (TabList[i].dlSpeed > 0 && !dlPercent && !dlTime) {
-				dlPercent = TabList[i].dlPercent;
-				dlTime = timeToStringS(TabList[i].dlTimeSecs);
-			}
-		}
-
-	if (isActive) {
-		self.port.emit('setIcon',{'16': './nzb-16-green.png','32': './nzb-32-green.png','64': './nzb-64-green.png'});
-		if (!progressWidgetVisible) {
-			showProgressWidget();
-			// Refresh status timers
-			refreshAll();
-		}
-		if (progressWidgetVisible && dlPercent && dlTime)
-			updateProgressWidget(dlPercent,dlTime);
-	} else
-	if (isPaused) {
-		self.port.emit('setIcon',{'16': './nzb-16-orange.png','32': './nzb-32-orange.png','64': './nzb-64-orange.png'});
-		if (progressWidgetVisible)
-			hideProgressWidget();
-	} else {
-		self.port.emit('setIcon',{'16': './nzb-16-gray.png','32': './nzb-32-gray.png','64': './nzb-64-gray.png'});
-		if (progressWidgetVisible)
-			hideProgressWidget();
+function nzbgPriorityToString(nzbgPriority) {
+	switch (nzbgPriority) {
+		case 900: return 'Force';
+		case 100: return 'Very High';
+		case 50: return 'High';
+		case 0: return 'Normal';
+		case -50: return 'Low';
+		case -100: return 'Very Low';
+		default: return nzbgPriority;
 	}
-
-	refreshIcon_timer = window.setTimeout(refreshIcon,3000);
 }
 
-function addTab(tabType) {
-	for (var i = 0; i < TabList.length; ++i)
-		if (!TabList[i]) { // recycle a previously used id
-			var id = i;
-			break;
-		}
-
-	if (typeof id == 'undefined') // insert at end of array
-		var id = TabList.length;
-
-	if (tabType == 'nzbg')
-		TabList[id] = new nzbg_tab(id,'NZBGet')
-	else
-	if (tabType == 'sab')
-		TabList[id] = new sab_tab(id,'SABnzbd+');
-
-	// Start timers & do initial refresh
-	// Delayed by 2 seconds due to FF startup issues with XHR (caused by load-order of other addons?)
-	window.setTimeout(function() {
-		tabStartStatusTimer(id);
-		tabStartHistoryTimer(id);
-		TabList[id].refreshStatus();
-		TabList[id].refreshHistory();
-	},2000);
-	log('addTab('+tabType+') = '+id);
-	return id;
+function updateToolbar() {
+	var aTabIsPaused = false;
+	if (Tabs.some(function(Tab) { // forEach, but stops on return true
+//		console.log('s: '+Tab.download.speed+' p: '+Tab.download.percent+' t: '+Tab.download.time+' z: '+Tab.download.paused);
+		if (Tab.download.speed > 0 && Tab.download.time > 0 &&  !Tab.download.paused) {
+			self.port.emit('setIcon',{'16': './nzb-16-green.png','32': './nzb-32-green.png','64': './nzb-64-green.png'});
+			if (!progressWidgetVisible)
+				showProgressWidget();
+			updateProgressWidget(Tab.download.percent,timeToStringS(Tab.download.time));
+			return true;
+		} else
+			aTabIsPaused = aTabIsPaused || Tab.download.paused;
+	}) == false) {
+		// No tabs are downloading
+		if (progressWidgetVisible)
+			hideProgressWidget();
+		self.port.emit('setIcon',aTabIsPaused?{'16': './nzb-16-orange.png','32': './nzb-32-orange.png','64': './nzb-64-orange.png'}:{'16': './nzb-16-gray.png','32': './nzb-32-gray.png','64': './nzb-64-gray.png'})
+	}
 }
+window.setInterval(updateToolbar,2500); // 2.5 secs
 
-function doResize() {
-	self.port.emit('resize',{width: parseInt(window.getComputedStyle(document.documentElement).width,10),height:parseInt(window.getComputedStyle(document.documentElement).height,10)});
+var progressWidgetVisible = false;
+function showProgressWidget() {
+	self.port.emit('showProgressWidget');
+	progressWidgetVisible = true;
+}
+function hideProgressWidget() {
+	self.port.emit('hideProgressWidget');
+	progressWidgetVisible = false;
+}
+function updateProgressWidget(percentage,timeleft) {
+	if (progressWidgetVisible)
+		self.port.emit('updateProgressWidget',[percentage,timeleft]);
 }
 
 function onPrefChange([prefName,prefValue]) {
 	self.options.prefs[prefName] = prefValue;
 
-	if (prefName == 'theme') {
-		$('#theme').attr('href','nzbFox.ui.'+self.options.prefs.theme+'.css');
-	}else
+	if (prefName == 'theme')
+		$('#theme').attr('href','nzbFox.theme.'+self.options.prefs.theme+'.css');
+	else
 	if (prefName == 'sab_enabled' || prefName == 'nzbg_enabled') {
 		if (prefValue) {
 			if (prefName == 'nzbg_enabled')
-				addTab('nzbg');
+				new nzbgTab();
 			if (prefName == 'sab_enabled')
-				addTab('sab');
+				new sabTab();
 		} else {
-			for (var i = 0; i < TabList.length; ++i) {
-				if (TabList[i] && ((prefName == 'sab_enabled' && TabList[i].constructor.name == 'sab_tab') || (prefName == 'nzbg_enabled' && TabList[i].constructor.name == 'nzbg_tab'))) {
-					TabList[i].remove();
-					delete TabList[i];
+			for (var i = 0; i < Tabs.length; ++i) {
+				if (Tabs[i] && ((prefName == 'sab_enabled' && Tabs[i].constructor.name == 'sabTab') || (prefName == 'nzbg_enabled' && Tabs[i].constructor.name == 'nzbgTab'))) {
+					Tabs[i].remove();
+					delete Tabs[i];
 				}
 			}
 		}
 	}
 }
+
 self.port.on('prefChange',onPrefChange);
 
+var panelVisible = false;
 self.port.on('show',function() {
-	doResize();
+	resize();
 	panelVisible = true;
-	refreshAll();
+	Tabs.forEach(function(Tab) Tab.statusTimerInterval(self.options.prefs.refresh_active));
 });
 self.port.on('hide',function() {
 	panelVisible = false;
 	// Click on document to close open menus
 	$(document).click();
-});
-self.port.on('rpc-call-success',function({call,reply}) {
-//	log('rpc-call-success '+JSON.stringify(call)+' / '+JSON.stringify(reply));
-	if (!TabList[call.id]) return;
-	TabList[call.id].setError('');
-	TabList[call.id].activity.hide();
-
-	if (call.method == 'status' || call.method == 'queue') {
-		tabStartStatusTimer(call.id);
-		TabList[call.id].parseStatus(reply);
-		TabList[call.id].refreshQueue();
-	} else
-	if (call.method == 'history') {
-		tabStartHistoryTimer(call.id)
-		TabList[call.id].parseHistory(reply);
-	}
-	if (call.method == 'listgroups'){
-		tabStartStatusTimer(call.id);
-		TabList[call.id].parseQueue(reply);
-	} else
-	if (call.method == 'pausedownload' || call.method == 'pause') {
-		TabList[call.id].setPaused(true);
-	} else
-	if (call.method == 'resumedownload' || call.method == 'resume') {
-		TabList[call.id].setPaused(false);
-	}
-});
-self.port.on('rpc-call-failure',function({call,reply}) {
-	log('rpc-call-failure '+JSON.stringify(call)+' / '+JSON.stringify(reply));
-	if (TabList[call.id]) {
-		TabList[call.id].activity.hide();
-		TabList[call.id].setError(reply.message);
-		if (call.method == 'status' || call.method == 'queue' || call.method == 'listgroups') tabStartStatusTimer(call.id);
-		if (call.method == 'history') tabStartHistoryTimer(call.id);
-	}
+	// Set interval to idle unless client is downloading something
+	Tabs.forEach(function(Tab) Tab.statusTimerInterval(Tab.download.speed > 0?self.options.prefs.refresh_active:self.options.prefs.refresh_idle));
 });
 
-function sab_tab(id,title) {
+var Tabs = [];
+function Tab(type) { //// Tab Variables
+
 	var _this = this;
-	this.id = id;
-	this.lastStatus;
-	this.lastQueue;
-	this.lastHistory;
-	this.refresh_timer;
-	this.history_timer;
+	this.type = type;
+	// Get our ID
+	this.id = Tabs.length;	 // Default to end of array
+	for (var i = 0; i < Tabs.length; ++i)
+		if (!Tabs[i]) { // recycle a previously used id
+			this.id = i;
+			break;
+		}
+	Tabs[this.id] = this;
 
-	// Last parse unformatted results stored for progress widget
-	this.dlSpeed = 0;
-	this.dlTimeSecs  = 0;
-	this.dlPercent = 0;
+	// The Tab
+	this.header = $('<li><a href="#tabs-'+this.id+'">'+$('div#'+type+'.template').attr('title')+'</a></li>').appendTo('#tabList');
+	this.content = $('<div/>', {id: 'tabs-'+this.id}).appendTo('#tabs');
+	this.content.html($('div#'+type+'.template').html());
+	// Active Download Raw Values
+	this.downloadDefaults = {
+		id: '',
+		paused: false,
+		name: '',
+		category: '',
+		priority: '',
+		age: '',
+		time: 0,
+		speed: 0,
+		speedLimit: 0,
+		sizeTotal: 0,
+		sizeLeft: 0,
+		percent: 0
+	};
+	this.download = $.extend({},this.downloadDefaults);
+	// Timers
+	this.statusTimer;
+	this.statusTimer_interval = self.options.prefs.refresh_active;
 
-	this.histLastID = '';
-
-	this.tabHeader = $('<li><a href="#tabs-'+id+'">'+title+'</a></li>');
-									 $('#tabList').append(this.tabHeader);
-	this.tab = $('<div/>', {id: 'tabs-'+id}).appendTo('#tabs');
-	this.tab.html($('div#sabnzbd.template').html());
+	this.historyTimer;
+	this.historyTimer_interval = self.options.prefs.refresh_history;
+	// Parse results
+	this.lastStatus = {};
+	this.lastHistory = {};
+	this.lastHistoryID = '';
+	this.lastActiveID = '';
 	// Labels
-	this.dlSpeedEle = this.tab.find('#dlSpeed');
-	this.dlNameEle = this.tab.find('#dlName');
-	this.dlTimeEle = this.tab.find('#dlTime');
-	this.dlProgressEle = this.tab.find('#dlProgress').progressbar({value: false});
-	this.dlProgressLabelEle = this.tab.find('#dlProgress-label');
-	this.activity = this.tab.find('#activity').hide();
-	this.errorEle = this.tab.find('#error');
+	this.speedEle = this.content.find('#speed');
+	this.nameEle = this.content.find('#name');
+	this.timeEle = this.content.find('#time');
+	// Progress Bar
+	this.progressBarEle = this.content.find('#progressBar').progressbar({value: false});
+	this.progressLabelEle = this.content.find('#progressLabel');
+	// Activity Spinner
+	this.activityEle = this.content.find('#activity').hide();
+	this.errorEle = this.content.find('#error');
 	// Buttons
-	this.btnTogglePauseEle = this.tab.find('#togglePause').button();
-	this.btnRefreshEle = this.tab.find('#refresh').button({icons:{primary: 'ui-icon-refresh'}});
-	this.btnOpenEle = this.tab.find('#open').button({text:false,icons:{primary: 'ui-icon-newwin'}});
-	// Menus
-	this.menuEle = this.tab.find('ul#menu').menu({position: {my: 'left bottom', at: 'right bottom'}}).hide();
-	this.btnTogglePauseMenuEle = this.tab.find('#toggleMenu').button({text:false,icons:{primary:'ui-icon-triangle-1-n'}});
+	this.btnTogglePauseEle = this.content.find('#togglePause').button().click(function() _this.btnTogglePause_Click.call(_this));
+	this.btnRefreshEle = this.content.find('#refresh').button({icons:{primary: 'ui-icon-refresh'}}).click(function() _this.btnRefresh_Click.call(_this));
+	this.btnShowMenuEle = this.content.find('#showMenu').button({text:false,icons:{primary:'ui-icon-triangle-1-n'}}).click(function() _this.btnShowMenu_Click.call(_this));
+	this.btnOpenEle = this.content.find('#open').button({text:false,icons:{primary: 'ui-icon-newwin'}}).click(function() _this.btnOpen_Click.call(_this)).click(function() self.port.emit('hide'));
+	// Action Menu
+	this.menuEle = this.content.find('ul#menu').menu().hide();
+	// Action Menu Items
+	this.menuSpeedLimit = this.content.find('li#speedLimit').click(function() _this.menuSpeedLimit_Click.call(_this));
 
-	// Show Menu
-	this.tab.find('#toggleMenu').click(function() {
-		_this.menuEle.show().position({
-			my: 'left bottom',
-			at: 'top right',
-			of: this
-		});
-		$(document).one('click', function() {
-			_this.menuEle.hide();
-		});
-		return false;
-	})
+	this.menuPauseFor = this.content.find('li#pause-custom').click(function() _this.menuPauseFor_Click.call(_this));
+	this.menuPauseFor5m = this.content.find('li#pause-5m').click(function() _this.pause.call(_this,5));
+	this.menuPauseFor15m = this.content.find('li#pause-15m').click(function() _this.pause.call(_this,15));
+	this.menuPauseFor30m = this.content.find('li#pause-30m').click(function() _this.pause.call(_this,30));
+	this.menuPauseFor60m = this.content.find('li#pause-60m').click(function() _this.pause.call(_this,60));
 
-	// Menu Actions
-	// Set speed limit
-	this.btnSpeedLimit = this.tab.find('li#speedLimit').click(function() {
-		$('#dialogSpeedLimit').dialog({
-			autoOpen: true,
-			modal: true,
-			draggable: false,
-			resizable: false,
-			width: 150,
-			position: {my: 'center', at: 'center', of: '#tabs'},
-			buttons: [ {
-					text: 'OK',
-					click: function() {
-						$(this).dialog('close');
-						var speedLimit = Number($(this).find('input').val());
-						self.port.emit('rpc-call',{target:'sab',id: _this.id, method:'config',params: {name:'speedlimit',value:(speedLimit == ''?0:speedLimit)},onSuccess: 'rpc-call-success',onFailure: 'rpc-call-failure'});
-					}
-				},
-				{text: 'Cancel', click: function() {$(this).dialog('close');}}
-			]
-		}).keypress(function(e) {
-      if (e.keyCode == $.ui.keyCode.ENTER) $(this).parent().find('button:eq(1)').trigger('click');
-    }).find('input').val(_this.lastStatus.queue.speedlimit).select();
-	});
-	// Pause for
-	this.btnPauseFor5m = this.tab.find('li#pause-5m').click(function() {_this.rpcPauseFor(5)});
-	this.btnPauseFor15m = this.tab.find('li#pause-15m').click(function() {_this.rpcPauseFor(15)});;
-	this.btnPauseFor30m = this.tab.find('li#pause-30m').click(function() {_this.rpcPauseFor(30)});;
-	this.btnPauseFor60m = this.tab.find('li#pause-60m').click(function() {_this.rpcPauseFor(60)});;
-	this.btnPauseForCustom = this.tab.find('li#pause-custom').click(function() {
-		$('#dialogPauseFor').dialog({
-			autoOpen: true,
-			modal: true,
-			draggable: false,
-			resizable: false,
-			width: 150,
-			position: {my: 'center', at: 'center', of: '#tabs'},
-			buttons: [ {
-					text: 'OK',
-					click: function() {
-						$(this).dialog('close');
-						_this.rpcPauseFor(Number($(this).find('input').val()));
-					}
-				},
-				{text: 'Cancel', click: function() {$(this).dialog('close');}}
-			]
-		}).keypress(function(e) {
-      if (e.keyCode == $.ui.keyCode.ENTER) $(this).parent().find('button:eq(1)').trigger('click');
-    }).find('input').select();
-	});
-	// On finish (queue)
-	this.btnOnFinishNothing = this.tab.find('li#finish-nothing').click(function() {_this.rpcFinishAction('');});
-	this.btnOnFinishShutdown = this.tab.find('li#finish-shutdown').click(function() {_this.rpcFinishAction('shutdown_program')});
-	this.btnOnFinishScript = this.tab.find('li#finish-script').click(function() {
-		var options = '';
-
-		for (var i = 0; i < _this.lastStatus.queue.scripts.length; ++i)
-			if (_this.lastStatus.queue.scripts[i].endsWith('.py') || _this.lastStatus.queue.scripts[i].endsWith('.bat'))
-				options += '<option value="script_'+_this.lastStatus.queue.scripts[i]+'"'+((_this.lastStatus.queue.finishaction == 'script_'+_this.lastStatus.queue.scripts[i])?' selected':'')+'>'+_this.lastStatus.queue.scripts[i]+'</option>';
-
-		$('#dialogFinishScript').dialog({
-			autoOpen: true,
-			modal: true,
-			draggable: false,
-			resizable: false,
-			width: 300,
-			position: {my: 'center', at: 'center', of: '#tabs'},
-			buttons: [ {
-					text: 'OK',
-					click: function() {
-						$(this).dialog('close');
-						_this.rpcFinishAction($(this).find('select#finishScript').val());
-					}
-				},
-				{text: 'Cancel', click: function() {$(this).dialog('close');}}
-			]
-		}).find('select').html(options);
-
-	});
-
-	// Update jQuery UI with our new DOM elements & set active tab to our newly created tab
-	this.tab.find('#btnSet').buttonset();
+	// Refresh UI and activate this tab
+	this.content.find('#btnSet').buttonset();
 	$('#tabs').tabs('refresh');
 	$('#tabs').tabs('option', 'active', 0);
 
-	// Pause Button Click
-	this.btnTogglePauseEle.click(function() {
-		self.port.emit('rpc-call',{target:'sab',id: _this.id, method:(_this.lastStatus.queue.paused?'resume':'pause'),params: {},onSuccess: 'rpc-call-success',onFailure: 'rpc-call-failure'});
-	});
-	// Refresh Button Click
-	this.btnRefreshEle.click(function() {
+	// Start timers - initial delay of 2 secs for to firefox startup
+	window.setTimeout(function() {
 		_this.refreshStatus();
-		// reply to 'status' will automatically trigger 'listgroups' (queue status) rpc
-	});
-	// Open download client webpage
-	this.btnOpenEle.click(function() {
-		window.open((self.options.prefs.sab_ssl?'https':'http')+'://'+self.options.prefs.sab_ip+':'+self.options.prefs.sab_port);
-	});
-	// Send 'queue' RPC call which contains all the info we need (labeled as Status for parity with nzbget)
-	this.refreshStatus = function(refreshRate) {
-		log('refreshStatus(sab,'+refreshRate+')');
-		window.clearTimeout(_this.refresh_timer);
-		if (refreshRate == 0) tabStartStatusTimer(_this.id); else {
-			_this.activity.show();
-			self.port.emit('rpc-call',{target:'sab',id: _this.id, method:'queue',params:{limit:5}, onSuccess: 'rpc-call-success',onFailure: 'rpc-call-failure' });
-		}
-	};
-	this.refreshQueue = function() {}; // Not needed for sab
-	this.refreshHistory = function() {
-		log('refreshHistory(sab)');
-		window.clearTimeout(_this.history_timer);
-		if (self.options.prefs.dl_notifications) {
-			_this.activity.show();
-			self.port.emit('rpc-call',{target:'sab',id: _this.id, method:'history',params:{limit:1}, onSuccess: 'rpc-call-success',onFailure: 'rpc-call-failure' });
-		}
-	}
-	this.parseStatus = function(rpc){
-		this.lastStatus = rpc;
-		this.dlSpeed = rpc.queue.kbpersec;
-		this.dlTimeSecs  = 0;
-		this.dlPercent = 0;
-
-		var dlSpeed = rpc.queue.kbpersec+' KB/s';
-		var dlTotalMB = 0;
-		var dlRemainingMB = 0;
-		var dlName = 'N/A';
-		var dlTime = 'N/A';
-		var dlPercent = 0;
-
-		if (rpc.queue.speedlimit > 0)
-			dlSpeed += ' ('+rpc.queue.speedlimit+' KB/s limit)';
-
-		this.btnOnFinishNothing.css('color','');
-		this.btnOnFinishShutdown.css('color','');
-		this.btnOnFinishScript.css('color','');
-
-		if (!rpc.queue.finishaction)
-			this.btnOnFinishNothing.css('color','#FF8C00') // DarkOrange
-		else
-		if (rpc.queue.finishaction == 'shutdown_program')
-			this.btnOnFinishShutdown.css('color','#FF8C00')
-		else
-		if (rpc.queue.finishaction.startsWith('script_'))
-			this.btnOnFinishScript.css('color','#FF8C00');
-
-		for (var i = 0; i < rpc.queue.slots.length; ++i)
-			if (rpc.queue.slots[i].status == 'Downloading' || (rpc.queue.slots[i].status == 'Queued' && rpc.queue.paused)) { // If download is active, or first in queue while paused
-				dlTime = rpc.queue.slots[i].timeleft.split(':')
-				dlTime = (+dlTime[0]) * 60 * 60 + (+dlTime[1]) * 60 + (+dlTime[2])
-				this.dlTimeSecs  = dlTime;
-				dlName = rpc.queue.slots[i].filename+((rpc.queue.slots[i].cat != '*') ? ' ('+rpc.queue.slots[i].cat+')':'');
-				dlTime = (rpc.queue.kbpersec > 0?timeToStringL(dlTime):'N/A')+' ('+rpc.queue.slots[i].sizeleft+')';
-				dlPercent = Math.round(rpc.queue.slots[i].percentage);
-				this.dlPercent = dlPercent;
-				break
-			}
-
-		this.dlSpeedEle.text(dlSpeed);
-		this.dlNameEle.text(dlName);
-		this.dlTimeEle.text(dlTime);
-		this.dlProgressEle.progressbar('option',{value:dlPercent});
-		this.dlProgressLabelEle.text(dlPercent+'%');
-		this.setPaused(rpc.queue.paused);
-		doResize();
-	};
-	this.parseHistory = function(rpc) {
-		this.lastHistory = rpc;
-		log('Parsing SABnzbd+ history, items = '+rpc.history.slots.length);
-		if (rpc.history.slots.length == 0) return;
-		if (this.histLastID == '') {
-			// First parse of history, set last ID but dont notify
-			this.histLastID = rpc.history.slots[0].nzo_id;
-		} else
-		if (rpc.history.slots[0].nzo_id != this.histLastID && (time() - rpc.history.slots[0].completed) < (self.options.prefs.refresh_history * 3) /* finished in past _ secs */ && (rpc.history.slots[0].status == 'Completed' || rpc.history.slots[0].status == 'Failed')) {
-			// Latest downloaded item nzo_id has changed. Perform notify
-
-			var dlStatus = rpc.history.slots[0].status;
-			var dlName = rpc.history.slots[0].name;
-			var dlStats = rpc.history.slots[0].size+' - ';
-
-			for (var i = 0; i < rpc.history.slots[0].stage_log.length; ++i)
-				if (rpc.history.slots[0].stage_log[i].name == 'Download') {
-					dlStats += rpc.history.slots[0].stage_log[i].actions[0]; // Downloaded in _ at an average of _ KB/s
-				} else
-				if (rpc.history.slots[0].stage_log[i].name == 'Unpack') {
-					dlStats += '<br/>'+(rpc.history.slots[0].stage_log[i].actions[0].split('] ').pop()); // Extract text outside of square brackets
-				}
-
-			if (rpc.history.slots[0].fail_message != '')
-				dlStats += '<br/><font color="red">'+rpc.history.slots[0].fail_message+'</font>';
-
-			log('--- DOWNLOAD NOTIFY "'+dlName+'", finished '+(time() - rpc.history.slots[0].completed)+' seconds ago');
-			self.port.emit('showNotification',['sab','Download '+dlStatus,'nzb-32-'+(dlStatus == 'Completed'?'green':'orange')+'.png',dlName,dlStats]);
-			this.histLastID = rpc.history.slots[0].nzo_id;
-		}
-
-	}
-	this.rpcFinishAction = function(action) {
-		// Finish action is not accessible via SAB's API. So we must emulate the request through web interface
-		var url = (self.options.prefs.sab_ssl?'https':'http')+'://'+self.options.prefs.sab_ip+':'+self.options.prefs.sab_port+'/queue/change_queue_complete_action?action='+action+'&session='+self.options.prefs.sab_apikey;
-		var xhr = new XMLHttpRequest();
-		try {
-			xhr.open('post',url);
-			xhr.timeout = 2000;
-			xhr.send();
-		}catch(e) {log('Error setting SAB finish action. '+e.message);log('Req URL: '+url);}
-	}
-	this.rpcPauseFor = function(mins) {
-		self.port.emit('rpc-call',{target:'sab',id: _this.id, method:'config',params: {name:'set_pause',value:mins},onSuccess: 'rpc-call-success',onFailure: 'rpc-call-failure'});
-	}
-	this.setPaused = function(isPaused) {
-		this.btnTogglePauseEle.button('option',{label: isPaused?'Resume':'Pause',icons:{primary:isPaused?'ui-icon-play':'ui-icon-pause'}});
-		this.btnTogglePauseEle.css('color',isPaused?'#00FF00':'#FF0000');
-	};
-	this.paused = function() {
-		return (this.lastStatus && this.lastStatus.queue.paused);
-	}
-	this.active = function() {
-		return (this.lastStatus && this.lastStatus.queue.kbpersec > 0);
-	}
-	this.setError = function(msg) {
-		this.errorEle.html('<strong>'+msg+'</strong>');
-	}
-	this.remove = function() {
-		log('remove(sab)');
-		window.clearTimeout(this.history_timer);
-		window.clearTimeout(this.refresh_timer);
-		this.tabHeader.remove();
-		this.tab.remove();
-		$('#tabs').tabs('refresh');
-	}
+		_this.refreshHistory();
+	},2000);
 }
 
-
-function nzbg_tab(id,title) {
+//// Tab PROTOTYPE functions ////
+// Click Events - Buttons
+Tab.prototype.btnTogglePause_Click = function() {if (this.download.paused) this.resume(); else this.pause();}
+Tab.prototype.btnRefresh_Click = function() this.refreshStatus();
+Tab.prototype.btnOpen_Click = function() { //child
+}
+Tab.prototype.btnShowMenu_Click = function() {
+	this.menuEle.show().position({my: 'left bottom',at: 'top right',of: this.btnShowMenuEle});
+	var _this = this
+	$(document).one('click', function() _this.menuEle.hide());
+	return false;
+}
+// Click Events - Action Menu
+Tab.prototype.menuSpeedLimit_Click = function() {
 	var _this = this;
-	this.id = id;
-	this.lastStatus;
-	this.lastQueue;
-	this.lastHistory;
-	this.refresh_timer;
-	this.history_timer;
-
-	// Last parse unformatted results stored for progress widget
-	this.dlSpeed = 0;
-	this.dlTimeSecs  = 0;
-	this.dlPercent = 0;
-
-	this.histLastID = '';
-
-	this.tabHeader = $('<li><a href="#tabs-'+id+'">'+title+'</a></li>');
-									 $('#tabList').append(this.tabHeader);
-	this.tab = $('<div/>', {id: 'tabs-'+id}).appendTo('#tabs');
-	this.tab.html($('div#nzbget.template').html());
-	// Labels
-	this.dlSpeedEle = this.tab.find('#dlSpeed');
-	this.dlNameEle = this.tab.find('#dlName');
-	this.dlTimeEle = this.tab.find('#dlTime');
-	this.dlProgressEle = this.tab.find('#dlProgress').progressbar({value: false});
-	this.dlProgressLabelEle = this.tab.find('#dlProgress-label');
-	this.activity = this.tab.find('#activity').hide();
-	this.errorEle = this.tab.find('#error');
-	// Buttons
-	this.btnTogglePauseEle = this.tab.find('#togglePause').button();
-	this.btnRefreshEle = this.tab.find('#refresh').button({icons:{primary: 'ui-icon-refresh'}});
-	this.btnOpenEle = this.tab.find('#open').button({text:false,icons:{primary: 'ui-icon-newwin'}});
-	// Menus
-	this.menuEle = this.tab.find('ul#menu').menu({position: {my: 'left bottom', at: 'right bottom'}}).hide();
-	this.btnTogglePauseMenuEle = this.tab.find('#toggleMenu').button({text:false,icons:{primary:'ui-icon-triangle-1-n'}});
-
-	// Show Menu
-	this.tab.find('#toggleMenu').click(function() {
-		_this.menuEle.show().position({
-			my: 'left bottom',
-			at: 'top right',
-			of: this
-		});
-		$(document).one('click', function() {
-			_this.menuEle.hide();
-		});
-		return false;
-	})
-
-	// Menu Actions
-	// Set speed limit
-	this.btnSpeedLimit = this.tab.find('li#speedLimit').click(function() {
-		$('#dialogSpeedLimit').dialog({
-			autoOpen: true,
-			modal: true,
-			draggable: false,
-			resizable: false,
-			width: 150,
-			position: {my: 'center', at: 'center', of: '#tabs'},
-			buttons: [ {
-					text: 'OK',
-					click: function() {
-						$(this).dialog('close');
-						var speedLimit = Number($(this).find('input').val());
-						self.port.emit('rpc-call',{target:'nzbg',id: _this.id, method:'rate',params: [(speedLimit == ''?0:speedLimit)],onSuccess: 'rpc-call-success',onFailure: 'rpc-call-failure'});
-					}
-				},
-				{text: 'Cancel', click: function() {$(this).dialog('close');}}
-			]
-		}).keypress(function(e) {
-      if (e.keyCode == $.ui.keyCode.ENTER) $(this).parent().find('button:eq(1)').trigger('click');
-    }).find('input').val(_this.lastStatus.result.DownloadLimit / 1024).select();
+	dialog.speedLimit.open(this.download.speedLimit,function() {
+		var result = Number($(this).closest('.ui-dialog').find('input').val());
+		_this.setSpeedLimit(result);
 	});
-	// Pause for
-	this.btnPauseFor5m = this.tab.find('li#pause-5m').click(function() {_this.rpcPauseFor(5)});
-	this.btnPauseFor15m = this.tab.find('li#pause-15m').click(function() {_this.rpcPauseFor(15)});;
-	this.btnPauseFor30m = this.tab.find('li#pause-30m').click(function() {_this.rpcPauseFor(30)});;
-	this.btnPauseFor60m = this.tab.find('li#pause-60m').click(function() {_this.rpcPauseFor(60)});;
-	this.btnPauseForCustom = this.tab.find('li#pause-custom').click(function() {
-		$('#dialogPauseFor').dialog({
-			autoOpen: true,
-			modal: true,
-			draggable: false,
-			resizable: false,
-			width: 150,
-			position: {my: 'center', at: 'center', of: '#tabs'},
-			buttons: [ {
-					text: 'OK',
-					click: function() {
-						$(this).dialog('close');
-						_this.rpcPauseFor(Number($(this).find('input').val()));
-					}
-				},
-				{text: 'Cancel', click: function() {$(this).dialog('close');}}
-			]
-		}).keypress(function(e) {
-      if (e.keyCode == $.ui.keyCode.ENTER) $(this).parent().find('button:eq(1)').trigger('click');
-    }).find('input').select();
+}
+Tab.prototype.menuPauseFor_Click = function() {
+	var _this = this;
+	dialog.pauseFor.open('',function() {
+		var result = Number($(this).closest('.ui-dialog').find('input').val());
+		_this.pause(result);
 	});
-
-	// Update jQuery UI with our new DOM elements & set active tab to our newly created tab
-	this.tab.find('#btnSet').buttonset();
-	$('#tabs').tabs('refresh');
-	$('#tabs').tabs('option', 'active', 0);
-
-	// Pause Button Click
-	this.btnTogglePauseEle.click(function() {
-		self.port.emit('rpc-call',{target:'nzbg',id: _this.id, method:(_this.lastStatus.result.DownloadPaused?'resumedownload':'pausedownload'),params: [],onSuccess: 'rpc-call-success',onFailure: 'rpc-call-failure'});
-	});
-	// Refresh Button Click
-	this.btnRefreshEle.click(function() {
-		_this.refreshStatus();
-		// reply to 'status' will automatically trigger 'listgroups' (queue status) rpc
-	});
-	// Open download client webpage
-	this.btnOpenEle.click(function() {
-		window.open((self.options.prefs.nzbg_ssl?'https':'http')+'://'+self.options.prefs.nzbg_ip+':'+self.options.prefs.nzbg_port);
-	});
-	// Send 'status' RPC call to get current download speed & paused state
-	this.refreshStatus = function(refreshRate) {
-		log('refreshStatus(nzbg,'+refreshRate+')');
-		window.clearTimeout(_this.refresh_timer);
-		if (refreshRate == 0) tabStartStatusTimer(_this.id); else {
-			_this.activity.show();
-			self.port.emit('rpc-call',{target:'nzbg',id: _this.id, method:'status',params:[], onSuccess: 'rpc-call-success',onFailure: 'rpc-call-failure' });
+}
+// Timers
+Tab.prototype.statusTimerInterval = function(interval,startTimer=true) {
+	if (typeof interval == 'undefined') return this.statusTimer_interval;	else
+	if (interval != this.statusTimer_interval || !this.statusTimer) {
+		this.statusTimer_interval = interval;
+		log(this.type+' -> status interval set to '+this.statusTimer_interval);
+		if (startTimer) {
+			this.stopStatusTimer();
+			this.startStatusTimer();
 		}
-	}
-	// Send 'listgroups' RPC call to get currently active download
-	this.refreshQueue = function() {
-		log('refreshQueue(nzbg)');
-		window.clearTimeout(_this.refresh_timer);
-		_this.activity.show();
-		self.port.emit('rpc-call',{target:'nzbg',id: _this.id, method:'listgroups',params:[5], onSuccess: 'rpc-call-success',onFailure: 'rpc-call-failure' });
-	}
-	this.refreshHistory = function() {
-		log('refreshHistory(nzbg)');
-		window.clearTimeout(_this.history_timer);
-		if (self.options.prefs.dl_notifications) {
-			_this.activity.show();
-			self.port.emit('rpc-call',{target:'nzbg',id: _this.id, method:'history',params:[false], onSuccess: 'rpc-call-success',onFailure: 'rpc-call-failure' });
-		}
-	}
-	this.parseStatus = function(rpc) {
-		this.lastStatus = rpc;
-		this.dlSpeed = Math.floor(rpc.result.DownloadRate);
-		var dlSpeed = bytesToReadable(rpc.result.DownloadRate,1)+'/s';
-		if (rpc.result.DownloadLimit > 0)
-			dlSpeed += ' ('+bytesToReadable(rpc.result.DownloadLimit,0)+'/s limit)';
-		this.dlSpeedEle.text(dlSpeed);
-		this.setPaused(rpc.result.DownloadPaused);
-	};
-	this.parseQueue = function(rpc) {
-		this.lastQueue = rpc;
-//		this.dlSpeed = 0; // set in parseStatus
-		this.dlTimeSecs  = 0;
-		this.dlPercent = 0;
-
-		var dlTotalMB = 0;
-		var dlRemainingMB = 0;
-		var dlName = 'N/A';
-		var dlTime = 'N/A';
-		var dlPercent = 0;
-
-		for (var i = 0; i < rpc.result.length; ++i)
-			if ((rpc.result[i].Status == 'DOWNLOADING') || (rpc.result[i].Status == 'QUEUED' && this.lastStatus.result.DownloadPaused)) { // If download is active, or first in queue while paused
-				dlTotalMB = (rpc.result[i].FileSizeMB - rpc.result[i].PausedSizeMB);
-				dlRemainingMB = (rpc.result[i].RemainingSizeMB - rpc.result[i].PausedSizeMB);
-				dlPercent =  Math.floor((dlTotalMB - dlRemainingMB) / dlTotalMB * 100);
-				this.dlPercent = dlPercent;
-				dlName = rpc.result[i].NZBName+((rpc.result[i].Category != '') ? ' ('+rpc.result[i].Category+')':'');
-				this.dlTimeSecs = (dlRemainingMB * 1024 / (this.dlSpeed / 1024));
-				dlTime = (this.dlSpeed > 0?timeToStringL(this.dlTimeSecs):'N/A')+' ('+dlRemainingMB+' MB)';
-				break;
-			}
-
-		this.dlNameEle.text(dlName);
-		this.dlTimeEle.text(dlTime);
-		this.dlProgressEle.progressbar('option',{value:dlPercent});
-		this.dlProgressLabelEle.text(dlPercent+'%');
-		doResize();
-	};
-	this.parseHistory = function(rpc) {
-		this.lastHistory = rpc;
-		log('Parsing NZBGet history, items = '+rpc.result.length);
-		for (var i = 0; i < rpc.result.length; ++i) {
-			var dlStatus = rpc.result[i].Status.split('/').shift();
-
-			if (rpc.result[i].Kind == 'NZB' && (dlStatus == 'SUCCESS' || dlStatus == 'FAILURE' || dlStatus == 'WARNING')) {
-				if (this.histLastID == '') {
-					this.histLastID = rpc.result[i].NZBID;
-					break;
-				} else
-				if (rpc.result[i].NZBID != this.histLastID && (time() - rpc.result[i].HistoryTime) < (self.options.prefs.refresh_history * 3) /* finished in past _ secs */) {
-					// Latest downloaded item NZBID has changed. Perform notify
-					var dlName = rpc.result[i].Name;
-					var dlSpeed = rpc.result[i].DownloadTimeSec > 0 ? ((rpc.result[i].DownloadedSizeMB  > 1024?(rpc.result[i].DownloadedSizeMB * 1024 * 1024):rpc.result[i].DownloadedSizeLo) / rpc.result[i].DownloadTimeSec) : 0;
-					var dlStats = rpc.result[i].DownloadedSizeMB+' MB - Downloaded in '+timeToStringL(rpc.result[i].DownloadTimeSec,true)+' at an average of '+bytesToReadable(dlSpeed)+'/s';
-					if (rpc.result[i].UnpackTimeSec > 0)
-						dlStats += '<br/>Unpacked in '+timeToStringL(rpc.result[i].UnpackTimeSec);
-
-					if (dlStatus != 'SUCCESS')
-						dlStats += '<br/><font color="red">'+nzbgStatusToString(rpc.result[i].Status)+'</font>';
-
-					log('--- DOWNLOAD NOTIFY "'+dlName+'", finished '+(time() - rpc.result[i].HistoryTime)+' seconds ago');
-					self.port.emit('showNotification',['nzbg','Download '+dlStatus,'nzb-32-'+(dlStatus == 'SUCCESS'?'green':'orange')+'.png',dlName,dlStats]);
-					this.histLastID = rpc.result[i].NZBID;
-				}
-				break;
-			}
-		}
-	}
-	this.rpcFinishAction = function(action) {} // Not Implemented in NZBGet
-	this.rpcPauseFor = function(mins) {
-		self.port.emit('rpc-call',{target:'nzbg',id: _this.id, method:'pausedownload',params: [],onSuccess: 'rpc-call-success',onFailure: 'rpc-call-failure'}); // Must pause first, resume rpc will only work on already paused events
-		self.port.emit('rpc-call',{target:'nzbg',id: _this.id, method:'scheduleresume',params: [mins * 60],onSuccess: 'rpc-call-success',onFailure: 'rpc-call-failure'});
-	}
-	this.setPaused = function(isPaused) {
-		this.btnTogglePauseEle.button('option',{label: isPaused?'Resume':'Pause',icons:{primary:isPaused?'ui-icon-play':'ui-icon-pause'}});
-		this.btnTogglePauseEle.css('color',isPaused?'#00FF00':'#FF0000');
-	};
-	this.paused = function() {
-		return (this.lastStatus && this.lastStatus.result.DownloadPaused);
-	}
-	this.active = function() {
-		return (this.lastStatus && this.lastStatus.result.DownloadRate > 0);
-	}
-	this.setError = function(msg) {
-		this.errorEle.html('<strong>'+msg+'</strong>');
-	}
-	this.remove = function() {
-		log('remove(nzbg)');
-		window.clearTimeout(this.history_timer);
-		window.clearTimeout(this.refresh_timer);
-		this.tabHeader.remove();
-		this.tab.remove();
-		$('#tabs').tabs('refresh');
 	}
 }
+Tab.prototype.startStatusTimer = function() {
+	this.stopStatusTimer();
+	var _this = this;
+	if (this.statusTimer_interval > 0)
+		this.statusTimer = window.setTimeout(function() _this.refreshStatus.call(_this),this.statusTimer_interval * 1000);
+}
+Tab.prototype.startHistoryTimer = function() {
+	this.stopHistoryTimer();
+	var _this = this;
+	this.historyTimer = window.setTimeout(function() _this.refreshHistory.call(_this),this.historyTimer_interval * 1000);
+}
+Tab.prototype.stopStatusTimer = function() {
+	window.clearTimeout(this.statusTimer);
+	this.statusTimer = null;
+}
+Tab.prototype.stopHistoryTimer = function() {
+	window.clearTimeout(this.historyTimer);
+	this.historyTimer = null;
+}
+// API Actions
+Tab.prototype.onApiBeforeCall = function(call) { // General API pre-call handling
+	this.activityEle.show().css('display','inline-block');
+}
+Tab.prototype.onApiSuccess = function(call,reply) { // General API success handling
+	this.error('');
+	this.activityEle.hide();
+}
+Tab.prototype.onApiFailure = function(call,reply) { // General API failure handling
+	this.error(reply.message);
+	this.activityEle.hide();
+}
+Tab.prototype.refreshStatus = function() {	//child
+}
+Tab.prototype.parseStatus = function() {	//child
+}
+Tab.prototype.onStatusParsed = function() { // Shared code for post-status parsing
+	// Update Tab UI
+
+	var nameStr = this.download.name == ''?'':this.download.name+((this.download.category != '*' && this.download.category != '') ? ' ('+this.download.category+')':'');
+	var speedStr = bytesToReadable(this.download.speed * 1024,(this.download.speed>1024?1:0))+'/s'+(this.download.speedLimit > 0?' ('+bytesToReadable(this.download.speedLimit * 1024,(this.download.speedLimit>1024?1:0))+'/s limit)':'');
+	var timeStr = this.download.name == ''?'':(this.download.speed > 0?timeToStringL(this.download.time):'Unknown')+' ('+bytesToReadable(this.download.sizeLeft * 1024 * 1024,(this.download.sizeLeft > 1024?1:0))+')';
+
+	this.speedEle.text(speedStr);
+	this.nameEle.text(nameStr);
+	this.timeEle.text(timeStr);
+	this.progressBarEle.progressbar('option',{value:this.download.percent});
+	this.progressLabelEle.text(this.download.percent+'%');
+
+	this.paused(this.download.paused);
+
+	resize();
+
+	// Detect new download started
+	if (this.download.id != this.lastActiveID && this.download.speed > 0) {
+		this.lastActiveID = this.download.id;
+		if (this.download.id != '' && self.options.prefs.dl_start_notifications && !panelVisible) {
+			log('--- DOWNLOAD STARTED "'+name+'", id="'+this.download.id+'" lastid="'+this.lastActiveID+'"');
+			self.port.emit('showNotification',[this.type,'Download Started',this.type+'-32.png',this.download.name,bytesToReadable(this.download.sizeTotal * 1024 * 1024,(this.download.sizeTotal > 1024?1:0))+' / Category: '+this.download.category+' / Priority: '+this.download.priority+' / Age: '+this.download.age]);
+		}
+	}
+	if (this.download.speed > 0 && this.statusTimer_interval == self.options.prefs.refresh_idle) {
+		// Client is downloading, but were on idle timer. Start active rate
+		log(this.type+' -> has gone active');
+		this.statusTimerInterval(self.options.prefs.refresh_active,false); // false = dont start timer, start is called after parse in refreshStatus
+	} else
+	if (this.download.speed == 0 && !panelVisible && this.statusTimer_interval == self.options.prefs.refresh_active) {
+		// Client is not downloading, but were on active timer and the panel is not visible. Start idle rate
+		log(this.type+' -> has gone idle');
+		this.statusTimerInterval(self.options.prefs.refresh_idle,false); // false = dont start timer, start is called after parse in refreshStatus
+	}
+}
+Tab.prototype.refreshHistory = function() {	//child
+}
+Tab.prototype.parseHistory = function() {//child
+}
+Tab.prototype.pause = function(mins) {	//child
+}
+Tab.prototype.resume = function() {					//child
+}
+Tab.prototype.setSpeedLimit = function(kbps) { //child
+}
+// General Functions
+Tab.prototype.paused = function(paused) { // updates UI, called during status parse
+	if (typeof paused == 'undefined') return this.download.paused; else {
+		this.download.paused = paused;
+		this.btnTogglePauseEle.button('option',{label: paused?'Resume':'Pause',icons:{primary:paused?'ui-icon-play':'ui-icon-pause'}});
+		this.btnTogglePauseEle.css('color',paused?'#00FF00':'#FF0000');
+		return paused;
+	}
+}
+Tab.prototype.error = function(message) this.errorEle.html(message)
+Tab.prototype.remove = function() {
+	window.clearTimeout(this.statusTimer);
+	window.clearTimeout(this.historyTimer);
+	this.header.remove();
+	this.content.remove();
+	$('#tabs').tabs('refresh');
+}
+
+
+//////////////////
+// SABnzbd+ Tab //
+//////////////////
+sabTab.prototype = Object.create(Tab.prototype);
+sabTab.prototype.constructor = sabTab;
+function sabTab(type) {
+	var _this = this;
+	Tab.call(this, 'sab');
+
+	this.menuOnFinishNothing = this.content.find('li#finish-nothing').click(function() _this.setFinishAction.call(_this,''));
+	this.menuOnFinishShutdown = this.content.find('li#finish-shutdown').click(function() _this.setFinishAction.call(_this,'shutdown_program'));
+	this.menuOnFinishScript = this.content.find('li#finish-script').click(function() _this.menuOnFinishScript_Click.call(_this));
+
+}
+
+//// SABnzbd+ Tab PROTOTYPE functions ////
+// Click Events - Buttons
+sabTab.prototype.btnOpen_Click = function() {
+	window.open((self.options.prefs.sab_ssl?'https':'http')+'://'+self.options.prefs.sab_ip+':'+self.options.prefs.sab_port);
+}
+// Click Events - Action Menu
+sabTab.prototype.menuOnFinishScript_Click = function() {
+	var _this = this;
+	var options = '';
+	for (var i = 0; i < this.lastStatus.queue.scripts.length; ++i)
+		if (this.lastStatus.queue.scripts[i].endsWith('.py') || this.lastStatus.queue.scripts[i].endsWith('.bat'))
+			options += '<option value="script_'+this.lastStatus.queue.scripts[i]+'"'+((this.lastStatus.queue.finishaction == 'script_'+this.lastStatus.queue.scripts[i])?' selected':'')+'>'+this.lastStatus.queue.scripts[i]+'</option>';
+
+	dialog.finishScript.open(options,function() {
+		var result = $(this).closest('.ui-dialog').find('select').val();
+		_this.setFinishAction(result);
+	});
+}
+// API Actions
+sabTab.prototype.refreshStatus = function() {
+	log('refreshStatus('+this.type+')');
+	this.stopStatusTimer();
+	api.call(this,'queue',{limit:5},
+		function(api) { // onSuccess
+			this.parseStatus(api);
+			this.onStatusParsed();
+			this.startStatusTimer();
+		},
+		function(api) { // onFailure
+			this.startStatusTimer();
+		}
+	);
+
+}
+sabTab.prototype.parseStatus = function(api) {
+	log('parseStatus('+this.type+')');
+	this.lastStatus = api;
+	this.download = $.extend({},this.downloadDefaults);
+
+	$.extend(this.download,{
+		paused: api.queue.paused,
+		speed: (api.queue.kbpersec || 0),
+		speedLimit: (api.queue.speedlimit || 0),
+	});
+
+	this.menuOnFinishNothing.css('color','');
+	this.menuOnFinishShutdown.css('color','');
+	this.menuOnFinishScript.css('color','');
+
+	if (!api.queue.finishaction)
+		this.menuOnFinishNothing.css('color','#FF8C00') // DarkOrange
+	else
+	if (api.queue.finishaction == 'shutdown_program')
+		this.menuOnFinishShutdown.css('color','#FF8C00')
+	else
+	if (api.queue.finishaction.startsWith('script_'))
+		this.menuOnFinishScript.css('color','#FF8C00');
+
+	// Find active download
+	for (var i = 0; i < api.queue.slots.length; ++i) {
+		var item = api.queue.slots[i];
+		if (item.status == 'Downloading' || (item.status == 'Queued' && this.download.paused)) { // If download is active, or first in queue while paused
+			$.extend(this.download, {
+				id: item.nzo_id,
+				name: item.filename,
+				category: item.cat,
+				priority: item.priority,
+				age: item.avg_age,
+				sizeTotal: item.mb,
+				sizeLeft: item.mbleft,
+				percent: Math.floor(item.percentage)
+			});
+			this.download.time = item.timeleft.split(':')
+			this.download.time = (+this.download.time[0]) * 60 * 60 + (+this.download.time[1]) * 60 + (+this.download.time[2])
+			break
+		}
+	}
+}
+sabTab.prototype.refreshHistory = function() {
+	this.stopHistoryTimer();
+	api.call(this,'history',{limit:1},
+		function(api) { // onSuccess
+			this.parseHistory(api);
+			this.startHistoryTimer();
+		},
+		function(api) { // onFailure
+			this.startHistoryTimer();
+		}
+	);
+}
+sabTab.prototype.parseHistory = function(api) {
+	this.lastHistory = api;
+	log('parseHistory('+this.type+'), items = '+api.history.slots.length);
+	if (api.history.slots.length == 0) return;
+	if (this.lastHistoryID == '') {
+		// First parse of history, set last ID but dont notify
+		this.lastHistoryID = api.history.slots[0].nzo_id;
+	} else
+	if (api.history.slots[0].nzo_id != this.lastHistoryID && (time() - api.history.slots[0].completed) < (self.options.prefs.refresh_history * 3) /* finished in past _ secs */ && (api.history.slots[0].status == 'Completed' || api.history.slots[0].status == 'Failed')) {
+		// Latest downloaded item nzo_id has changed. Perform notify
+		var status = api.history.slots[0].status;
+		var name = api.history.slots[0].name;
+		var stats = api.history.slots[0].size+' - ';
+
+		for (var i = 0; i < api.history.slots[0].stage_log.length; ++i)
+			if (api.history.slots[0].stage_log[i].name == 'Download') {
+				stats += api.history.slots[0].stage_log[i].actions[0]; // Downloaded in _ at an average of _ KB/s
+			} else
+			if (api.history.slots[0].stage_log[i].name == 'Unpack') {
+				stats += '<br/>'+(api.history.slots[0].stage_log[i].actions[0].split('] ').pop()); // Extract text outside of square brackets
+			}
+
+		if (api.history.slots[0].fail_message != '')
+			stats += '<br/><font color="red">'+api.history.slots[0].fail_message+'</font>';
+
+		if (self.options.prefs.dl_finish_notifications) {
+			log('--- DOWNLOAD FINISHED "'+name+'", finished '+(time() - api.history.slots[0].completed)+' seconds ago');
+			self.port.emit('showNotification',[this.type,'Download '+status,'nzb-32-'+(status == 'Completed'?'green':'orange')+'.png',name,stats]);
+		}
+		this.lastHistoryID = api.history.slots[0].nzo_id;
+	}
+}
+sabTab.prototype.pause = function(mins) {
+	if (mins > 0)
+		api.call(this,'config',{name:'set_pause',value:mins},this.refreshStatus)
+	else
+		api.call(this,'pause',{},this.refreshStatus);
+}
+sabTab.prototype.resume = function() {
+	api.call(this,'resume',{},this.refreshStatus);
+}
+sabTab.prototype.setSpeedLimit = function(kbps) {
+	api.call(this,'config',{name:'speedlimit',value:kbps},this.refreshStatus);
+}
+sabTab.prototype.setFinishAction = function(action) { // Unique to SAB
+	var url = (self.options.prefs.sab_ssl?'https':'http')+'://'+self.options.prefs.sab_ip+':'+self.options.prefs.sab_port+'/queue/change_queue_complete_action?action='+action+'&session='+self.options.prefs.sab_apikey;
+	var xhr = new XMLHttpRequest();
+	try {
+		xhr.open('post',url);
+		xhr.timeout = self.options.prefs.connection_timeout * 1000;
+		xhr.send();
+	}catch(e) {log('Error setting SAB finish action. '+e.message);log('Req URL: '+url);}
+}
+//////////////////////////////////////////////////////////////////////////////
+
+
+////////////////
+// NZBGet Tab //
+////////////////
+nzbgTab.prototype = Object.create(Tab.prototype);
+nzbgTab.prototype.constructor = nzbgTab;
+function nzbgTab(type) {
+	var _this = this;
+	Tab.call(this, 'nzbg');
+}
+
+//// NZBGet Tab PROTOTYPE functions ////
+// Click Events - Buttons
+nzbgTab.prototype.btnOpen_Click = function() {
+	window.open((self.options.prefs.nzbg_ssl?'https':'http')+'://'+self.options.prefs.nzbg_ip+':'+self.options.prefs.nzbg_port);
+}
+// API Actions
+nzbgTab.prototype.refreshStatus = function() {
+	log('refreshStatus('+this.type+')');
+	this.stopStatusTimer();
+	api.call(this,'status',{limit:5},
+		function(api) { // onSuccess
+			this.parseStatus(api);
+			this.refreshQueue();
+		},
+		function(api) { // onFailure
+				this.startStatusTimer();
+			}
+	);
+}
+nzbgTab.prototype.parseStatus = function(api) {
+	log('parseStatus('+this.type+')');
+	this.lastStatus = api;
+	this.download = $.extend({},this.downloadDefaults);
+
+	$.extend(this.download,{
+		paused: api.result.DownloadPaused,
+		speed: Math.floor(api.result.DownloadRate / 1024), // Convert bps to kbps
+		speedLimit: (api.result.DownloadLimit / 1024), // Convert bps to kbps
+	});
+}
+nzbgTab.prototype.refreshQueue = function() {
+	log('refreshQueue('+this.type+')');
+	this.stopStatusTimer();
+	api.call(this,'listgroups',[5],
+		function(api) { // onSuccess
+			this.parseQueue(api);
+			this.onStatusParsed();
+			this.startStatusTimer();
+		},
+		function(api) { // onFailure
+			this.startStatusTimer();
+		}
+	);
+}
+nzbgTab.prototype.parseQueue = function(api) {
+	this.lastQueue = api;
+	// Find active download
+	for (var i = 0; i < api.result.length; ++i) {
+		var item = api.result[i];
+		if ((item.Status == 'DOWNLOADING') || (item.Status == 'QUEUED' && this.download.paused)) { // If download is active, or first in queue while paused
+			$.extend(this.download, {
+				id: item.NZBID,
+				name: item.NZBName,
+				category: item.cat,
+				priority: nzbgPriorityToString(item.MaxPriority),
+				age: timeToStringS(time() - item.MinPostTime),
+				sizeTotal: (item.FileSizeMB - item.PausedSizeMB),
+				sizeLeft: (item.RemainingSizeMB - item.PausedSizeMB),
+			});
+			$.extend(this.download, { // extend again because we are going to use vars calculated prior
+				time: (this.download.sizeLeft * 1024 / this.download.speed),
+				percent: Math.floor((this.download.sizeTotal - this.download.sizeLeft) / this.download.sizeTotal * 100),
+			});
+			break;
+		}
+	}
+}
+nzbgTab.prototype.refreshHistory = function() {
+	this.stopHistoryTimer();
+	api.call(this,'history',[false],
+		function(api) { // onSuccess
+			this.parseHistory(api);
+			this.startHistoryTimer();
+		},
+		function(api) { // onFailure
+			this.startHistoryTimer();
+		}
+	);
+}
+nzbgTab.prototype.parseHistory = function(api) {
+	log('parseHistory('+this.type+'), items = '+api.result.length);
+
+	for (var i = 0; i < api.result.length; ++i) {
+		var status = api.result[i].Status.split('/').shift();
+
+		if (api.result[i].Kind == 'NZB' && (status == 'SUCCESS' || status == 'FAILURE' || status == 'WARNING')) {
+			if (this.lastHistoryID == '') {
+				this.lastHistoryID = api.result[i].NZBID;
+				break;
+			} else
+			if (api.result[i].NZBID != this.lastHistoryID && (time() - api.result[i].HistoryTime) < (self.options.prefs.refresh_history * 3) /* finished in past _ secs */) {
+				// Latest downloaded item NZBID has changed. Perform notify
+				var name = api.result[i].Name;
+				var speed = api.result[i].DownloadTimeSec > 0 ? ((api.result[i].DownloadedSizeMB  > 1024?(api.result[i].DownloadedSizeMB * 1024 * 1024):api.result[i].DownloadedSizeLo) / api.result[i].DownloadTimeSec) : 0;
+				var stats = api.result[i].DownloadedSizeMB+' MB - Downloaded in '+timeToStringL(api.result[i].DownloadTimeSec,true)+' at an average of '+bytesToReadable(speed)+'/s';
+				if (api.result[i].UnpackTimeSec > 0)
+					stats += '<br/>Unpacked in '+timeToStringL(api.result[i].UnpackTimeSec);
+
+				if (status != 'SUCCESS')
+					stats += '<br/><font color="red">'+nzbgStatusToString(api.result[i].Status)+'</font>';
+
+				if (self.options.prefs.dl_finish_notifications) {
+					log('--- DOWNLOAD FINISHED "'+name+'", finished '+(time() - api.result[i].HistoryTime)+' seconds ago');
+					self.port.emit('showNotification',[this.type,'Download '+status,'nzb-32-'+(status == 'SUCCESS'?'green':'orange')+'.png',name,stats]);
+				}
+				this.lastHistoryID = api.result[i].NZBID;
+			}
+			break;
+		}
+	}
+}
+nzbgTab.prototype.pause = function(mins) {
+	if (mins > 0) {
+		this.pause();
+		api.call(this,'scheduleresume',[60 * mins],this.refreshStatus); // NZBGet uses seconds
+	} else
+		api.call(this,'pausedownload',[],this.refreshStatus);
+}
+nzbgTab.prototype.resume = function() {
+	api.call(this,'resumedownload',[],this.refreshStatus);
+}
+nzbgTab.prototype.setSpeedLimit = function(kbps) {
+	api.call(this,'rate',[kbps],this.refreshStatus);
+}
+//////////////////////////////////////////////////////////////////////////////
+
+const dialog = (new function() {
+
+	var defaults = {
+		autoOpen: false,
+		modal: true,
+		draggable: false,
+		resizable: false,
+		width: 250,
+		position: {my: 'center', at: 'center', of: '#tabs'},
+		buttons: [
+			{
+				text: 'OK',
+				click: function() {
+					$(this).dialog('close');
+				}
+			},
+			{
+				text: 'Cancel',
+				click: function() {
+					$(this).dialog('close');
+				}
+			}
+		]
+	}
+
+	const onKeyPress = function(e) {
+		if (e.keyCode == $.ui.keyCode.ENTER) $(this).parent().find('button:eq(1)').trigger('click');
+	}
+
+	this.speedLimit = $('#speedLimit.dialog').dialog(defaults).keypress(onKeyPress);
+	this.pauseFor = $('#pauseFor.dialog').dialog(defaults).keypress(onKeyPress);
+	this.finishScript = $('#finishScript.dialog').dialog(defaults).keypress(onKeyPress);
+
+
+	this.speedLimit.open = function(speedLimit,onClose) {
+		// this == speedLimit element
+		this.dialog('open');
+		this.find('input').val(speedLimit).select();
+		if (onClose)
+			this.parent().find('button:eq(1)').one('click',onClose);
+	}
+
+	this.pauseFor.open = function(pauseFor,onClose) {
+		this.dialog('open');
+		this.find('input').val(pauseFor).select();
+		if (onClose)
+			this.parent().find('button:eq(1)').one('click',onClose);
+	}
+
+	this.finishScript.open = function(finishScript,onClose) {
+		this.dialog('open');
+		this.find('select').html(finishScript).select();
+		if (onClose)
+			this.parent().find('button:eq(1)').one('click',onClose);
+	}
+
+
+}());
+
+const api = (new function(){
+	var _this = this;
+	var queue = [];
+
+	this.call = function(sender,method,params,onSuccess,onFailure) {
+	for (var id = 0; id < queue.length; ++id)
+		if (!queue[id]) break;
+		queue[id] = ({sender:sender,api:{method:method,params:params},onSuccess:onSuccess,onFailure:onFailure,sent:false});
+		_this.startQueue();
+	}
+
+	this.startQueue = function() {
+		for (var i = 0; i < queue.length; ++i)
+			if (queue[i] && !queue[i].sent) {
+				queue[i].sender.onApiBeforeCall(queue[i].api);
+				self.port.emit('api-call',{index:i,type:queue[i].sender.type,api:queue[i].api,onSuccess:'api-call-success',onFailure:'api-call-failure'});
+				queue[i].sent = true;
+			}
+	}
+	this.onSuccess = function(call,reply) {
+//		console.log('api-call-success '+JSON.stringify(call)+' / '+JSON.stringify(reply));
+		queue[call.index].sender.onApiSuccess(call,reply);
+		if (queue[call.index].onSuccess && queue[call.index].sender)
+			queue[call.index].onSuccess.call(queue[call.index].sender,reply);
+
+		delete queue[call.index];
+	}; self.port.on('api-call-success',function({call,reply}) _this.onSuccess.call(_this,call,reply));
+	this.onFailure = function(call,reply) {
+		console.error('api-call-failure '+JSON.stringify(call)+' / '+JSON.stringify(reply));
+		queue[call.index].sender.onApiFailure(call,reply);
+		if (queue[call.index].onFailure)
+			queue[call.index].onFailure.call(queue[call.index].sender,reply);
+
+		delete queue[call.index];
+
+	}; self.port.on('api-call-failure',function({call,reply}) _this.onFailure.call(_this,call,reply));
+}());
 
 $(function() {
-	$('#tabs').tabs({
-		activate: doResize
-	});
 
-	$('button#showOptions').button({text:false,icons:{primary:'ui-icon-wrench'}}).click(function() {
-		self.port.emit('showOptions');
-	});
+	$('#tabs').tabs({activate: resize});
+
+	$('button#showOptions').button({text:false,icons:{primary:'ui-icon-wrench'}}).click(function() self.port.emit('showOptions'));
 
 	onPrefChange(['theme',self.options.prefs.theme]);
 	if (self.options.prefs.nzbg_enabled)
@@ -819,28 +814,20 @@ $(function() {
 		onPrefChange(['sab_enabled',true]);
 
 	if (noSDK) {
-		TabList[0].parseStatus(testNzbgStatus);
-		TabList[0].parseQueue(testNzbgQueue);
-		TabList[0].parseHistory(testNzbgetHistory);
+		Tabs[0].parseStatus(testNzbgStatus);
+		Tabs[0].parseQueue(testNzbgQueue);
+		Tabs[0].parseHistory(testNzbgetHistory);
+		Tabs[1].parseStatus(testSabStatus);
+		Tabs[1].parseHistory(testSabHistory1);
 
-		TabList[1].parseStatus(testSabStatus);
-		TabList[1].parseHistory(testSabHistory1);
-
-		$('#tabs').tabs('option', 'active', 1);
+		Tabs[0].onStatusParsed();
+		Tabs[1].onStatusParsed();
 	}
 
-	if (self.options.prefs.dev) $('#dev').show();
+	if (self.options.prefs.dev) {
+		$('#dev').show();
 		$('#test1').click(function() {
-			TabList[0].refreshHistory();
-	//		TabList[1].refreshHistory();
+			Tabs.forEach(function(Tab) console.log(Tab));
 		});
-		$('#test2').click(function() {
-			console.log(JSON.stringify(TabList[0].lastHistory));
-		});
-		$('#test3').click(function() {
-			TabList[0].histLastID = 'asdf';
-		});
-
-	refreshIcon();
-
+	}
 });

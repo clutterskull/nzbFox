@@ -7,7 +7,7 @@
 	"icon": "data/nzb-64-green.png",
 	"author": "Enesce",
 	"license": "MPL 2.0",
-	"version": "1.2.2",
+	"version": "1.3.0",
 
 	"preferences": [
 
@@ -28,11 +28,18 @@
 		]
 	},
 	{
-		"name": "dl_notifications",
-		"title": "Enable Download Notifications",
-		"description": "",
+		"name": "dl_finish_notifications",
+		"title": "Enable Download Finished Notifications",
+		"description": "Notification is shown when a download has finished, including statistics. Attached to toolbar icon",
 		"type": "bool",
 		"value": true
+	},
+	{
+		"name": "dl_start_notifications",
+		"title": "Enable Download Started Notifications",
+		"description": "Notification is shown when a download is started. Attached to toolbar icon",
+		"type": "bool",
+		"value": false
 	},
 
 	{
@@ -199,14 +206,14 @@
 	{
 		"name": "refresh_active",
 		"title": "Refresh Speed while Active",
-		"description": "Seconds. While the UI Panel is visible or an NZB is downloading, nzbFox will refresh your download client at this speed. Default 3 seconds",
+		"description": "Seconds. While the UI Panel is visible or an NZB is downloading, nzbFox will refresh your download client at this speed. Default 3 seconds, 0 to disable",
 		"type": "integer",
 		"value": 3
 	},
 	{
 		"name": "refresh_idle",
 		"title": "Refresh Speed while Idle",
-		"description": "Seconds. While the UI Panel is hidden and an NZB is not downloading, nzbFox will refresh your download client at this speed. Default 2 minutes",
+		"description": "Seconds. While the UI Panel is hidden and an NZB is not downloading, nzbFox will refresh your download client at this speed. Default 2 minutes, 0 to disable",
 		"type": "integer",
 		"value": 120
 	},

@@ -5,6 +5,9 @@
  		nzbFox (c) 2014 Nick Cooper - https://github.com/NickSC
 
 */
+
+'use strict';
+
 var noSDK = (typeof self.port == 'undefined');
 
 if (noSDK) { // dummy code for when testing UI without add-on SDK
@@ -19,12 +22,17 @@ if (noSDK) { // dummy code for when testing UI without add-on SDK
 	});
 
 	var options = (new function() {
-		this.target = 'sab';
-		this.title = 'Download Success';
-		this.icon = 'nzb-32-green.png';
-//		this.dlName = 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa.';
-		this.dlName = 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit';
-		this.dlStats = '962 MB - Downloaded in 22 minutes 28 seconds at an average of 731 KB/s<br/>Unpacked in 32 seconds<br/>Unpack has failed because the password was not provided or was wrong';
+		this.type = 'sab';
+//		this.title = 'Download Success';
+//		this.icon = 'nzb-32-green.png';
+//		this.name = 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit';
+//		this.stats = '962 MB - Downloaded in 22 minutes 28 seconds at an average of 731 KB/s<br/>Unpacked in 32 seconds<br/>Unpack has failed because the password was not provided or was wrong';
+
+		this.title = 'Download Started';
+		this.icon = 'sab-32.png';
+		this.name = 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit';
+		this.stats = '962 MB - Category: "cat" Priority: "priority" Age: "avg_age" ';
+
 
 		this.prefs = {
 			theme: 'light',
@@ -43,32 +51,32 @@ if (noSDK) { // dummy code for when testing UI without add-on SDK
 
 }
 
-function doResize() {
+function resize() {
 	self.port.emit('resize',{width: parseInt(window.getComputedStyle(document.documentElement).width,10),height:parseInt(window.getComputedStyle(document.documentElement).height,10)});
 }
 
 $(function() {
-	$('#theme').attr('href','nzbFox.ui.'+self.options.prefs.theme+'.css');
+	$('#theme').attr('href','nzbFox.theme.'+self.options.prefs.theme+'.css');
 
 	var openLabel = 'Open Client';
 
-	if (self.options.target == 'sab')
+	if (self.options.type == 'sab')
 		openLabel = 'Open SABnzbd+';
 	else
-	if (self.options.target == 'nzbg')
+	if (self.options.type == 'nzbg')
 		openLabel = 'Open NZBGet';
 
 	$('#header').text(self.options.title);
 	$('#icon').attr('src',self.options.icon);
-	$('#name').text(self.options.dlName);
-	$('#stats').html(self.options.dlStats);
+	$('#name').text(self.options.name);
+	$('#stats').html(self.options.stats);
 	$('#open').text(openLabel).button({icons:{primary: 'ui-icon-newwin'}}).click(function() {
-		if (self.options.target == 'sab')
+		if (self.options.type == 'sab')
 			window.open((self.options.prefs.sab_ssl?'https':'http')+'://'+self.options.prefs.sab_ip+':'+self.options.prefs.sab_port);
 		else
-		if (self.options.target == 'nzbg')
+		if (self.options.type == 'nzbg')
 			window.open((self.options.prefs.nzbg_ssl?'https':'http')+'://'+self.options.prefs.nzbg_ip+':'+self.options.prefs.nzbg_port);
 	});
 
-	doResize();
+	resize();
 });

@@ -8,19 +8,19 @@
 
 var prefs 				= self.options.prefs;
 var indexers			= self.options.indexers;
-var imgNZBG 			= self.options.dataURL+'nzbget-16.png';
-var imgNZBG_Pass	= self.options.dataURL+'nzbget-16_pass.png';
-var imgNZBG_Fail	= self.options.dataURL+'nzbget-16_fail.png';
+var imgNZBG 			= self.options.dataURL+'nzbg-16.png';
+var imgNZBG_Pass	= self.options.dataURL+'nzbg-16-pass.png';
+var imgNZBG_Fail	= self.options.dataURL+'nzbg-16-fail.png';
 var imgSAB 				= self.options.dataURL+'sab-16.png';
-var imgSAB_Pass 	= self.options.dataURL+'sab-16_pass.png';
-var imgSAB_Fail 	= self.options.dataURL+'sab-16_fail.png';
+var imgSAB_Pass 	= self.options.dataURL+'sab-16-pass.png';
+var imgSAB_Fail 	= self.options.dataURL+'sab-16-fail.png';
 
 self.port.on('nzbget-added',function(data) {
 	if (data.success) {
 		$('a#nzbFoxNZBGet'+data.request.id+' > img').attr('src',imgNZBG_Pass);
 	} else {
 		$('a#nzbFoxNZBGet'+data.request.id+' > img').attr('src',imgNZBG_Fail);
-		alert('Unable to send "'+data.request.title+'" to NZBGet'+"\n"+'Message: '+data.rpc.message+"\n\n"+JSON.stringify(data.rpc.query));
+		alert('Unable to send "'+data.request.title+'" to NZBGet'+"\n"+'Message: '+data.api.message+"\n\n"+JSON.stringify(data.api.query));
 	}
 });
 self.port.on('sabnzbd-added',function(data) {
@@ -28,7 +28,7 @@ self.port.on('sabnzbd-added',function(data) {
 		$('a#nzbFoxSAB'+data.request.id+' > img').attr('src',imgSAB_Pass);
 	} else {
 		$('a#nzbFoxSAB'+data.request.id+' > img').attr('src',imgSAB_Fail);
-		alert('Unable to send "'+data.request.title+'" to SABnzbd+'+"\n"+'Message: '+data.rpc.message+"\n\n"+JSON.stringify(data.rpc.query));
+		alert('Unable to send "'+data.request.title+'" to SABnzbd+'+"\n"+'Message: '+data.api.message+"\n\n"+JSON.stringify(data.api.query));
 	}
 });
 
@@ -48,7 +48,7 @@ function CreateButton(ID,Title,Category,URL,WrapHTML) {
 		WrapHTML = ['',''];
 
 	if (prefs.nzbg_enabled) {
-		var NZBG_Ele = $(WrapHTML[0]+'<a id="nzbFoxNZBGet'+ID+'" style="outline: none;padding-right: 2px" href="#" title="Send to NZBGet"><img src="'+imgNZBG+'" /></a>'+WrapHTML[1]);
+		var NZBG_Ele = $(WrapHTML[0]+'<a id="nzbFoxNZBGet'+ID+'" style="outline: none;padding-right: 2px" href="#" title="Send to NZBGet"><img src="'+imgNZBG+'"></a>'+WrapHTML[1]);
 		NZBG_Ele.click(function() {
 			log('NZBGet Clicked = '+ID+' / '+Title+' / '+Category+' / '+URL);
 			self.port.emit('nzbget-add', {id: ID,title:Title,category:Category,url:URL});
@@ -57,7 +57,7 @@ function CreateButton(ID,Title,Category,URL,WrapHTML) {
 	}
 
 	if (prefs.sab_enabled) {
-		var SAB_Ele = $(WrapHTML[0]+'<a id="nzbFoxSAB'+ID+'" style="outline: none;padding-right: 2px" href="#" title="Send to SABnzbd+"><img src="'+imgSAB+'" /></a>'+WrapHTML[1]);
+		var SAB_Ele = $(WrapHTML[0]+'<a id="nzbFoxSAB'+ID+'" style="outline: none;padding-right: 2px" href="#" title="Send to SABnzbd+"><img src="'+imgSAB+'"></a>'+WrapHTML[1]);
 		SAB_Ele.click(function() {
 			log('SAB Clicked = '+ID+' / '+Title+' / '+Category+' / '+URL);
 			self.port.emit('sabnzbd-add', {id: ID,title:Title,category:Category,url:URL});

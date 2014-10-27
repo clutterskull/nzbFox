@@ -11,7 +11,7 @@
 <head>
 	<meta charset="utf-8">
 	<link href="jquery-ui.structure.min.css" rel="stylesheet">
-	<link id="theme" href="nzbFox.ui.light.css" rel="stylesheet">
+	<link id="theme" href="nzbFox.theme.light.css" rel="stylesheet">
 	<style type="text/css" media="all">
 		html {
 			overflow: hidden;
@@ -46,6 +46,9 @@
 			width: 100px;
 			position: absolute;
 		}
+		.ui-tabs-anchor {
+			outline: none;
+		}
 	</style>
 </head>
 <body>
@@ -56,15 +59,15 @@
 	</ul>
 </div>
 
-<div id="nzbget" class="template">
-	<b>Speed:</b> <div id="dlSpeed" class="nzbFox"></div><br/>
-	<b>Downloading:</b> <div id="dlName" class="nzbFox"></div><br/>
-	<b>Remaining:</b> <div id="dlTime" class="nzbFox"></div><br/>
-	<div id="dlProgress" class="ui-progressbar"><div id="dlProgress-label" class="ui-progressbar-label"></div></div><br/>
+<div id="nzbg" class="template" title="NZBGet">
+	<b>Speed:</b> <div id="speed" class="nzbFox"></div><br/>
+	<b>Downloading:</b> <div id="name" class="nzbFox"></div><br/>
+	<b>Remaining:</b> <div id="time" class="nzbFox"></div><br/>
+	<div id="progressBar" class="ui-progressbar"><div id="progressLabel" class="ui-progressbar-label"></div></div><br/>
 	<div id="btnSet" class="nzbFox">
 		<button id="togglePause">...</button>
 		<button id="refresh">Refresh</button>
-		<button id="toggleMenu">Select an action</button>
+		<button id="showMenu">Select an action</button>
 	</div>
 	<ul id="menu">
 		<li id="speedLimit">Speed limit</li>
@@ -84,15 +87,15 @@
 	<button id="open" style="float: right">Open in Browser</button>
 </div>
 
-<div id="sabnzbd" class="template">
-	<b>Speed:</b> <div id="dlSpeed" class="nzbFox"></div><br/>
-	<b>Downloading:</b> <div id="dlName" class="nzbFox"></div><br/>
-	<b>Remaining:</b> <div id="dlTime" class="nzbFox"></div><br/>
-	<div id="dlProgress" class="ui-progressbar"><div id="dlProgress-label" class="ui-progressbar-label"></div></div><br/>
+<div id="sab" class="template" title="SABnzbd+">
+	<b>Speed:</b> <div id="speed" class="nzbFox"></div><br/>
+	<b>Downloading:</b> <div id="name" class="nzbFox"></div><br/>
+	<b>Remaining:</b> <div id="time" class="nzbFox"></div><br/>
+	<div id="progressBar" class="ui-progressbar"><div id="progressLabel" class="ui-progressbar-label"></div></div><br/>
 	<div id="btnSet" class="nzbFox">
 		<button id="togglePause">...</button>
 		<button id="refresh">Refresh</button>
-		<button id="toggleMenu">Select an action</button>
+		<button id="showMenu">Select an action</button>
 	</div>
 	<ul id="menu">
 		<li id="speedLimit">Speed limit</li>
@@ -120,22 +123,22 @@
 	<button id="open" style="float: right">Open in Browser</button>
 </div>
 
-<div id="dialogPauseFor" title="Pause for..." class="template">
+<div id="pauseFor" title="Pause for..." class="dialog template">
 		<p><input type="number" value="60" class="text ui-widget-content ui-corner-all" style="width: 60px"> <i>minutes</i></p>
 </div>
 
-<div id="dialogSpeedLimit" title="Set Speed Limit" class="template">
+<div id="speedLimit" title="Set Speed Limit" class="dialog template">
 		<p><input type="number" value="" class="text ui-widget-content ui-corner-all" style="width: 60px"> <i>KB/s</i></p>
 </div>
 
-<div id="dialogFinishScript" title="Finish script" class="template">
+<div id="finishScript" title="Finish script" class="dialog template">
 		<p><select class="text ui-widget-content ui-corner-all"></select></p>
 </div>
 
 <div id="dev" style="display: none">
-	<button id="test1">Refresh Histories</button>
-	<button id="test2">Log last API result</button>
-	<button id="test3">histLastID 'asdf'</button>
+	<button id="test1">Test 1</button>
+	<button id="test2">Test 2</button>
+	<button id="test3">Test 3</button>
 </div>
 
 </body>

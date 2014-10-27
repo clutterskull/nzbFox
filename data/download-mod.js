@@ -16,17 +16,17 @@ if (dialog.mLauncher.MIMEInfo.MIMEType == 'application/x-nzb' || dialog.mLaunche
 
 	if (self.options.prefs.nzbg_enabled) {
 		send_nzbg = modeGroup.appendItem('Send to NZBGet','nzbg');
-		send_nzbg.setAttribute('src',self.options.dataURL+'nzbget.png');
+		send_nzbg.setAttribute('src',self.options.dataURL+'nzbg-16.png');
 	}
 	if (self.options.prefs.sab_enabled) {
 		send_sab = modeGroup.appendItem('Send to SABnzbd+','sab');
-		send_sab.setAttribute('src',self.options.dataURL+'sab.png');
+		send_sab.setAttribute('src',self.options.dataURL+'sab-16.png');
 	}
 
 	dialog.onOK_orig = dialog.onOK;
 	dialog.onOK = function() {
 		if (modeGroup.selectedItem == send_nzbg || modeGroup.selectedItem == send_sab) {
-			var data = {'url':dialog.mLauncher.source.spec,'target':modeGroup.selectedItem.value,'fileName':fileName};
+			var data = {url:dialog.mLauncher.source.spec,type:modeGroup.selectedItem.value,fileName:fileName};
 			self.port.emit('nzb-download', data);
 			modeGroup.selectedItem = document.getElementById('save');
 		}
