@@ -246,7 +246,7 @@ function Tab(type) { //// Tab Variables
 	this.btnShowMenuEle = this.content.find('#showMenu').button({text:false,icons:{primary:'ui-icon-triangle-1-n'}}).click(function() _this.btnShowMenu_Click.call(_this));
 	this.btnOpenEle = this.content.find('#open').button({text:false,icons:{primary: 'ui-icon-newwin'}}).click(function() _this.btnOpen_Click.call(_this)).click(function() self.port.emit('hide'));
 	// Action Menu
-	this.menuEle = this.content.find('ul#menu').menu().hide();
+	this.menuEle = this.content.find('ul#menu').menu({position: {my: 'left bottom', at: 'right bottom'}}).hide();
 	// Action Menu Items
 	this.menuSpeedLimit = this.content.find('li#speedLimit').click(function() _this.menuSpeedLimit_Click.call(_this));
 
