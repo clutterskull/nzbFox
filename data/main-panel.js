@@ -23,6 +23,7 @@ if (noSDK) { // dummy code for when testing UI without add-on SDK
 	var options = (new function() {
 		this.prefs = {
 			theme: 'light',
+			dev: true,
 			nzbg_enabled: true,
 			sab_enabled: true,
 
@@ -418,6 +419,9 @@ function sabTab(type) {
 
 	this.menuOnFinishNothing = this.content.find('li#finish-nothing').click(function() _this.setFinishAction.call(_this,''));
 	this.menuOnFinishShutdown = this.content.find('li#finish-shutdown').click(function() _this.setFinishAction.call(_this,'shutdown_program'));
+	this.menuOnFinishShutdownPC = this.content.find('li#finish-shutdownPC').click(function() _this.setFinishAction.call(_this,'shutdown_pc'));
+	this.menuOnFinishStandbyPC = this.content.find('li#finish-standbyPC').click(function() _this.setFinishAction.call(_this,'standby_pc'));
+	this.menuOnFinishHibernatePC = this.content.find('li#finish-hibernatePC').click(function() _this.setFinishAction.call(_this,'hibernate_pc'));
 	this.menuOnFinishScript = this.content.find('li#finish-script').click(function() _this.menuOnFinishScript_Click.call(_this));
 
 }
@@ -432,7 +436,7 @@ sabTab.prototype.menuOnFinishScript_Click = function() {
 	var _this = this;
 	var options = '';
 	for (var i = 0; i < this.lastStatus.queue.scripts.length; ++i)
-		if (this.lastStatus.queue.scripts[i].endsWith('.py') || this.lastStatus.queue.scripts[i].endsWith('.bat'))
+		if (this.lastStatus.queue.scripts[i].endsWith('.py') || this.lastStatus.queue.scripts[i].endsWith('.bat') || this.lastStatus.queue.scripts[i].endsWith('.cmd'))
 			options += '<option value="script_'+this.lastStatus.queue.scripts[i]+'"'+((this.lastStatus.queue.finishaction == 'script_'+this.lastStatus.queue.scripts[i])?' selected':'')+'>'+this.lastStatus.queue.scripts[i]+'</option>';
 
 	dialog.finishScript.open(options,function() {
@@ -469,6 +473,12 @@ sabTab.prototype.parseStatus = function(api) {
 
 	this.menuOnFinishNothing.css('color','');
 	this.menuOnFinishShutdown.css('color','');
+	if (api.nt) { // Windows only On Finish actions
+		$('li.windows-only').show();
+		this.menuOnFinishShutdownPC.css('color','');
+		this.menuOnFinishStandbyPC.css('color','');
+		this.menuOnFinishHibernatePC.css('color','');
+	} else $('li.windows-only').hide()
 	this.menuOnFinishScript.css('color','');
 
 	if (!api.queue.finishaction)
@@ -476,6 +486,15 @@ sabTab.prototype.parseStatus = function(api) {
 	else
 	if (api.queue.finishaction == 'shutdown_program')
 		this.menuOnFinishShutdown.css('color','#FF8C00')
+	else
+	if (api.queue.finishaction == 'shutdown_pc')
+		this.menuOnFinishShutdownPC.css('color','#FF8C00')
+	else
+	if (api.queue.finishaction == 'standby_pc')
+		this.menuOnFinishStandbyPC.css('color','#FF8C00')
+	else
+	if (api.queue.finishaction == 'hibernate_pc')
+		this.menuOnFinishHibernatePC.css('color','#FF8C00')
 	else
 	if (api.queue.finishaction.startsWith('script_'))
 		this.menuOnFinishScript.css('color','#FF8C00');
@@ -557,13 +576,7 @@ sabTab.prototype.setSpeedLimit = function(kbps) {
 	api.call(this,'config',{name:'speedlimit',value:kbps},this.refreshStatus);
 }
 sabTab.prototype.setFinishAction = function(action) { // Unique to SAB
-	var url = self.options.prefs.sab_url+'/queue/change_queue_complete_action?action='+action+'&session='+self.options.prefs.sab_apikey;
-	var xhr = new XMLHttpRequest();
-	try {
-		xhr.open('post',url);
-		xhr.timeout = self.options.prefs.connection_timeout * 1000;
-		xhr.send();
-	}catch(e) {log('Error setting SAB finish action. '+e.message);log('Req URL: '+url);}
+	api.call(this,'queue',{name:'change_complete_action',value:action},this.refreshStatus);
 }
 //////////////////////////////////////////////////////////////////////////////
 
@@ -828,6 +841,11 @@ $(function() {
 		$('#dev').show();
 		$('#test1').click(function() {
 			Tabs.forEach(function(Tab) console.log(Tab));
+		});
+		$('#test2').click(function() {
+			self.options.prefs.theme = (self.options.prefs.theme == 'light'?'dark':'light');
+			onPrefChange(['theme',self.options.prefs.theme]);
+			resize();
 		});
 	}
 });

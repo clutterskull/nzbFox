@@ -49,8 +49,11 @@
 		.ui-tabs-anchor {
 			outline: none;
 		}
-		.ui-widget-content .ui-state-focus {
-			font-weight: bold;
+		li.windows-only {
+			display: none;
+		}
+		.ui-widget-content .ui-state-active .ui-menu-item {
+			font-weight: normal;
 		}
 		.ui-widget-content .ui-state-focus .ui-menu-item {
 			font-weight: normal;
@@ -119,6 +122,9 @@
 		<ul style="width: 130px">
 				<li id="finish-nothing">Do nothing</li>
 				<li id="finish-shutdown">Shutdown SAB</li>
+				<li id="finish-shutdownPC" class="windows-only">Shutdown PC</li>
+				<li id="finish-standbyPC" class="windows-only">Standby PC</li>
+				<li id="finish-hibernatePC" class="windows-only">Hibernate PC</li>
 				<li>-</li>
 				<li id="finish-script">Run script</li>
 			</ul>
