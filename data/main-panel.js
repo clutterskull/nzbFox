@@ -425,7 +425,7 @@ function sabTab(type) {
 //// SABnzbd+ Tab PROTOTYPE functions ////
 // Click Events - Buttons
 sabTab.prototype.btnOpen_Click = function() {
-	window.open((self.options.prefs.sab_ssl?'https':'http')+'://'+self.options.prefs.sab_ip+':'+self.options.prefs.sab_port);
+	window.open(self.options.prefs.sab_url);
 }
 // Click Events - Action Menu
 sabTab.prototype.menuOnFinishScript_Click = function() {
@@ -557,7 +557,7 @@ sabTab.prototype.setSpeedLimit = function(kbps) {
 	api.call(this,'config',{name:'speedlimit',value:kbps},this.refreshStatus);
 }
 sabTab.prototype.setFinishAction = function(action) { // Unique to SAB
-	var url = (self.options.prefs.sab_ssl?'https':'http')+'://'+self.options.prefs.sab_ip+':'+self.options.prefs.sab_port+'/queue/change_queue_complete_action?action='+action+'&session='+self.options.prefs.sab_apikey;
+	var url = self.options.prefs.sab_url+'/queue/change_queue_complete_action?action='+action+'&session='+self.options.prefs.sab_apikey;
 	var xhr = new XMLHttpRequest();
 	try {
 		xhr.open('post',url);
@@ -581,7 +581,7 @@ function nzbgTab(type) {
 //// NZBGet Tab PROTOTYPE functions ////
 // Click Events - Buttons
 nzbgTab.prototype.btnOpen_Click = function() {
-	window.open((self.options.prefs.nzbg_ssl?'https':'http')+'://'+self.options.prefs.nzbg_ip+':'+self.options.prefs.nzbg_port);
+	window.open(self.options.prefs.nzbg_url);
 }
 // API Actions
 nzbgTab.prototype.refreshStatus = function() {

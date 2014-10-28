@@ -72,10 +72,10 @@ $(function() {
 	$('#stats').html(self.options.stats);
 	$('#open').text(openLabel).button({icons:{primary: 'ui-icon-newwin'}}).click(function() {
 		if (self.options.type == 'sab')
-			window.open((self.options.prefs.sab_ssl?'https':'http')+'://'+self.options.prefs.sab_ip+':'+self.options.prefs.sab_port);
+			window.open(self.options.prefs.sab_url);
 		else
 		if (self.options.type == 'nzbg')
-			window.open((self.options.prefs.nzbg_ssl?'https':'http')+'://'+self.options.prefs.nzbg_ip+':'+self.options.prefs.nzbg_port);
+			window.open(self.options.prefs.nzbg_url);
 	});
 
 	resize();

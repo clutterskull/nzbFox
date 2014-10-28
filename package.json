@@ -50,25 +50,35 @@
 		"value": false
 	},
 	{
+		"name": "nzbg_url",
+		"title": "NZBGet URL",
+		"description": "",
+		"type": "string",
+		"value": "http://127.0.0.1:6789"
+	},
+	{
 		"name": "nzbg_ssl",
 		"title": "Use SSL",
-		"description": "",
+		"description": "Deprecated - use nzbg_url",
 		"type": "bool",
-		"value": false
+		"value": false,
+		"hidden": true
 	},
 	{
 		"name": "nzbg_ip",
 		"title": "NZBGet IP Address",
-		"description": "",
+		"description": "Deprecated - use nzbg_url",
 		"type": "string",
-		"value": "127.0.0.1"
+		"value": "127.0.0.1",
+		"hidden": true
 	},
 	{
 		"name": "nzbg_port",
 		"title": "NZBGet Port",
-		"description": "",
+		"description": "Deprecated - use nzbg_url",
 		"type": "integer",
-		"value": 6789
+		"value": 6789,
+		"hidden": true
 	},
 	{
 		"name": "nzbg_user",
@@ -99,25 +109,35 @@
 		"value": false
 	},
 	{
+		"name": "sab_url",
+		"title": "SABnzbd+ URL",
+		"description": "",
+		"type": "string",
+		"value": "http://127.0.0.1:8080"
+	},
+	{
 		"name": "sab_ssl",
 		"title": "Use SSL",
-		"description": "",
+		"description": "Deprecated - use sab_url",
 		"type": "bool",
-		"value": false
+		"value": false,
+		"hidden": true
 	},
 	{
 		"name": "sab_ip",
 		"title": "SABnzbd+ IP Address",
-		"description": "",
+		"description": "Deprecated - use sab_url",
 		"type": "string",
-		"value": "127.0.0.1"
+		"value": "",
+		"hidden": true
 	},
 	{
 		"name": "sab_port",
 		"title": "SABnzbd+ Port",
-		"description": "",
+		"description": "Deprecated - use sab_url",
 		"type": "integer",
-		"value": 8080
+		"value": 8080,
+		"hidden": true
 	},
 	{
 		"name": "sab_apikey",
