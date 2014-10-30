@@ -6,32 +6,6 @@
 
 */
 
-var prefs 				= self.options.prefs;
-var indexers			= self.options.indexers;
-var imgNZBG 			= self.options.dataURL+'nzbg-16.png';
-var imgNZBG_Pass	= self.options.dataURL+'nzbg-16-pass.png';
-var imgNZBG_Fail	= self.options.dataURL+'nzbg-16-fail.png';
-var imgSAB 				= self.options.dataURL+'sab-16.png';
-var imgSAB_Pass 	= self.options.dataURL+'sab-16-pass.png';
-var imgSAB_Fail 	= self.options.dataURL+'sab-16-fail.png';
-
-self.port.on('nzbget-added',function(data) {
-	if (data.success) {
-		$('a#nzbFoxNZBGet'+data.request.id+' > img').attr('src',imgNZBG_Pass);
-	} else {
-		$('a#nzbFoxNZBGet'+data.request.id+' > img').attr('src',imgNZBG_Fail);
-		alert('Unable to send "'+data.request.title+'" to NZBGet'+"\n"+'Message: '+data.api.message+"\n\n"+JSON.stringify(data.api.query));
-	}
-});
-self.port.on('sabnzbd-added',function(data) {
-	if (data.success) {
-		$('a#nzbFoxSAB'+data.request.id+' > img').attr('src',imgSAB_Pass);
-	} else {
-		$('a#nzbFoxSAB'+data.request.id+' > img').attr('src',imgSAB_Fail);
-		alert('Unable to send "'+data.request.title+'" to SABnzbd+'+"\n"+'Message: '+data.api.message+"\n\n"+JSON.stringify(data.api.query));
-	}
-});
-
 function log(msg) {self.port.emit('log',msg);}
 
 function getURLParameter(name,url) {
@@ -39,44 +13,56 @@ function getURLParameter(name,url) {
   return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(url)||[,""])[1].replace(/\+/g, '%20'))||null
 }
 
-function CreateButton(ID,Title,Category,URL,WrapHTML) {
+function CreateButtons(title,category,url,wrapHTML) {
 
-	var NZBG_Ele = '';
-	var SAB_Ele = '';
-
-	if (!WrapHTML)
-		WrapHTML = ['',''];
-
-	if (prefs.nzbg_enabled) {
-		var NZBG_Ele = $(WrapHTML[0]+'<a id="nzbFoxNZBGet'+ID+'" style="outline: none;padding-right: 2px" href="#" title="Send to NZBGet"><img src="'+imgNZBG+'"></a>'+WrapHTML[1]);
-		NZBG_Ele.click(function() {
-			log('NZBGet Clicked = '+ID+' / '+Title+' / '+Category+' / '+URL);
-			self.port.emit('nzbget-add', {id: ID,title:Title,category:Category,url:URL});
+	function CreateButton(type,title,category,url,wrapHTML) {
+		if (!wrapHTML)
+			wrapHTML = ['',''];
+		
+		function onSuccess(api) {
+			$(this.ele).css('background-image','url(\''+self.options.dataURL+this.type+'-16-pass.png'+'\')');
+		}
+		function onFailure(api) {
+			$(this.ele).css('background-image','url(\''+self.options.dataURL+this.type+'-16-fail.png'+'\')');
+			alert('Unable to send NZB to download client'+"\n"+'Message: '+api.message+"\n\n"+JSON.stringify(api.query));
+		}
+	
+		var result = '';
+	
+		result = $(wrapHTML[0]+'<div class="nzbFoxButton"></div>'+wrapHTML[1]);
+		result.css('background-image','url(\''+self.options.dataURL+type+'-16.png'+'\')');
+		result.click(function() {
+			log('AddURL Button Clicked = '+type+' / '+title+' / '+category+' / '+url);
+			if (type == 'nzbg')
+				api.call({type:type,ele:this},'append',[title+'.nzb', url, category, 0, false, false, '', 0, 'SCORE'],onSuccess,onFailure);
+			else 
+			if (type == 'sab')
+				api.call({type:type,ele:this},'addurl',{nzbname: title,name: url,cat: category},onSuccess,onFailure);
+				
 			return false;
 		});
+		
+		return result;
 	}
-
-	if (prefs.sab_enabled) {
-		var SAB_Ele = $(WrapHTML[0]+'<a id="nzbFoxSAB'+ID+'" style="outline: none;padding-right: 2px" href="#" title="Send to SABnzbd+"><img src="'+imgSAB+'"></a>'+WrapHTML[1]);
-		SAB_Ele.click(function() {
-			log('SAB Clicked = '+ID+' / '+Title+' / '+Category+' / '+URL);
-			self.port.emit('sabnzbd-add', {id: ID,title:Title,category:Category,url:URL});
-			return false;
-		});
-	}
-
-	return $().add(NZBG_Ele).add(SAB_Ele);
+	
+	var result = $();
+	if (self.options.prefs.nzbg_enabled)
+		result = result.add(CreateButton('nzbg',title,category,url,wrapHTML));
+	if (self.options.prefs.sab_enabled)
+		result = result.add(CreateButton('sab',title,category,url,wrapHTML));
+		
+	return result;
 }
 
-for (let i = 0; i < indexers.length; ++i) {
-	indexers[i] = indexers[i].substr(2); // remove *.
-	if (window.location.hostname.endsWith(indexers[i])) {
-		var domain = indexers[i];
+for (let i = 0; i < self.options.indexers.length; ++i) {
+	self.options.indexers[i] = self.options.indexers[i].substr(2); // remove *.
+	if (window.location.hostname.endsWith(self.options.indexers[i])) {
+		var domain = self.options.indexers[i];
 
 		function eachNewznabDownload(index) {
 			let thisRow = $(this).closest('tr');
 			let apiURL = window.location.hostname;
-			let wrapHTML = ['<div class="icon" style="display: inline">','</div>'];
+			let wrapHTML = ['',''];
 			if (domain == 'dognzb.cr') apiURL = 'api.dognzb.cr';
 			if (domain == 'nzbgeek.info') {
 				thisRow = $(this).closest('tr.HighlightTVRow2');
@@ -103,6 +89,7 @@ for (let i = 0; i < indexers.length; ++i) {
 				thisRow.find('a[href*="/details/"]')[0] ||	// nzbplanet top 24hr downloads page
 				$('div#content').find('h1')[0] || 					// nzbplanet/generic details page
 				$('div#infohead > h1')[0] ||								// nzbs details page
+				$('h2#detailsh1')[0] ||											// PFMonkey details page
 				$('h2')[0] ||																// nmatrix details page
 				$('div.span12 >h3')[0] || 									// nzb.su details page
 				$('div.container-index > font[size=5]')[0]	// nzbgeek details page
@@ -118,31 +105,34 @@ for (let i = 0; i < indexers.length; ++i) {
 				$('div#show1').find('a[href*="?c="]')[0] || 								// nzbgeek details
 				$('div.span12 > a[href^="/browse?t="]')[0] ||								// nzb.su details page
 				$('dl.dl-horizontal').find('a[href^="/browse?t="]')[0] ||		// nmatrix details
+				$('table.detailsmid').find('a[href^="/browse?t="]')[0] ||		// PFMonkey details page
 				$('table#detailstable').find('a[href^="/browse?t="]')[0]		// generic newznab details
 			).text();
 			if (domain == 'nzbplanet.net') Cat = (thisRow.find('td.less:first > a').attr('title') || $('table#detailstable').find('a[href^="/browse?t="]').text() || '').substr(7); // nzbplanet only shows subcat, so get Cat1>Cat2 from link title
+			if (domain == 'pfmonkey.com' && Cat == '') Cat = $((thisRow.html().match(/<!--<td class="less">(.+?)<\/td>-->/i) || '')[1] || '').text(); // PFMonkey hides primary cat behind an icon and provides no title, extract from commented out newznab style row
+
 			Cat = Cat.trim().toLowerCase().split(/[-(\s>\s)]+/); 			// newznab pages, split with " > " / "-"
 
 			let Category = '';
 			if (Cat[0] == '') Cat[0] = String(window.location.pathname).toLowerCase().split('/')[1];
 			switch (Cat[0]) {
-				case 'tv': Category = prefs.cat_tv; break;
-				case 'movies': Category = prefs.cat_movies; break;
-				case 'console': case 'games': Category = prefs.cat_games; break;
-				case 'apps': case 'pc': Category = prefs.cat_apps; break;
-				case 'xxx': case 'adult': Category = prefs.cat_adult; break;
-				case 'music': case 'audio': Category = prefs.cat_music; break;
+				case 'tv': Category = self.options.prefs.cat_tv; break;
+				case 'movies': Category = self.options.prefs.cat_movies; break;
+				case 'console': case 'games': Category = self.options.prefs.cat_games; break;
+				case 'apps': case 'pc': Category = self.options.prefs.cat_apps; break;
+				case 'xxx': case 'adult': Category = self.options.prefs.cat_adult; break;
+				case 'music': case 'audio': Category = self.options.prefs.cat_music; break;
 			}
 			switch (Cat[1]) {
-				case 'anime': Category = prefs.cat_anime; break;
-				case 'ebook': case 'comics': Category = prefs.cat_reading; break;
+				case 'anime': Category = self.options.prefs.cat_anime; break;
+				case 'ebook': case 'comics': Category = self.options.prefs.cat_reading; break;
 			}
 
-			let downloadButton = CreateButton(index,Title,Category,URL,wrapHTML);
+			let downloadButtons = CreateButtons(Title,Category,URL,wrapHTML);
 			if (domain == 'dognzb.cr')
-				$(downloadButton).insertBefore($(this).closest('tr').find('a.link'));
+				$(downloadButtons).insertBefore($(this).closest('tr').find('a.link'));
 			else
-				$(downloadButton).insertBefore($(this).closest('*'));
+				$(downloadButtons).insertBefore($(this).closest('*'));
 		}
 
 		var btnSelector = '';
@@ -156,14 +146,14 @@ for (let i = 0; i < indexers.length; ++i) {
 
 		if (domain == 'fanzub.com')
 			$('td.file').each(function(index) {
-				$(this).prepend(CreateButton(index,$(this).text(),prefs.cat_anime,$(this).find('a').prop('href')));
+				$(this).prepend(CreateButtons($(this).text(),self.options.prefs.cat_anime,$(this).find('a').prop('href')));
 			});
 		else
 		if (domain == 'binsearch.info')
  			$('tr[bgcolor="#FFFFFF"], tr[bgcolor="#F6F7FA"]').each(function(index) {
 				let Title = ($(this).find('span.s').text().match(/"(.*?)"/) || ['','Unknown Title @ binsearch'])[1];
 				let URL = window.location.protocol+'//'+domain+'/?action=nzb&'+$(this).find('input').attr('name')+'=on';
-				$(this).find('input').parent().append(CreateButton(index,Title,'',URL));
+				$(this).find('input').parent().append(CreateButtons(Title,'',URL));
  			});
 		else
 		$(btnSelector).each(eachNewznabDownload);
