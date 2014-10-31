@@ -29,7 +29,7 @@ function CreateButtons(title,category,url,wrapHTML) {
 
 		var result = '';
 
-		result = $(wrapHTML[0]+'<div class="nzbFoxButton"></div>'+wrapHTML[1]);
+		result = $(wrapHTML[0]+'<div class="nzbFoxButton" title="Send to nzbFox"></div>'+wrapHTML[1]);
 		result.css('background-image','url(\''+self.options.dataURL+type+'-16.png'+'\')');
 		result.click(function() {
 			log('AddURL Button Clicked = '+type+' / '+title+' / '+category+' / '+url);
@@ -56,7 +56,7 @@ function CreateButtons(title,category,url,wrapHTML) {
 
 for (let i = 0; i < self.options.indexers.length; ++i) {
 	self.options.indexers[i] = self.options.indexers[i].substr(2); // remove *.
-
+	
 	if (window.location.hostname.endsWith(self.options.indexers[i])) {
 		var domain = self.options.indexers[i];
 
@@ -152,14 +152,17 @@ for (let i = 0; i < self.options.indexers.length; ++i) {
 		if (domain == 'nzbindex.nl')
 			$('tr.odd, tr.even').each(function(index) {
 				let Title = $(this).find('label').text();
-				if (Title.contains('" yEnc'))
-					Title = Title.match(/"(.*?)"/)[1];
+				if (Title.contains('" yEnc')) // Fetch title in "quotes"
+					Title = Title.match(/"(.*?)"/)[1];		
 				$(this).find('td:nth-child(1)').append(CreateButtons(Title,'',$(this).find('a[href*="/download/"]').attr('href')));
-			})
+			})	
 		else
 		if (domain == 'nzbclub.com')
 			$('tr.rgRow, tr.rgAltRow').each(function(index) {
-
+				var Title = $(this).find('a.partscompletelink').text();			
+				if (Title.split('"').length == 3) Title = Title.match(/"(.*?)"/)[1]; // Fetch title in "quotes"
+				var URL = window.location.protocol+'//'+domain+$(this).find('a[href^="/nzb_get/"]').attr('href');
+				$(this).find('td:nth-child(1)').append(CreateButtons(Title,'',URL));
 			})
 		else { // Newznab
 			var btnSelector = '';
@@ -170,7 +173,7 @@ for (let i = 0; i < self.options.indexers.length; ++i) {
 				btnSelector = 'a[href*="&api="][title="Download NZB"]';
 			else
 				btnSelector = 'div.icon.icon_nzb, a.icon.icon_nzb';
-
+			
 			$(btnSelector).each(eachNewznabDownload);
 		}
 
