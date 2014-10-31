@@ -18,7 +18,7 @@ function CreateButtons(title,category,url,wrapHTML) {
 	function CreateButton(type,title,category,url,wrapHTML) {
 		if (!wrapHTML)
 			wrapHTML = ['',''];
-		
+
 		function onSuccess(api) {
 			$(this.ele).css('background-image','url(\''+self.options.dataURL+this.type+'-16-pass.png'+'\')');
 		}
@@ -26,36 +26,37 @@ function CreateButtons(title,category,url,wrapHTML) {
 			$(this.ele).css('background-image','url(\''+self.options.dataURL+this.type+'-16-fail.png'+'\')');
 			alert('Unable to send NZB to download client'+"\n"+'Message: '+api.message+"\n\n"+JSON.stringify(api.query));
 		}
-	
+
 		var result = '';
-	
+
 		result = $(wrapHTML[0]+'<div class="nzbFoxButton"></div>'+wrapHTML[1]);
 		result.css('background-image','url(\''+self.options.dataURL+type+'-16.png'+'\')');
 		result.click(function() {
 			log('AddURL Button Clicked = '+type+' / '+title+' / '+category+' / '+url);
 			if (type == 'nzbg')
 				api.call({type:type,ele:this},'append',[title+'.nzb', url, category, 0, false, false, '', 0, 'SCORE'],onSuccess,onFailure);
-			else 
+			else
 			if (type == 'sab')
 				api.call({type:type,ele:this},'addurl',{nzbname: title,name: url,cat: category},onSuccess,onFailure);
-				
+
 			return false;
 		});
-		
+
 		return result;
 	}
-	
+
 	var result = $();
 	if (self.options.prefs.nzbg_enabled)
 		result = result.add(CreateButton('nzbg',title,category,url,wrapHTML));
 	if (self.options.prefs.sab_enabled)
 		result = result.add(CreateButton('sab',title,category,url,wrapHTML));
-		
+
 	return result;
 }
 
 for (let i = 0; i < self.options.indexers.length; ++i) {
 	self.options.indexers[i] = self.options.indexers[i].substr(2); // remove *.
+
 	if (window.location.hostname.endsWith(self.options.indexers[i])) {
 		var domain = self.options.indexers[i];
 
@@ -136,28 +137,42 @@ for (let i = 0; i < self.options.indexers.length; ++i) {
 				$(downloadButtons).insertBefore($(this).closest('*'));
 		}
 
-		var btnSelector = '';
-		if (domain == 'dognzb.cr')
-			btnSelector = 'div.dog-icon-download';
-		else
-		if (domain == 'nzbgeek.info')
-			btnSelector = 'a[href*="&api="][title="Download NZB"]';
-		else
-			btnSelector = 'div.icon.icon_nzb, a.icon.icon_nzb';
-
 		if (domain == 'fanzub.com')
 			$('td.file').each(function(index) {
 				$(this).prepend(CreateButtons($(this).text(),self.options.prefs.cat_anime,$(this).find('a').prop('href')));
-			});
+			})
 		else
 		if (domain == 'binsearch.info')
  			$('tr[bgcolor="#FFFFFF"], tr[bgcolor="#F6F7FA"]').each(function(index) {
 				let Title = ($(this).find('span.s').text().match(/"(.*?)"/) || ['','Unknown Title @ binsearch'])[1];
 				let URL = window.location.protocol+'//'+domain+'/?action=nzb&'+$(this).find('input').attr('name')+'=on';
 				$(this).find('input').parent().append(CreateButtons(Title,'',URL));
- 			});
+ 			})
 		else
-		$(btnSelector).each(eachNewznabDownload);
+		if (domain == 'nzbindex.nl')
+			$('tr.odd, tr.even').each(function(index) {
+				let Title = $(this).find('label').text();
+				if (Title.contains('" yEnc'))
+					Title = Title.match(/"(.*?)"/)[1];
+				$(this).find('td:nth-child(1)').append(CreateButtons(Title,'',$(this).find('a[href*="/download/"]').attr('href')));
+			})
+		else
+		if (domain == 'nzbclub.com')
+			$('tr.rgRow, tr.rgAltRow').each(function(index) {
+
+			})
+		else { // Newznab
+			var btnSelector = '';
+			if (domain == 'dognzb.cr')
+				btnSelector = 'div.dog-icon-download';
+			else
+			if (domain == 'nzbgeek.info')
+				btnSelector = 'a[href*="&api="][title="Download NZB"]';
+			else
+				btnSelector = 'div.icon.icon_nzb, a.icon.icon_nzb';
+
+			$(btnSelector).each(eachNewznabDownload);
+		}
 
 		break;
 	}
