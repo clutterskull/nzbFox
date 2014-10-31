@@ -84,6 +84,7 @@ for (let i = 0; i < self.options.indexers.length; ++i) {
 			if (domain == 'nzbgeek.info') dlkey = getURLParameter('guid',$(thisRow).find('a[href*="guid="]').attr('href'));
 
 			let Title = $(
+				thisRow.find('a.nodec[href*="/details/"]')[0] || // PFMonkey music table
 				thisRow.find('a.title')[0] ||								// nzbs/nmatrix/oznzb/nzbgeek/nzbsu result table
 				thisRow.find('a.link')[0] ||								// dognzb result table
 				thisRow.find('a[href*="/details/"]')[0] ||	// nzbplanet top 24hr downloads page
@@ -95,7 +96,7 @@ for (let i = 0; i < self.options.indexers.length; ++i) {
 				$('div.container-index > font[size=5]')[0]	// nzbgeek details page
 			).text().trim();
 			let URL = window.location.protocol+'//'+apiURL+'/api?t=get&id='+dlkey+'&apikey='+apikey;
-
+			
 			let Cat = $(
 				thisRow.find('td.less:first > a')[0] ||											// nzbs/nmatrix results table
 				thisRow.find('a[href^="geekseek.php?c="]')[0] ||						// nzbgeek results table
