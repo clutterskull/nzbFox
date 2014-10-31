@@ -90,13 +90,13 @@ for (let i = 0; i < self.options.indexers.length; ++i) {
 				thisRow.find('a[href*="/details/"]')[0] ||	// nzbplanet top 24hr downloads page
 				$('div#content').find('h1')[0] || 					// nzbplanet/generic details page
 				$('div#infohead > h1')[0] ||								// nzbs details page
-				$('h2#detailsh1')[0] ||											// PFMonkey details page
+				$('h2#detailsh1').contents()[0] ||					// PFMonkey details page
 				$('h2')[0] ||																// nmatrix details page
 				$('div.span12 >h3')[0] || 									// nzb.su details page
 				$('div.container-index > font[size=5]')[0]	// nzbgeek details page
 			).text().trim();
 			let URL = window.location.protocol+'//'+apiURL+'/api?t=get&id='+dlkey+'&apikey='+apikey;
-			
+
 			let Cat = $(
 				thisRow.find('td.less:first > a')[0] ||											// nzbs/nmatrix results table
 				thisRow.find('a[href^="geekseek.php?c="]')[0] ||						// nzbgeek results table
