@@ -71,8 +71,8 @@ function timeToStringS(secs) {
 	var m = Math.floor((secs / 60) % 60);
 	var s = Math.floor(secs % 60);
 	if (d > 0) return d+'d';
-	if (h > 0) return h+'h';
-	if (m > 0) return m+'m';
+	if (h > 0) return (m > 30?h+1:h)+'h';
+	if (m > 0) return (s > 30?m+1:m)+'m';
 	return s+'s';
 }
 
@@ -116,11 +116,11 @@ function updateToolbar() {
 	var aTabIsPaused = false;
 	if (Tabs.some(function(Tab) { // forEach, but stops on return true
 //		console.log('s: '+Tab.download.speed+' p: '+Tab.download.percent+' t: '+Tab.download.time+' z: '+Tab.download.paused);
-		if (Tab.download.speed > 0 && Tab.download.time > 0 &&  !Tab.download.paused) {
+		if (Tab.download.speed > 0 && Tab.queue.time > 0 &&  !Tab.download.paused) {
 			self.port.emit('setIcon',{'16': './nzb-16-green.png','32': './nzb-32-green.png','64': './nzb-64-green.png'});
 			if (!progressWidgetVisible)
 				showProgressWidget();
-			updateProgressWidget(Tab.download.percent,timeToStringS(Tab.download.time));
+			updateProgressWidget(Tab.download.percent,timeToStringS(Tab.queue.time),(Tab.queue.num > 1?Tab.queue.num:'nzb'));
 			return true;
 		} else
 			aTabIsPaused = aTabIsPaused || Tab.download.paused;
@@ -142,9 +142,9 @@ function hideProgressWidget() {
 	self.port.emit('hideProgressWidget');
 	progressWidgetVisible = false;
 }
-function updateProgressWidget(percentage,timeleft) {
+function updateProgressWidget(percentage,timeleft,counter) {
 	if (progressWidgetVisible)
-		self.port.emit('updateProgressWidget',[percentage,timeleft]);
+		self.port.emit('updateProgressWidget',[percentage,timeleft,counter]);
 }
 
 function onPrefChange([prefName,prefValue]) {
@@ -219,7 +219,9 @@ function Tab(type) { //// Tab Variables
 		sizeLeft: 0,
 		percent: 0
 	};
+
 	this.download = $.extend({},this.downloadDefaults);
+	this.queue = {num: 0,time: 0};
 	// Timers
 	this.statusTimer;
 	this.statusTimer_interval = self.options.prefs.refresh_active;
@@ -470,6 +472,10 @@ sabTab.prototype.parseStatus = function(api) {
 		speed: (api.queue.kbpersec || 0),
 		speedLimit: (api.queue.speedlimit || 0),
 	});
+	this.queue = {
+		num: 0,
+		time: (api.queue.mbleft * 1024 / api.queue.kbpersec),
+	}
 
 	this.menuOnFinishNothing.css('color','');
 	this.menuOnFinishShutdown.css('color','');
@@ -503,21 +509,22 @@ sabTab.prototype.parseStatus = function(api) {
 	for (var i = 0; i < api.queue.slots.length; ++i) {
 		var item = api.queue.slots[i];
 		if (item.status == 'Downloading' || (item.status == 'Queued' && this.download.paused)) { // If download is active, or first in queue while paused
-			$.extend(this.download, {
-				id: item.nzo_id,
-				name: item.filename,
-				category: item.cat,
-				priority: item.priority,
-				age: item.avg_age,
-				sizeTotal: item.mb,
-				sizeLeft: item.mbleft,
-				percent: Math.floor(item.percentage)
-			});
-			this.download.time = item.timeleft.split(':')
-			this.download.time = (+this.download.time[0]) * 60 * 60 + (+this.download.time[1]) * 60 + (+this.download.time[2])
-			break
-		}
-	}
+			if (this.download.id == '') // If we havent already found top active item
+				$.extend(this.download, {
+					id: item.nzo_id,
+					name: item.filename,
+					category: item.cat,
+					priority: item.priority,
+					age: item.avg_age,
+					time: (item.mbleft * 1024 / this.download.speed),
+					sizeTotal: item.mb,
+					sizeLeft: item.mbleft,
+					percent: Math.floor(item.percentage)
+				});
+		} // Active item loop
+		if (item.status == 'Downloading' || item.status == 'Queued')
+			this.queue.num++;
+	} // All item loop
 }
 sabTab.prototype.refreshHistory = function() {
 	this.stopHistoryTimer();
@@ -620,11 +627,15 @@ nzbgTab.prototype.parseStatus = function(api) {
 		speed: Math.floor(api.result.DownloadRate / 1024), // Convert bps to kbps
 		speedLimit: (api.result.DownloadLimit / 1024), // Convert bps to kbps
 	});
+	this.queue = {
+		num: 0,
+		time: (api.result.RemainingSizeMB * 1024 / this.download.speed),
+	};
 }
 nzbgTab.prototype.refreshQueue = function() {
 	log('refreshQueue('+this.type+')');
 	this.stopStatusTimer();
-	api.call(this,'listgroups',[5],
+	api.call(this,'listgroups',[3],
 		function(api) { // onSuccess
 			this.parseQueue(api);
 			this.onStatusParsed();
@@ -640,23 +651,26 @@ nzbgTab.prototype.parseQueue = function(api) {
 	// Find active download
 	for (var i = 0; i < api.result.length; ++i) {
 		var item = api.result[i];
-		if ((item.Status == 'DOWNLOADING') || (item.Status == 'QUEUED' && this.download.paused)) { // If download is active, or first in queue while paused
-			$.extend(this.download, {
-				id: item.NZBID,
-				name: item.NZBName,
-				category: item.cat,
-				priority: nzbgPriorityToString(item.MaxPriority),
-				age: timeToStringS(time() - item.MinPostTime),
-				sizeTotal: (item.FileSizeMB - item.PausedSizeMB),
-				sizeLeft: (item.RemainingSizeMB - item.PausedSizeMB),
-			});
-			$.extend(this.download, { // extend again because we are going to use vars calculated prior
-				time: (this.download.sizeLeft * 1024 / this.download.speed),
-				percent: Math.floor((this.download.sizeTotal - this.download.sizeLeft) / this.download.sizeTotal * 100),
-			});
-			break;
-		}
-	}
+		if (item.Status == 'DOWNLOADING' || (item.Status == 'QUEUED' && this.download.paused)) { // If download is active, or first in queue while paused
+			if (this.download.id == '') { // If we havent already found top active item
+				$.extend(this.download, {
+					id: item.NZBID,
+					name: item.NZBName,
+					category: item.cat,
+					priority: nzbgPriorityToString(item.MaxPriority),
+					age: timeToStringS(time() - item.MinPostTime),
+					sizeTotal: (item.FileSizeMB - item.PausedSizeMB),
+					sizeLeft: (item.RemainingSizeMB - item.PausedSizeMB),
+				});
+				$.extend(this.download, { // extend again because we are going to use vars calculated prior
+					time: (this.download.sizeLeft * 1024 / this.download.speed),
+					percent: Math.floor((this.download.sizeTotal - this.download.sizeLeft) / this.download.sizeTotal * 100),
+				});
+			}
+		} // Active item loop
+		if (item.Status == 'DOWNLOADING' || item.Status == 'QUEUED')
+			this.queue.num++;
+	} // All item loop
 }
 nzbgTab.prototype.refreshHistory = function() {
 	this.stopHistoryTimer();
