@@ -10,7 +10,6 @@
 	"version": "1.3.1",
 
 	"preferences": [
-
 	{
 		"name": "theme",
 		"title": "Panel Theme",
@@ -250,6 +249,27 @@
 		"description": "If you have your own Newznab indexer, enter the domain name here. Default template is recommended.\nUse ',' for multiple domains.\n(Example: myindexer.com,192.168.1.4,localhost)",
 		"type": "string",
 		"value": ""
+	},
+	{
+		"name": "prompt_action",
+		"title": "Automatically Send NZB Downloads to",
+		"description": "When prompted to download an NZB file, select an option here if you want nzbFox to automatically send the NZB to your download client",
+		"type": "radio",
+		"value": "",
+		"options": [
+		{
+			"value": "",
+			"label": "None"
+		},
+		{
+			"value": "nzbg",
+			"label": "NZBGet"
+		},
+		{
+			"value": "sab",
+			"label": "SABnzbd+"
+		}
+		]
 	}
 	]
 }
