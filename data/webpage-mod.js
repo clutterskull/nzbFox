@@ -29,7 +29,7 @@ function CreateButtons(title,category,url,wrapHTML) {
 
 		var result = '';
 
-		result = $(wrapHTML[0]+'<div class="nzbFoxButton" title="Send to nzbFox"></div>'+wrapHTML[1]);
+		result = $(wrapHTML[0]+'<div class="nzbFoxButton icon" title="Send to nzbFox"></div>'+wrapHTML[1]);
 		result.css('background-image','url(\''+self.options.dataURL+type+'-16.png'+'\')');
 		result.click(function() {
 			log('AddURL Button Clicked = '+type+' / '+title+' / '+category+' / '+url);
