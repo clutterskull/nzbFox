@@ -648,6 +648,7 @@ nzbgTab.prototype.refreshQueue = function() {
 	);
 }
 nzbgTab.prototype.parseQueue = function(api) {
+	log('parseQueue('+this.type+')');
 	this.lastQueue = api;
 	// Find active download
 	for (var i = 0; i < api.result.length; ++i) {
