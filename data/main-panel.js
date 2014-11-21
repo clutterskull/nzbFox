@@ -27,13 +27,8 @@ if (noSDK) { // dummy code for when testing UI without add-on SDK
 			nzbg_enabled: true,
 			sab_enabled: true,
 
-			nzbg_ip: '192.168.1.4',
-			nzbg_port: 8085,
-			nzbg_user: '',
-			nzbg_pass: '',
-
-			sab_ip: '192.168.1.4',
-			sab_port: 8080,
+			nzbg_url: 'http://192.168.1.4:8085',
+			sab_url: 'http://192.168.1.4:8080',
 			sab_apikey: '123456',
 		};
 	});
@@ -437,10 +432,12 @@ sabTab.prototype.btnOpen_Click = function() {
 // Click Events - Action Menu
 sabTab.prototype.menuOnFinishScript_Click = function() {
 	var _this = this;
-	var options = '';
+	var options = [];
 	for (var i = 0; i < this.lastStatus.queue.scripts.length; ++i)
 		if (this.lastStatus.queue.scripts[i].endsWith('.py') || this.lastStatus.queue.scripts[i].endsWith('.bat') || this.lastStatus.queue.scripts[i].endsWith('.cmd'))
-			options += '<option value="script_'+this.lastStatus.queue.scripts[i]+'"'+((this.lastStatus.queue.finishaction == 'script_'+this.lastStatus.queue.scripts[i])?' selected':'')+'>'+this.lastStatus.queue.scripts[i]+'</option>';
+			options.push(
+				$('<option>',{value:'script_'+this.lastStatus.queue.scripts[i],selected:(this.lastStatus.queue.finishaction == 'script_'+this.lastStatus.queue.scripts[i]?true:false)}).text(this.lastStatus.queue.scripts[i])
+			);
 
 	dialog.finishScript.open(options,function() {
 		var result = $(this).closest('.ui-dialog').find('select').val();
@@ -783,8 +780,13 @@ const dialog = (new function() {
 	}
 
 	this.finishScript.open = function(finishScript,onClose) {
+		var scriptSelect = this.find('select');
+		scriptSelect.html('').select();
+
+		for (var i = 0; i < finishScript.length; ++i)
+			scriptSelect.append(finishScript[i]);
+
 		this.dialog('open');
-		this.find('select').html(finishScript).select();
 		if (onClose)
 			this.parent().find('button:eq(1)').one('click',onClose);
 	}
