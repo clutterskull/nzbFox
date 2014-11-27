@@ -36,6 +36,20 @@ if (noSDK) { // dummy code for when testing UI without add-on SDK
 }
 //////////////////////////////////////////////////////////////////////////////
 
+var entityMap = {
+	"&": "&amp;",
+	"<": "&lt;",
+	">": "&gt;",
+	'"': '&quot;',
+	"'": '&#39;',
+	"/": '&#x2F;'
+};
+function escapeHtml(string) {
+	return String(string).replace(/[&<>"'\/]/g, function (s) {
+		return entityMap[s];
+	});
+}
+
 function log(msg) {
 	if (noSDK)
 		console.log(msg)
@@ -185,7 +199,7 @@ var Tabs = [];
 function Tab(type) { //// Tab Variables
 
 	var _this = this;
-	this.type = type;
+	this.type = type; // can only be 'sab' or 'nzbg'
 	// Get our ID
 	this.id = Tabs.length;	 // Default to end of array
 	for (var i = 0; i < Tabs.length; ++i)
@@ -196,7 +210,7 @@ function Tab(type) { //// Tab Variables
 	Tabs[this.id] = this;
 
 	// The Tab
-	this.header = $('<li><a href="#tabs-'+this.id+'">'+$('div#'+type+'.template').attr('title')+'</a></li>').appendTo('#tabList');
+	this.header = $('<li/>').append($('<a/>',{href:'#tabs-'+this.id}).text($('div#'+type+'.template').attr('title'))).appendTo('#tabList');
 	this.content = $('<div/>', {id: 'tabs-'+this.id}).appendTo('#tabs');
 	this.content.html($('div#'+type+'.template').html());
 	// Active Download Raw Values
@@ -548,18 +562,18 @@ sabTab.prototype.parseHistory = function(api) {
 		// Latest downloaded item nzo_id has changed. Perform notify
 		var status = api.history.slots[0].status;
 		var name = api.history.slots[0].name;
-		var stats = api.history.slots[0].size+' - ';
+		var stats = escapeHtml(api.history.slots[0].size)+' - ';
 
 		for (var i = 0; i < api.history.slots[0].stage_log.length; ++i)
 			if (api.history.slots[0].stage_log[i].name == 'Download') {
-				stats += api.history.slots[0].stage_log[i].actions[0]; // Downloaded in _ at an average of _ KB/s
+				stats += escapeHtml(api.history.slots[0].stage_log[i].actions[0]); // Downloaded in _ at an average of _ KB/s
 			} else
 			if (api.history.slots[0].stage_log[i].name == 'Unpack') {
-				stats += '<br/>'+(api.history.slots[0].stage_log[i].actions[0].split('] ').pop()); // Extract text outside of square brackets
+				stats += '<br/>'+escapeHtml(api.history.slots[0].stage_log[i].actions[0].split('] ').pop()); // Extract text outside of square brackets
 			}
 
 		if (api.history.slots[0].fail_message != '')
-			stats += '<br/><font color="red">'+api.history.slots[0].fail_message+'</font>';
+			stats += '<br/><font color="red">'+escapeHtml(api.history.slots[0].fail_message)+'</font>';
 
 		if (self.options.prefs.dl_finish_notifications) {
 			log('--- DOWNLOAD FINISHED "'+name+'", finished '+(time() - api.history.slots[0].completed)+' seconds ago');
@@ -698,7 +712,7 @@ nzbgTab.prototype.parseHistory = function(api) {
 				// Latest downloaded item NZBID has changed. Perform notify
 				var name = api.result[i].Name;
 				var speed = api.result[i].DownloadTimeSec > 0 ? ((api.result[i].DownloadedSizeMB  > 1024?(api.result[i].DownloadedSizeMB * 1024 * 1024):api.result[i].DownloadedSizeLo) / api.result[i].DownloadTimeSec) : 0;
-				var stats = api.result[i].DownloadedSizeMB+' MB - Downloaded in '+timeToStringL(api.result[i].DownloadTimeSec,true)+' at an average of '+bytesToReadable(speed)+'/s';
+				var stats = escapeHtml(api.result[i].DownloadedSizeMB)+' MB - Downloaded in '+timeToStringL(api.result[i].DownloadTimeSec,true)+' at an average of '+bytesToReadable(speed)+'/s';
 				if (api.result[i].UnpackTimeSec > 0)
 					stats += '<br/>Unpacked in '+timeToStringL(api.result[i].UnpackTimeSec);
 
