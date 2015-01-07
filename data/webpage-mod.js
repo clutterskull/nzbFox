@@ -69,9 +69,8 @@ for (let i = 0; i < self.options.indexers.length; ++i) {
 				thisRow = $(this).closest('tr.HighlightTVRow2');
 				apiURL = 'api.nzbgeek.info';
 			}
-			if (domain == 'nzb.su') {
-				apiURL = 'api.nzb.su';
-			}
+			if (domain == 'nzb.su') apiURL = 'api.nzb.su';
+			if (domain == 'oznzb.com') apiURL = 'api.oznzb.com';
 
 			let apikey = (
 				document.getElementsByName('RSSTOKEN')[0] ||	// nzbs/nmatrix/oznzb/nzbsu
