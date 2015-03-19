@@ -29,7 +29,7 @@ function CreateButtons(title,category,url,wrapHTML) {
 
 		var result = '';
 
-		result = $(wrapHTML[0]+'<div class="nzbFoxButton icon" title="Send to nzbFox"></div>'+wrapHTML[1]);
+		result = $(wrapHTML[0]+'<div class="nzbFoxButton icon" title="Send to nzbFox ('+category+')"></div>'+wrapHTML[1]);
 		result.css('background-image','url(\''+self.options.dataURL+type+'-16.png'+'\')');
 		result.click(function() {
 			log('AddURL Button Clicked = '+type+' / '+title+' / '+category+' / '+url);
@@ -119,7 +119,7 @@ for (let i = 0; i < self.options.indexers.length; ++i) {
 			switch (Cat[0]) {
 				case 'tv': Category = self.options.prefs.cat_tv; break;
 				case 'movies': Category = self.options.prefs.cat_movies; break;
-				case 'console': case 'games': Category = self.options.prefs.cat_games; break;
+				case 'console': case 'games': case 'gaming': Category = self.options.prefs.cat_games; break;
 				case 'apps': case 'pc': Category = self.options.prefs.cat_apps; break;
 				case 'xxx': case 'adult': Category = self.options.prefs.cat_adult; break;
 				case 'music': case 'audio': Category = self.options.prefs.cat_music; break;
@@ -136,7 +136,7 @@ for (let i = 0; i < self.options.indexers.length; ++i) {
 				$(downloadButtons).insertBefore($(this).closest('*'));
 		}
 
-		if (domain == 'fanzub.com')
+		if (domain == 'animenzb.com')
 			$('td.file').each(function(index) {
 				$(this).prepend(CreateButtons($(this).text(),self.options.prefs.cat_anime,$(this).find('a').prop('href')));
 			})

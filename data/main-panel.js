@@ -701,7 +701,7 @@ nzbgTab.prototype.parseHistory = function(api) {
 	log('parseHistory('+this.type+'), items = '+api.result.length);
 
 	for (var i = 0; i < api.result.length; ++i) {
-		var status = api.result[i].Status.split('/').shift();
+		var status = escapeHtml(api.result[i].Status.split('/').shift());
 
 		if (api.result[i].Kind == 'NZB' && (status == 'SUCCESS' || status == 'FAILURE' || status == 'WARNING')) {
 			if (this.lastHistoryID == '') {
@@ -712,12 +712,12 @@ nzbgTab.prototype.parseHistory = function(api) {
 				// Latest downloaded item NZBID has changed. Perform notify
 				var name = api.result[i].Name;
 				var speed = api.result[i].DownloadTimeSec > 0 ? ((api.result[i].DownloadedSizeMB  > 1024?(api.result[i].DownloadedSizeMB * 1024 * 1024):api.result[i].DownloadedSizeLo) / api.result[i].DownloadTimeSec) : 0;
-				var stats = escapeHtml(api.result[i].DownloadedSizeMB)+' MB - Downloaded in '+timeToStringL(api.result[i].DownloadTimeSec,true)+' at an average of '+bytesToReadable(speed)+'/s';
+				var stats = escapeHtml(api.result[i].DownloadedSizeMB+' MB - Downloaded in '+timeToStringL(api.result[i].DownloadTimeSec,true)+' at an average of '+bytesToReadable(speed)+'/s');
 				if (api.result[i].UnpackTimeSec > 0)
-					stats += '<br/>Unpacked in '+timeToStringL(api.result[i].UnpackTimeSec);
+					stats += '<br/>Unpacked in '+escapeHtml(timeToStringL(api.result[i].UnpackTimeSec));
 
 				if (status != 'SUCCESS')
-					stats += '<br/><font color="red">'+nzbgStatusToString(api.result[i].Status)+'</font>';
+					stats += '<br/><font color="red">'+escapeHtml(nzbgStatusToString(api.result[i].Status))+'</font>';
 
 				if (self.options.prefs.dl_finish_notifications) {
 					log('--- DOWNLOAD FINISHED "'+name+'", finished '+(time() - api.result[i].HistoryTime)+' seconds ago');

@@ -7,7 +7,7 @@
 	"icon": "data/nzb-64-green.png",
 	"author": "Enesce",
 	"license": "MPL 2.0",
-	"version": "1.3.5",
+	"version": "1.3.6",
 
 	"preferences": [
 	{
@@ -68,7 +68,7 @@
 		"title": "NZBGet IP Address",
 		"description": "Deprecated - use nzbg_url",
 		"type": "string",
-		"value": "127.0.0.1",
+		"value": "",
 		"hidden": true
 	},
 	{
