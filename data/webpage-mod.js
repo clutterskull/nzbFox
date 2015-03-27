@@ -58,29 +58,19 @@ for (let i = 0; i < self.options.indexers.length; ++i) {
 	self.options.indexers[i] = self.options.indexers[i].substr(2); // remove *.
 
 	if (window.location.hostname.endsWith(self.options.indexers[i])) {
-		var domain = self.options.indexers[i];
+		let domain = self.options.indexers[i];
+		let apiURL = '';
+		let apikey = '';
 
 		function eachNewznabDownload(index) {
 			let thisRow = $(this).closest('tr');
-			let apiURL = window.location.hostname;
+			if (domain == 'nzbgeek.info') thisRow = $(this).closest('tr.HighlightTVRow2');
 			let wrapHTML = ['',''];
-			if (domain == 'dognzb.cr') apiURL = 'api.dognzb.cr';
-			if (domain == 'nzbgeek.info') {
-				thisRow = $(this).closest('tr.HighlightTVRow2');
-				apiURL = 'api.nzbgeek.info';
-			}
-			if (domain == 'nzb.su') apiURL = 'api.nzb.su';
-			if (domain == 'oznzb.com') apiURL = 'api.oznzb.com';
-
-			let apikey = (
-				document.getElementsByName('RSSTOKEN')[0] ||	// nzbs/nmatrix/oznzb/nzbsu
-				document.getElementsByName('rsstoken')[0]			// dognzb/nzbgeek
-			).value;
 			let dlkey = $(
 				$(this).find('a')[0] ||			// nzbs/nmatrix/oznzb/nzbsu (child link)
 				$(this).closest('a')[0] ||	// nzbs/nmatrix/oznzb/nzbsu (parent link)
 				thisRow.find('a')[0]				// dognzb
-			).attr('href').split('/')[2];
+			).attr('href').match(/[a-f0-9]{32}/i)
 			if (domain == 'nzbgeek.info') dlkey = getURLParameter('guid',$(thisRow).find('a[href*="guid="]').attr('href'));
 
 			let Title = $(
@@ -107,7 +97,7 @@ for (let i = 0; i < self.options.indexers.length; ++i) {
 				$('div.span12 > a[href^="/browse?t="]')[0] ||								// nzb.su details page
 				$('dl.dl-horizontal').find('a[href^="/browse?t="]')[0] ||		// nmatrix details
 				$('table.detailsmid').find('a[href^="/browse?t="]')[0] ||		// PFMonkey details page
-				$('table#detailstable').find('a[href^="/browse?t="]')[0]		// generic newznab details
+				$('table#detailstable').find('a[href*="/browse?t="]')[0]		// generic newznab details (* to handle subdir newznab installs)
 			).text();
 			if (domain == 'nzbplanet.net') Cat = (thisRow.find('td.less:first > a').attr('title') || $('table#detailstable').find('a[href^="/browse?t="]').text() || '').substr(7); // nzbplanet only shows subcat, so get Cat1>Cat2 from link title
 			if (domain == 'pfmonkey.com' && Cat == '') Cat = $((thisRow.html().match(/<!--<td class="less">(.+?)<\/td>-->/i) || '')[1] || '').text(); // PFMonkey hides primary cat behind an icon and provides no title, extract from commented out newznab style row
@@ -127,6 +117,7 @@ for (let i = 0; i < self.options.indexers.length; ++i) {
 			switch (Cat[1]) {
 				case 'anime': Category = self.options.prefs.cat_anime; break;
 				case 'ebook': case 'comics': Category = self.options.prefs.cat_reading; break;
+				case 'games': case 'gaming': Category = self.options.prefs.cat_games; break;
 			}
 
 			let downloadButtons = CreateButtons(Title,Category,URL,wrapHTML);
@@ -172,6 +163,18 @@ for (let i = 0; i < self.options.indexers.length; ++i) {
 				btnSelector = 'a[href*="&api="][title="Download NZB"]';
 			else
 				btnSelector = 'div.icon.icon_nzb, a.icon.icon_nzb';
+
+			if (domain == 'dognzb.cr') apiURL = 'api.dognzb.cr'; else
+			if (domain == 'nzbgeek.info') apiURL = 'api.nzbgeek.info'; else
+			if (domain == 'nzb.su') apiURL = 'api.nzb.su'; else
+			if (domain == 'oznzb.com') apiURL = 'api.oznzb.com'; else
+				apiURL = window.location.hostname;
+			apiURL = apiURL + (typeof unsafeWindow === 'undefined' ? (window.WWW_TOP !== undefined ? window.WWW_TOP:'') : (unsafeWindow.WWW_TOP !== undefined ? unsafeWindow.WWW_TOP:''));
+
+			apikey = (
+				document.getElementsByName('RSSTOKEN')[0] ||	// nzbs/nmatrix/oznzb/nzbsu
+				document.getElementsByName('rsstoken')[0]		// dognzb/nzbgeek
+			).value;
 
 			$(btnSelector).each(eachNewznabDownload);
 		}

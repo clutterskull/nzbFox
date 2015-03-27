@@ -375,7 +375,6 @@ Tab.prototype.onStatusParsed = function() { // Shared code for post-status parsi
 	if (this.download.id != this.lastActiveID && this.download.speed > 0) {
 		this.lastActiveID = this.download.id; ///            '---' = fetching NZB URL in SAB
 		if (this.download.id != '' && this.download.age != '---' && self.options.prefs.dl_start_notifications && !panelVisible) {
-			console.log(this.download.age);
 			log('--- DOWNLOAD STARTED "'+name+'", id="'+this.download.id+'" lastid="'+this.lastActiveID+'"');
 			self.port.emit('showNotification',[this.type,'Download Started',this.type+'-32.png',this.download.name,bytesToReadable(this.download.sizeTotal * 1024 * 1024,(this.download.sizeTotal > 1024?1:0))+' / Category: '+this.download.category+' / Priority: '+this.download.priority+' / Age: '+this.download.age]);
 		}
