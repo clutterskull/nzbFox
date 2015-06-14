@@ -139,7 +139,7 @@ for (let i = 0; i < self.options.indexers.length; ++i) {
 				$(this).find('input').parent().append(CreateButtons(Title,'',URL));
  			})
 		else
-		if (domain == 'nzbindex.nl')
+		if (domain == 'nzbindex.nl' || domain == 'nzbindex.com')
 			$('tr.odd, tr.even').each(function(index) {
 				let Title = $(this).find('label').text();
 				if (Title.contains('" yEnc')) // Fetch title in "quotes"
