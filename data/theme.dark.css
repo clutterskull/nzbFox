@@ -1,0 +1,14 @@
+@import "theme/jquery-ui.structure.min.css";
+@import "theme/dark-hive/theme.css";
+
+.ui-progressbar-label {
+	text-shadow: 1px 1px 0 #000;
+}
+
+.icon-spinner {
+	height: 16px;
+	width: 16px;
+	background-image: url(images/spinner-dark.gif);
+	vertical-align:middle;
+	display: inline-block;
+}

@@ -20,17 +20,17 @@ function CreateButtons(title,category,url,wrapHTML) {
 			wrapHTML = ['',''];
 
 		function onSuccess(api) {
-			$(this.ele).css('background-image','url(\''+self.options.dataURL+this.type+'-16-pass.png'+'\')');
+			$(this.ele).css('background-image','url(\''+self.options.dataURL+'images/'+this.type+'-16-pass.png'+'\')');
 		}
 		function onFailure(api) {
-			$(this.ele).css('background-image','url(\''+self.options.dataURL+this.type+'-16-fail.png'+'\')');
+			$(this.ele).css('background-image','url(\''+self.options.dataURL+'images/'+this.type+'-16-fail.png'+'\')');
 			alert('Unable to send NZB to download client'+"\n"+'Message: '+api.message+"\n\n"+JSON.stringify(api.query));
 		}
 
 		var result = '';
 
 		result = $(wrapHTML[0]+'<div class="nzbFoxButton icon" title="Send to nzbFox ('+category+')"></div>'+wrapHTML[1]);
-		result.css('background-image','url(\''+self.options.dataURL+type+'-16.png'+'\')');
+		result.css('background-image','url(\''+self.options.dataURL+'images/'+type+'-16.png'+'\')');
 		result.click(function() {
 			log('AddURL Button Clicked = '+type+' / '+title+' / '+category+' / '+url);
 			if (type == 'nzbg')

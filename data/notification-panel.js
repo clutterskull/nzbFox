@@ -56,7 +56,7 @@ function resize() {
 }
 
 $(function() {
-	$('#theme').attr('href','nzbFox.theme.'+self.options.prefs.theme+'.css');
+	$('#theme').attr('href','theme.'+self.options.prefs.theme+'.css');
 
 	var openLabel = 'Open Client';
 

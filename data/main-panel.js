@@ -126,7 +126,7 @@ function updateToolbar() {
 	if (Tabs.some(function(Tab) { // forEach, but stops on return true
 //		console.log('s: '+Tab.download.speed+' p: '+Tab.download.percent+' t: '+Tab.download.time+' z: '+Tab.download.paused);
 		if (Tab.download.speed > 0 && Tab.queue.time > 0 &&  !Tab.download.paused) {
-			self.port.emit('setIcon',{'16': './nzb-16-green.png','32': './nzb-32-green.png','64': './nzb-64-green.png'});
+			self.port.emit('setIcon',{'16': './images/nzb-16-green.png','32': './images/nzb-32-green.png','64': './images/nzb-64-green.png'});
 			if (!progressWidgetVisible)
 				showProgressWidget();
 			updateProgressWidget(Tab.download.percent,timeToStringS(Tab.queue.time),(Tab.queue.num > 1?Tab.queue.num:'nzb'));
@@ -137,7 +137,7 @@ function updateToolbar() {
 		// No tabs are downloading
 		if (progressWidgetVisible)
 			hideProgressWidget();
-		self.port.emit('setIcon',aTabIsPaused?{'16': './nzb-16-orange.png','32': './nzb-32-orange.png','64': './nzb-64-orange.png'}:{'16': './nzb-16-gray.png','32': './nzb-32-gray.png','64': './nzb-64-gray.png'})
+		self.port.emit('setIcon',aTabIsPaused?{'16': './images/nzb-16-orange.png','32': './images/nzb-32-orange.png','64': './images/nzb-64-orange.png'}:{'16': './images/nzb-16-gray.png','32': './images/nzb-32-gray.png','64': './images/nzb-64-gray.png'})
 	}
 }
 window.setInterval(updateToolbar,2500); // 2.5 secs
@@ -160,7 +160,7 @@ function onPrefChange([prefName,prefValue]) {
 	self.options.prefs[prefName] = prefValue;
 
 	if (prefName == 'theme')
-		$('#theme').attr('href','nzbFox.theme.'+self.options.prefs.theme+'.css');
+		$('#theme').attr('href','theme.'+self.options.prefs.theme+'.css');
 	else
 	if (prefName == 'sab_enabled' || prefName == 'nzbg_enabled') {
 		if (prefValue) {
