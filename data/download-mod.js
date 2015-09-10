@@ -6,6 +6,7 @@
 
 */
 function log(msg) {self.port.emit('log',msg);}
+const XUL_NS = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
 
 log('Download prompt detected, MIME = "'+dialog.mLauncher.MIMEInfo.MIMEType+'" suggestedFileName = "'+dialog.mLauncher.suggestedFileName+'"');
 
@@ -13,21 +14,71 @@ if (dialog.mLauncher.MIMEInfo.MIMEType == 'application/x-nzb' || dialog.mLaunche
 	var modeGroup = document.getElementById('mode');
 	var rememberChoice = document.getElementById('rememberChoice');
 	var fileName = dialog.mLauncher.suggestedFileName;
-	var send_nzbg, send_sab;
 
-	if (self.options.prefs.nzbg_enabled) {
-		send_nzbg = modeGroup.appendItem('Send to NZBGet','nzbg');
-		send_nzbg.setAttribute('src',self.options.dataURL+'images/nzbg-16.png');
+	function createMenuItem(aLabel, aValue) {
+		var item = document.createElementNS(XUL_NS,'menuitem');
+				item.setAttribute('label',aLabel);
+				item.setAttribute('value',aValue);
+		return item;
 	}
+
+	function createSendTo(id,label) {
+
+		var container = document.createElementNS(XUL_NS, 'hbox');
+				container.setAttribute('flex','1');
+
+		var spacer = document.createElementNS(XUL_NS, 'spacer');
+				spacer.setAttribute('flex','1');
+
+		var radio = document.createElementNS(XUL_NS, 'radio');
+				radio.setAttribute('label',label);
+				radio.setAttribute('value',id);
+				radio.setAttribute('src',self.options.dataURL+'images/'+id+'-16.png');
+
+	  var catList = document.createElementNS(XUL_NS, 'menulist');
+			  catList.setAttribute('crop', 'center');
+			  catList.setAttribute('flex', '1');
+			  catList.setAttribute('readonly', 'true');
+
+		var catListMenu = document.createElementNS(XUL_NS, 'menupopup');
+				catListMenu.appendChild(createMenuItem('Category (optional)',''));
+				catListMenu.appendChild(createMenuItem('TV',self.options.prefs.cat_tv));
+				catListMenu.appendChild(createMenuItem('Movies',self.options.prefs.cat_movies));
+				catListMenu.appendChild(createMenuItem('Anime',self.options.prefs.cat_anime));
+				catListMenu.appendChild(createMenuItem('Music',self.options.prefs.cat_music));
+				catListMenu.appendChild(createMenuItem('Games',self.options.prefs.cat_games));
+				catListMenu.appendChild(createMenuItem('Reading',self.options.prefs.cat_reading));
+				catListMenu.appendChild(createMenuItem('Apps',self.options.prefs.cat_apps));
+				catListMenu.appendChild(createMenuItem('Adult',self.options.prefs.cat_adult));
+
+		catList.appendChild(catListMenu);
+
+		container.appendChild(radio);
+		container.appendChild(spacer);
+		container.appendChild(catList);
+
+		return {container:container,radio:radio,catList:catList};
+	}
+
 	if (self.options.prefs.sab_enabled) {
-		send_sab = modeGroup.appendItem('Send to SABnzbd+','sab');
-		send_sab.setAttribute('src',self.options.dataURL+'images/sab-16.png');
+		var	sendto_sab = createSendTo('sab','Send to SABnzbd+');
+		modeGroup.appendChild(sendto_sab.container);
+	}
+	if (self.options.prefs.nzbg_enabled) {
+		var	sendto_nzbg = createSendTo('nzbg','Send to NZBGet');
+		modeGroup.appendChild(sendto_nzbg.container);
 	}
 
 	dialog.onOK_orig = dialog.onOK;
 	dialog.onOK = function() {
-		if (modeGroup.selectedItem == send_nzbg || modeGroup.selectedItem == send_sab) {
-			var data = {url:dialog.mLauncher.source.spec,type:modeGroup.selectedItem.value,fileName:fileName,remember:rememberChoice.checked};
+		var selected;
+		if (sendto_nzbg && modeGroup.selectedItem == sendto_nzbg.radio)
+			selected = sendto_nzbg
+		else if (sendto_sab && modeGroup.selectedItem == sendto_sab.radio)
+			selected = sendto_sab;
+
+		if (typeof selected !== 'undefined') {
+			var data = {url:dialog.mLauncher.source.spec,type:selected.radio.value,fileName:fileName,category:selected.catList.value,remember:rememberChoice.checked};
 			self.port.emit('nzb-download', data);
 
 			modeGroup.selectedItem = document.getElementById('save');
@@ -40,19 +91,17 @@ if (dialog.mLauncher.MIMEInfo.MIMEType == 'application/x-nzb' || dialog.mLaunche
 	dialog.postShowCallback = function() {
 		dialog.postShowCallback_orig();
 		if(self.options.prefs.prompt_action != '') {
-			if (send_sab && self.options.prefs.prompt_action == send_sab.value)
-				modeGroup.selectedItem = send_sab
+			if (sendto_sab && self.options.prefs.prompt_action == sendto_sab.radio.value)
+				modeGroup.selectedItem = sendto_sab.radio
 			else
-			if (send_nzbg && self.options.prefs.prompt_action == send_nzbg.value)
-				modeGroup.selectedItem = send_nzbg;
+			if (sendto_nzbg && self.options.prefs.prompt_action == sendto_nzbg.radio.value)
+				modeGroup.selectedItem = sendto_nzbg.radio;
 
 			if (modeGroup.selectedItem.value == self.options.prefs.prompt_action) {
 				rememberChoice.checked = true;
-				dialog.mDialog.document.documentElement.getButton("accept").disabled = false;
-				dialog.mDialog.document.documentElement.getButton("accept").click();
+				dialog.mDialog.document.documentElement.getButton('accept').disabled = false;
+				dialog.mDialog.document.documentElement.getButton('accept').click();
 			}
 		}
 	}
-
-
 }

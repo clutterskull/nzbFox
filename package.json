@@ -7,7 +7,7 @@
 	"icon": "data/images/nzb-64-green.png",
 	"author": "Enesce",
 	"license": "MPL 2.0",
-	"version": "1.3.10",
+	"version": "1.4.0",
 
 	"preferences": [
 	{
@@ -28,64 +28,39 @@
 	},
 	{
 		"name": "dl_finish_notifications",
-		"title": "Enable Download Finished Notifications",
-		"description": "Notification is shown when a download has finished, including statistics. Attached to toolbar icon",
+		"title": "Download Finished Notification",
+		"description": "Notification is shown when a download has finished. Attached to the nzbFox toolbar icon",
 		"type": "bool",
 		"value": true
 	},
 	{
 		"name": "dl_start_notifications",
-		"title": "Enable Download Started Notifications",
-		"description": "Notification is shown when a download is started. Attached to toolbar icon",
-		"type": "bool",
-		"value": false
-	},
-
-	{
-		"name": "nzbg_enabled",
-		"title": "Enable NZBGet",
-		"description": "",
+		"title": "Download Started Notification",
+		"description": "Notification is shown when a download is started. Attached to the nzbFox toolbar icon",
 		"type": "bool",
 		"value": false
 	},
 	{
-		"name": "nzbg_url",
-		"title": "NZBGet URL",
-		"description": "",
-		"type": "string",
-		"value": "http://nzbget:tegbzn6789@127.0.0.1:6789"
-	},
-	{
-		"name": "nzbg_ssl",
-		"title": "Use SSL",
-		"description": "Deprecated - use nzbg_url",
-		"type": "bool",
-		"value": false,
-		"hidden": true
-	},
-	{
-		"name": "nzbg_ip",
-		"title": "NZBGet IP Address",
-		"description": "Deprecated - use nzbg_url",
-		"type": "string",
-		"value": "",
-		"hidden": true
-	},
-	{
-		"name": "nzbg_port",
-		"title": "NZBGet Port",
-		"description": "Deprecated - use nzbg_url",
-		"type": "integer",
-		"value": 6789,
-		"hidden": true
-	},
-	{
-		"name": "testNZBGet",
-		"label": "Test NZBGet",
-		"type": "control",
-		"title": ""
-	},
-
+		"name": "dl_notification_type",
+		"title": "Download Notification Type",
+		"description": "Standard notifications will only be visible while your browser window is active.\nDesktop notifications will appear even when your browser is in the background",
+		"type": "radio",
+		"value": "standard",
+		"options": [
+		{
+			"value": "standard",
+			"label": "Standard"
+		},
+		{
+			"value": "desktop",
+			"label": "Desktop"
+		},
+		{
+			"value": "both",
+			"label": "Both"
+		}
+		]
+	},	
 	{
 		"name": "sab_enabled",
 		"title": "Enable SABnzbd+",
@@ -101,30 +76,6 @@
 		"value": "http://127.0.0.1:8080"
 	},
 	{
-		"name": "sab_ssl",
-		"title": "Use SSL",
-		"description": "Deprecated - use sab_url",
-		"type": "bool",
-		"value": false,
-		"hidden": true
-	},
-	{
-		"name": "sab_ip",
-		"title": "SABnzbd+ IP Address",
-		"description": "Deprecated - use sab_url",
-		"type": "string",
-		"value": "",
-		"hidden": true
-	},
-	{
-		"name": "sab_port",
-		"title": "SABnzbd+ Port",
-		"description": "Deprecated - use sab_url",
-		"type": "integer",
-		"value": 8080,
-		"hidden": true
-	},
-	{
 		"name": "sab_apikey",
 		"title": "SABnzbd+ API Key",
 		"description": "Found under Config -> General -> API Key",
@@ -137,7 +88,26 @@
 		"type": "control",
 		"title": ""
 	},
-
+	{
+		"name": "nzbg_enabled",
+		"title": "Enable NZBGet",
+		"description": "",
+		"type": "bool",
+		"value": false
+	},
+	{
+		"name": "nzbg_url",
+		"title": "NZBGet URL",
+		"description": "",
+		"type": "string",
+		"value": "http://nzbget:tegbzn6789@127.0.0.1:6789"
+	},
+	{
+		"name": "testNZBGet",
+		"label": "Test NZBGet",
+		"type": "control",
+		"title": ""
+	},
 	{
 		"name": "cat_tv",
 		"title": "TV Category",
@@ -232,7 +202,7 @@
 	{
 		"name": "custom_indexers",
 		"title": "Personal Newznab Indexers",
-		"description": "If you have your own Newznab indexer, enter the domain name here. Default template is recommended.\nUse ',' for multiple domains.\n(Example: myindexer.com,192.168.1.4,localhost)",
+		"description": "If you have your own Newznab indexer, enter the domain name here.\nDefault template is recommended.\nUse ',' for multiple domains.\n(Example: myindexer.com,192.168.1.4,localhost)",
 		"type": "string",
 		"value": ""
 	},
