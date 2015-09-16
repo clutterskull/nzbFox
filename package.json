@@ -6,8 +6,17 @@
 	"homepage": "https://github.com/NickSC/nzbFox",
 	"icon": "data/images/nzb-64-green.png",
 	"author": "Enesce",
-	"license": "MPL 2.0",
-	"version": "1.4.0",
+  "main": "./lib/main.js",
+	"license": "MPL-2.0",
+	"version": "1.4.1",
+	"permissions": ["multiprocess"],
+  "engines": {
+    "firefox": ">=38.0a1 <=43.0a1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NickSC/nzbFox.git"
+  },
 
 	"preferences": [
 	{
@@ -60,7 +69,7 @@
 			"label": "Both"
 		}
 		]
-	},	
+	},
 	{
 		"name": "sab_enabled",
 		"title": "Enable SABnzbd+",
@@ -86,7 +95,7 @@
 		"name": "testSAB",
 		"label": "Test SABnzbd+",
 		"type": "control",
-		"title": ""
+		"title": " "
 	},
 	{
 		"name": "nzbg_enabled",
@@ -106,7 +115,7 @@
 		"name": "testNZBGet",
 		"label": "Test NZBGet",
 		"type": "control",
-		"title": ""
+		"title": " "
 	},
 	{
 		"name": "cat_tv",
@@ -163,6 +172,13 @@
 		"description": "",
 		"type": "string",
 		"value": "Adult"
+	},
+	{
+		"name": "cat_custom",
+		"title": "Extra Categories",
+		"description": "Comma separated list of extra categories to add to NZB download prompt category list",
+		"type": "string",
+		"value": ""
 	},
 	{
 		"name": "dev",

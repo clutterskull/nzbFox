@@ -15,16 +15,19 @@ if (dialog.mLauncher.MIMEInfo.MIMEType == 'application/x-nzb' || dialog.mLaunche
 	var rememberChoice = document.getElementById('rememberChoice');
 	var fileName = dialog.mLauncher.suggestedFileName;
 
-	function createMenuItem(aLabel, aValue) {
-		var item = document.createElementNS(XUL_NS,'menuitem');
-				item.setAttribute('label',aLabel);
-				item.setAttribute('value',aValue);
-		return item;
+	function createMenuItem(aMenuPopup, aValue, aDescription='') { // Create a <menuitem> for category list
+		if (aValue != '' && aMenuPopup) {
+			var item = document.createElementNS(XUL_NS,'menuitem');
+					item.setAttribute('label',aValue);
+					item.setAttribute('value',aValue);
+					item.setAttribute('description',aDescription);
+			return aMenuPopup.appendChild(item);
+		} else return false;
 	}
 
 	function createSendTo(id,label) {
 
-		var container = document.createElementNS(XUL_NS, 'hbox');
+		var container = document.createElementNS(XUL_NS, 'hbox'); // Contains the radio and category list in one row
 				container.setAttribute('flex','1');
 
 		var spacer = document.createElementNS(XUL_NS, 'spacer');
@@ -41,15 +44,22 @@ if (dialog.mLauncher.MIMEInfo.MIMEType == 'application/x-nzb' || dialog.mLaunche
 			  catList.setAttribute('readonly', 'true');
 
 		var catListMenu = document.createElementNS(XUL_NS, 'menupopup');
-				catListMenu.appendChild(createMenuItem('Category (optional)',''));
-				catListMenu.appendChild(createMenuItem('TV',self.options.prefs.cat_tv));
-				catListMenu.appendChild(createMenuItem('Movies',self.options.prefs.cat_movies));
-				catListMenu.appendChild(createMenuItem('Anime',self.options.prefs.cat_anime));
-				catListMenu.appendChild(createMenuItem('Music',self.options.prefs.cat_music));
-				catListMenu.appendChild(createMenuItem('Games',self.options.prefs.cat_games));
-				catListMenu.appendChild(createMenuItem('Reading',self.options.prefs.cat_reading));
-				catListMenu.appendChild(createMenuItem('Apps',self.options.prefs.cat_apps));
-				catListMenu.appendChild(createMenuItem('Adult',self.options.prefs.cat_adult));
+				createMenuItem(catListMenu,'Category (optional)');
+				createMenuItem(catListMenu,self.options.prefs.cat_tv);
+				createMenuItem(catListMenu,self.options.prefs.cat_movies);
+				createMenuItem(catListMenu,self.options.prefs.cat_anime);
+				createMenuItem(catListMenu,self.options.prefs.cat_music);
+				createMenuItem(catListMenu,self.options.prefs.cat_games);
+				createMenuItem(catListMenu,self.options.prefs.cat_reading);
+				createMenuItem(catListMenu,self.options.prefs.cat_apps);
+				createMenuItem(catListMenu,self.options.prefs.cat_adult);
+
+		// Extra Categories
+		if (self.options.prefs.cat_custom != ''){
+			var CustomCategories = self.options.prefs.cat_custom.split(',')
+			for (let i = 0; i < CustomCategories.length; ++i)
+				createMenuItem(catListMenu,CustomCategories[i],'(custom)');
+		}
 
 		catList.appendChild(catListMenu);
 
