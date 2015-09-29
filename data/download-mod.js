@@ -15,10 +15,10 @@ if (dialog.mLauncher.MIMEInfo.MIMEType == 'application/x-nzb' || dialog.mLaunche
 	var rememberChoice = document.getElementById('rememberChoice');
 	var fileName = dialog.mLauncher.suggestedFileName;
 
-	function createMenuItem(aMenuPopup, aValue, aDescription='') { // Create a <menuitem> for category list
-		if (aValue != '' && aMenuPopup) {
+	function createMenuItem(aMenuPopup, aLabel,aValue=aLabel, aDescription='') { // Create a <menuitem> for category list
+		if (aLabel != '' && aMenuPopup) {
 			var item = document.createElementNS(XUL_NS,'menuitem');
-					item.setAttribute('label',aValue);
+					item.setAttribute('label',aLabel);
 					item.setAttribute('value',aValue);
 					item.setAttribute('description',aDescription);
 			return aMenuPopup.appendChild(item);
@@ -44,7 +44,7 @@ if (dialog.mLauncher.MIMEInfo.MIMEType == 'application/x-nzb' || dialog.mLaunche
 			  catList.setAttribute('readonly', 'true');
 
 		var catListMenu = document.createElementNS(XUL_NS, 'menupopup');
-				createMenuItem(catListMenu,'Category (optional)');
+				createMenuItem(catListMenu,'Category (optional)','');
 				createMenuItem(catListMenu,self.options.prefs.cat_tv);
 				createMenuItem(catListMenu,self.options.prefs.cat_movies);
 				createMenuItem(catListMenu,self.options.prefs.cat_anime);
@@ -58,7 +58,7 @@ if (dialog.mLauncher.MIMEInfo.MIMEType == 'application/x-nzb' || dialog.mLaunche
 		if (self.options.prefs.cat_custom != ''){
 			var CustomCategories = self.options.prefs.cat_custom.split(',')
 			for (let i = 0; i < CustomCategories.length; ++i)
-				createMenuItem(catListMenu,CustomCategories[i],'(custom)');
+				createMenuItem(catListMenu,CustomCategories[i],undefined,'(custom)');
 		}
 
 		catList.appendChild(catListMenu);

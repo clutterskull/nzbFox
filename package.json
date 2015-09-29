@@ -8,7 +8,7 @@
 	"author": "Enesce",
   "main": "./lib/main.js",
 	"license": "MPL-2.0",
-	"version": "1.4.1",
+	"version": "1.4.1-fix",
 	"permissions": ["multiprocess"],
   "engines": {
     "firefox": ">=38.0a1 <=43.0a1"
