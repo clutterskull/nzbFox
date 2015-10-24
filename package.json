@@ -4,14 +4,14 @@
 	"id": "nzbFox@github",
 	"description": "Adds the ability to control & send NZB files directly to remote download clients",
 	"homepage": "https://github.com/NickSC/nzbFox",
-	"icon": "data/images/nzb-64-green.png",
+	"icon": "resource://nzbFox-at-github/data/images/nzb-64-green.png",
 	"author": "Enesce",
   "main": "./lib/main.js",
 	"license": "MPL-2.0",
-	"version": "1.4.1-fix",
-	"permissions": ["multiprocess"],
+	"version": "1.4.2",
+	"permissions": {"multiprocess":true,"private-browsing":true},
   "engines": {
-    "firefox": ">=38.0a1 <=43.0a1"
+    "firefox": ">=38.0a1 <=44.0a1"
   },
   "repository": {
     "type": "git",
