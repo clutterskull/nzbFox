@@ -8,10 +8,10 @@
 	"author": "Enesce",
   "main": "./lib/main.js",
 	"license": "MPL-2.0",
-	"version": "1.4.2",
+	"version": "1.4.3",
 	"permissions": {"multiprocess":true,"private-browsing":true},
   "engines": {
-    "firefox": ">=38.0a1 <=44.0a1"
+    "firefox": ">=38.0a1 <=47.0a1"
   },
   "repository": {
     "type": "git",

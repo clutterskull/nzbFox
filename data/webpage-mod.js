@@ -145,24 +145,24 @@ function injectButtons() {
 			if (domain == 'binsearch.info')
 	 			$('tr[bgcolor="#FFFFFF"], tr[bgcolor="#F6F7FA"]').each(function(index) {
 					let Title = ($(this).find('span.s').text().match(/"(.*?)"/) || ['','Unknown Title @ binsearch'])[1];
-					let URL = window.location.protocol+'//'+domain+'/?action=nzb&'+$(this).find('input').attr('name')+'=on';
+					let URL = window.location+'&action=nzb&'+$(this).find('input').attr('name')+'=on';
 					$(this).find('input').parent().append(CreateButtons(Title,'','',URL));
 	 			})
 			else
 			if (domain == 'nzbindex.nl' || domain == 'nzbindex.com')
 				$('tr.odd, tr.even').each(function(index) {
 					let Title = $(this).find('label').text();
-					if (Title.contains('" yEnc')) // Fetch title in "quotes"
+					if (Title.endsWith(' yEnc')) // Fetch title in "quotes"
 						Title = Title.match(/"(.*?)"/)[1];
 					$(this).find('td:nth-child(1)').append(CreateButtons(Title,'','',$(this).find('a[href*="/download/"]').attr('href')));
 				})
 			else
 			if (domain == 'nzbclub.com')
-				$('tr.rgRow, tr.rgAltRow').each(function(index) {
-					var Title = $(this).find('a.partscompletelink').text();
+				$('div.media > div.row').each(function(index) {
+					var Title = $(this).find('a.text-primary').text();
 					if (Title.split('"').length == 3) Title = Title.match(/"(.*?)"/)[1]; // Fetch title in "quotes"
-					var URL = window.location.protocol+'//'+domain+$(this).find('a[href^="/nzb_get/"]').attr('href');
-					$(this).find('td:nth-child(1)').append(CreateButtons(Title,'','',URL));
+					var URL = window.location.protocol+'//'+domain+'/nzb_get/'+encodeURIComponent($(this).find('button#get').parent().parent().attr('collectionid'));
+					$(this).find('button#get').parent().append(CreateButtons(Title,'','',URL));
 				})
 			else { // Newznab
 				var btnSelector = '';
