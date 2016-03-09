@@ -166,18 +166,15 @@ function injectButtons() {
 				})
 			else { // Newznab
 				var btnSelector = '';
-				if (domain == 'dognzb.cr')
-					btnSelector = 'div.dog-icon-download';
-				else
-				if (domain == 'nzbgeek.info')
-					btnSelector = 'a[href*="&api="][title="Download NZB"]';
-				else
+				if (domain == 'dognzb.cr') btnSelector = 'div.dog-icon-download'; else
+				if (domain == 'nzbgeek.info') btnSelector = 'a[href*="&api="][title="Download NZB"]'; else
 					btnSelector = 'div.icon.icon_nzb, a.icon.icon_nzb';
 
 				if (domain == 'dognzb.cr') apiURL = 'api.dognzb.cr'; else
 				if (domain == 'nzbgeek.info') apiURL = 'api.nzbgeek.info'; else
 				if (domain == 'nzb.su') apiURL = 'api.nzb.su'; else
 				if (domain == 'oznzb.com') apiURL = 'api.oznzb.com'; else
+				if (domain == 'nzbplanet.net') apiURL = 'api.nzbplanet.net'; else
 					apiURL = window.location.hostname;
 				apiURL = apiURL + (typeof unsafeWindow === 'undefined' ? (window.WWW_TOP !== undefined ? window.WWW_TOP:'') : (unsafeWindow.WWW_TOP !== undefined ? unsafeWindow.WWW_TOP:''));
 

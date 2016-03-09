@@ -228,13 +228,13 @@ function Tab(type) { //// Tab Variables
 		sizeLeft: 0,
 		percent: 0
 	};
-
 	this.download = $.extend({},this.downloadDefaults);
 	this.queue = {num: 0,time: 0};
+	// API
+	this.apiVer = 1;	// 1 = SAB 0.7.20 / NZBG v14  2 = SAB 1.0.0
 	// Timers
 	this.statusTimer;
 	this.statusTimer_interval = self.options.prefs.refresh_active;
-
 	this.historyTimer;
 	this.historyTimer_interval = self.options.prefs.refresh_history;
 	// Parse results
@@ -476,12 +476,13 @@ sabTab.prototype.refreshStatus = function() {
 sabTab.prototype.parseStatus = function(api) {
 	log('parseStatus('+this.type+')');
 	this.lastStatus = api;
+	if (typeof api.queue.speedlimit_abs !== 'undefined') this.apiVer = 2; else this.apiVer = 1; // SAB 1.0.0 changes default speedlimit value to percentages. Ugh. So we need to use speedlimit_abs
 	this.download = $.extend({},this.downloadDefaults);
 
 	$.extend(this.download,{
 		paused: api.queue.paused,
 		speed: (api.queue.kbpersec || 0),
-		speedLimit: (api.queue.speedlimit || 0),
+		speedLimit: (this.apiVer == 1 ? api.queue.speedlimit : (api.queue.speedlimit == '100' ? 0 : Math.round(api.queue.speedlimit_abs / 1024))) || 0,
 	});
 	this.queue = {
 		num: 0,
@@ -591,7 +592,7 @@ sabTab.prototype.resume = function() {
 	api.call(this,'resume',{},this.refreshStatus);
 }
 sabTab.prototype.setSpeedLimit = function(kbps) {
-	api.call(this,'config',{name:'speedlimit',value:kbps},this.refreshStatus);
+	api.call(this,'config',{name:'speedlimit',value:kbps+(this.apiVer == 2?'K':'')},this.refreshStatus);
 }
 sabTab.prototype.setFinishAction = function(action) { // Unique to SAB
 	api.call(this,'queue',{name:'change_complete_action',value:action},this.refreshStatus);
@@ -635,8 +636,8 @@ nzbgTab.prototype.parseStatus = function(api) {
 
 	$.extend(this.download,{
 		paused: api.result.DownloadPaused,
-		speed: Math.floor(api.result.DownloadRate / 1024), // Convert bps to kbps
-		speedLimit: (api.result.DownloadLimit / 1024), // Convert bps to kbps
+		speed: Math.ceil(api.result.DownloadRate / 1024), // Convert bps to kbps
+		speedLimit: Math.ceil(api.result.DownloadLimit / 1024), // Convert bps to kbps
 	});
 	this.queue = {
 		num: 0,
