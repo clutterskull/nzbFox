@@ -8,10 +8,10 @@
 	"author": "Enesce",
 	"main": "./lib/main.js",
 	"license": "MPL-2.0",
-	"version": "1.4.4",
+	"version": "1.4.5",
 	"permissions": {"multiprocess":true,"private-browsing":true},
 	"engines": {
-		"firefox": ">=38.0a1 <=47.0a1"
+		"firefox": ">=38.0a1 <=49.0a1"
 	},
 	"repository": {
 		"type": "git",
@@ -158,6 +158,13 @@
 		"description": "",
 		"type": "string",
 		"value": "Ebooks"
+	},
+	{
+		"name": "cat_comics",
+		"title": "Comics Category",
+		"description": "",
+		"type": "string",
+		"value": "Comics"
 	},
 	{
 		"name": "cat_apps",

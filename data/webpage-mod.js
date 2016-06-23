@@ -81,19 +81,20 @@ function injectButtons() {
 				dlkey = dlURL.match(/[a-f0-9]{32}/i);
 				if (domain == 'nzbgeek.info') dlkey = getURLParameter('guid',$(thisRow).find('a[href*="guid="]').attr('href'));
 				Password = dlURL.match(/(?:%7B%7B|\{\{)(.*)(?:%7D%7D|\}\})/); // fetch password between {{password}} or %7B%7Bpassword%7D%7D in URL
-				if (Password != null) Password = Password[1]; else Password = ''; // Password is either an array or null
+				if (Password != null) Password = unescape(Password[1]); else Password = ''; // Password is either an array or null
 
 				let Title = $(
-					thisRow.find('a.nodec[href*="/details/"]')[0] || // PFMonkey music table
-					thisRow.find('a.title')[0] ||								// nzbs/nmatrix/oznzb/nzbgeek/nzbsu result table
-					thisRow.find('a.link')[0] ||								// dognzb result table
-					thisRow.find('a[href*="/details/"]')[0] ||	// nzbplanet top 24hr downloads page
-					$('div#content').find('h1')[0] || 					// nzbplanet/generic details page
-					$('div#infohead > h1')[0] ||								// nzbs details page
-					$('h2#detailsh1').contents()[0] ||					// PFMonkey details page
-					$('h2')[0] ||																// nmatrix details page
-					$('div.span12 >h3')[0] || 									// nzb.su details page
-					$('div.container-index > font[size=5]')[0]	// nzbgeek details page
+					thisRow.find('a.nodec[href*="/details/"]')[0] ||					 // PFMonkey music table
+					thisRow.find('a.title')[0] ||															// nzbs/nmatrix/oznzb/nzbgeek/nzbsu result table
+					thisRow.find('a.link')[0] ||															// dognzb result table
+					thisRow.find('a[href*="/details/"]')[0] ||								// nzbplanet top 24hr downloads page
+					$('div#content').find('h1')[0] || 												// nzbplanet/generic details page
+					$('div#infohead > h1')[0] ||															// nzbs details page
+					$('h2#detailsh1').contents()[0] ||												// PFMonkey details page
+					$(this).closest('div.library-show').find('a.title')[0] ||	// newz-complex poster wall homepage
+					$('h2')[0] ||																							// nmatrix details page
+					$('div.span12 >h3')[0] || 																// nzb.su details page
+					$('div.container-index > font[size=5]')[0]								// nzbgeek details page
 				).text().trim();
 				let URL = window.location.protocol+'//'+apiURL+'/api?t=get&id='+dlkey+'&apikey='+apikey;
 
@@ -123,10 +124,12 @@ function injectButtons() {
 					case 'apps': case 'pc': Category = self.options.prefs.cat_apps; break;
 					case 'xxx': case 'adult': Category = self.options.prefs.cat_adult; break;
 					case 'music': case 'audio': Category = self.options.prefs.cat_music; break;
+					case 'books': Category = self.options.prefs.cat_reading; break;
 				}
 				switch (Cat[1]) {
 					case 'anime': Category = self.options.prefs.cat_anime; break;
-					case 'ebook': case 'comics': Category = self.options.prefs.cat_reading; break;
+					case 'comics': Category = self.options.prefs.cat_comics; break;
+					case 'ebook': Category = self.options.prefs.cat_reading; break;
 					case 'games': case 'gaming': Category = self.options.prefs.cat_games; break;
 				}
 
@@ -182,6 +185,7 @@ function injectButtons() {
 					document.getElementsByName('RSSTOKEN')[0] ||	// nzbs/nmatrix/oznzb/nzbsu
 					document.getElementsByName('rsstoken')[0]		// dognzb/nzbgeek
 				).value;
+
 
 				$(btnSelector).each(eachNewznabDownload);
 			}

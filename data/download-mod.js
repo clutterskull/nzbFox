@@ -51,6 +51,7 @@ if (dialog.mLauncher.MIMEInfo.MIMEType == 'application/x-nzb' || dialog.mLaunche
 				createMenuItem(catListMenu,self.options.prefs.cat_music);
 				createMenuItem(catListMenu,self.options.prefs.cat_games);
 				createMenuItem(catListMenu,self.options.prefs.cat_reading);
+				createMenuItem(catListMenu,self.options.prefs.cat_comics);
 				createMenuItem(catListMenu,self.options.prefs.cat_apps);
 				createMenuItem(catListMenu,self.options.prefs.cat_adult);
 
