@@ -1,254 +1,257 @@
 {
-	"name": "nzbfox",
-	"title": "nzbFox",
-	"id": "nzbFox@github",
-	"description": "Adds the ability to control & send NZB files directly to remote download clients",
-	"homepage": "https://github.com/NickSC/nzbFox",
-	"icon": "resource://nzbFox-at-github/data/images/nzb-64-green.png",
-	"author": "Enesce",
-	"main": "./lib/main.js",
-	"license": "MPL-2.0",
-	"version": "1.4.5",
-	"permissions": {"multiprocess":true,"private-browsing":true},
-	"engines": {
-		"firefox": ">=38.0a1 <=49.0a1"
-	},
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/NickSC/nzbFox.git"
-	},
-
-	"preferences": [
-	{
-		"name": "theme",
-		"title": "Panel Theme",
-		"type": "radio",
-		"value": "light",
-		"options": [
-		{
-			"value": "light",
-			"label": "Light"
-		},
-		{
-			"value": "dark",
-			"label": "Dark"
-		}
-		]
-	},
-	{
-		"name": "dl_finish_notifications",
-		"title": "Download Finished Notification",
-		"description": "Notification is shown when a download has finished. Attached to the nzbFox toolbar icon",
-		"type": "bool",
-		"value": true
-	},
-	{
-		"name": "dl_start_notifications",
-		"title": "Download Started Notification",
-		"description": "Notification is shown when a download is started. Attached to the nzbFox toolbar icon",
-		"type": "bool",
-		"value": false
-	},
-	{
-		"name": "dl_notification_type",
-		"title": "Download Notification Type",
-		"description": "Standard notifications will only be visible while your browser window is active.\nDesktop notifications will appear even when your browser is in the background",
-		"type": "radio",
-		"value": "standard",
-		"options": [
-		{
-			"value": "standard",
-			"label": "Standard"
-		},
-		{
-			"value": "desktop",
-			"label": "Desktop"
-		},
-		{
-			"value": "both",
-			"label": "Both"
-		}
-		]
-	},
-	{
-		"name": "sab_enabled",
-		"title": "Enable SABnzbd+",
-		"description": "",
-		"type": "bool",
-		"value": false
-	},
-	{
-		"name": "sab_url",
-		"title": "SABnzbd+ URL",
-		"description": "",
-		"type": "string",
-		"value": "http://127.0.0.1:8080"
-	},
-	{
-		"name": "sab_apikey",
-		"title": "SABnzbd+ API Key",
-		"description": "Found under Config -> General -> API Key",
-		"type": "string",
-		"value": ""
-	},
-	{
-		"name": "testSAB",
-		"label": "Test SABnzbd+",
-		"type": "control",
-		"title": " "
-	},
-	{
-		"name": "nzbg_enabled",
-		"title": "Enable NZBGet",
-		"description": "",
-		"type": "bool",
-		"value": false
-	},
-	{
-		"name": "nzbg_url",
-		"title": "NZBGet URL",
-		"description": "",
-		"type": "string",
-		"value": "http://nzbget:tegbzn6789@127.0.0.1:6789"
-	},
-	{
-		"name": "testNZBGet",
-		"label": "Test NZBGet",
-		"type": "control",
-		"title": " "
-	},
-	{
-		"name": "cat_tv",
-		"title": "TV Category",
-		"description": "",
-		"type": "string",
-		"value": "Series"
-	},
-	{
-		"name": "cat_movies",
-		"title": "Movies Category",
-		"description": "",
-		"type": "string",
-		"value": "Movies"
-	},
-	{
-		"name": "cat_anime",
-		"title": "Anime Category",
-		"description": "",
-		"type": "string",
-		"value": "Anime"
-	},
-	{
-		"name": "cat_music",
-		"title": "Music Category",
-		"description": "",
-		"type": "string",
-		"value": "Music"
-	},
-	{
-		"name": "cat_games",
-		"title": "Games Category",
-		"description": "",
-		"type": "string",
-		"value": "Games"
-	},
-	{
-		"name": "cat_reading",
-		"title": "Reading Category",
-		"description": "",
-		"type": "string",
-		"value": "Ebooks"
-	},
-	{
-		"name": "cat_comics",
-		"title": "Comics Category",
-		"description": "",
-		"type": "string",
-		"value": "Comics"
-	},
-	{
-		"name": "cat_apps",
-		"title": "Apps Category",
-		"description": "",
-		"type": "string",
-		"value": "Apps"
-	},
-	{
-		"name": "cat_adult",
-		"title": "Adult Category",
-		"description": "",
-		"type": "string",
-		"value": "Adult"
-	},
-	{
-		"name": "cat_custom",
-		"title": "Extra Categories",
-		"description": "Comma separated list of extra categories to add to NZB download prompt category list",
-		"type": "string",
-		"value": ""
-	},
-	{
-		"name": "dev",
-		"title": "Developer Mode",
-		"description": "Enables additional logging to web console.\nOnly enable if you know what you are doing!",
-		"type": "bool",
-		"value": false
-	},
-	{
-		"name": "connection_timeout",
-		"title": "Connection Timeout",
-		"description": "Seconds. Time to wait for remote download client to respond to API calls. Default 1 second\nMust be lower than active refresh speed.",
-		"type": "integer",
-		"value": 1
-	},
-	{
-		"name": "refresh_active",
-		"title": "Refresh Speed while Active",
-		"description": "Seconds. While the UI Panel is visible or an NZB is downloading, nzbFox will refresh your download client at this speed. Default 3 seconds, 0 to disable",
-		"type": "integer",
-		"value": 3
-	},
-	{
-		"name": "refresh_idle",
-		"title": "Refresh Speed while Idle",
-		"description": "Seconds. While the UI Panel is hidden and an NZB is not downloading, nzbFox will refresh your download client at this speed. Default 2 minutes, 0 to disable",
-		"type": "integer",
-		"value": 120
-	},
-	{
-		"name": "refresh_history",
-		"title": "Refresh History Speed",
-		"description": "Seconds. How often to check remote history for finished downloads. Default 15 seconds",
-		"type": "integer",
-		"value": 15
-	},
-	{
-		"name": "custom_indexers",
-		"title": "Personal Newznab Indexers",
-		"description": "If you have your own Newznab indexer, enter the domain name here.\nDefault template is recommended.\nUse ',' for multiple domains.\n(Example: myindexer.com,192.168.1.4,localhost)",
-		"type": "string",
-		"value": ""
-	},
-	{
-		"name": "prompt_action",
-		"title": "Automatically Send NZB Downloads to",
-		"description": "When prompted to download an NZB file, select an option here if you want nzbFox to automatically send the NZB to your download client",
-		"type": "radio",
-		"value": "",
-		"options": [
-		{
-			"value": "",
-			"label": "None"
-		},
-		{
-			"value": "nzbg",
-			"label": "NZBGet"
-		},
-		{
-			"value": "sab",
-			"label": "SABnzbd+"
-		}
-		]
-	}
-	]
+  "name": "nzbfoxplusplus",
+  "title": "nzbFox++",
+  "id": "nzbFoxPlusPlus@github",
+  "description": "Adds the ability to control & send NZB files directly to remote download clients",
+  "homepage": "https://github.com/clutterskull/nzbFoxPlusPlus",
+  "icon": "resource://nzbFoxPlusPlus-at-github/data/images/nzb-64-green.png",
+  "author": "clutterskull",
+  "maintainers": ["Enesce", "clutterskull"],
+  "main": "./lib/main.js",
+  "license": "MPL-2.0",
+  "version": "1.4.5",
+  "permissions": {
+    "multiprocess": true,
+    "private-browsing": true
+  },
+  "engines": {
+    "firefox": ">=38.0a1 <=49.0a1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/clutterskull/nzbFoxPlusPlus"
+  },
+  "preferences": [
+    {
+      "name": "theme",
+      "title": "Panel Theme",
+      "type": "radio",
+      "value": "light",
+      "options": [
+        {
+          "value": "light",
+          "label": "Light"
+        },
+        {
+          "value": "dark",
+          "label": "Dark"
+        }
+      ]
+    },
+    {
+      "name": "dl_finish_notifications",
+      "title": "Download Finished Notification",
+      "description": "Notification is shown when a download has finished. Attached to the nzbFox toolbar icon",
+      "type": "bool",
+      "value": true
+    },
+    {
+      "name": "dl_start_notifications",
+      "title": "Download Started Notification",
+      "description": "Notification is shown when a download is started. Attached to the nzbFox toolbar icon",
+      "type": "bool",
+      "value": false
+    },
+    {
+      "name": "dl_notification_type",
+      "title": "Download Notification Type",
+      "description": "Standard notifications will only be visible while your browser window is active.\nDesktop notifications will appear even when your browser is in the background",
+      "type": "radio",
+      "value": "standard",
+      "options": [
+        {
+          "value": "standard",
+          "label": "Standard"
+        },
+        {
+          "value": "desktop",
+          "label": "Desktop"
+        },
+        {
+          "value": "both",
+          "label": "Both"
+        }
+      ]
+    },
+    {
+      "name": "sab_enabled",
+      "title": "Enable SABnzbd+",
+      "description": "",
+      "type": "bool",
+      "value": false
+    },
+    {
+      "name": "sab_url",
+      "title": "SABnzbd+ URL",
+      "description": "",
+      "type": "string",
+      "value": "http://127.0.0.1:8080"
+    },
+    {
+      "name": "sab_apikey",
+      "title": "SABnzbd+ API Key",
+      "description": "Found under Config -> General -> API Key",
+      "type": "string",
+      "value": ""
+    },
+    {
+      "name": "testSAB",
+      "label": "Test SABnzbd+",
+      "type": "control",
+      "title": " "
+    },
+    {
+      "name": "nzbg_enabled",
+      "title": "Enable NZBGet",
+      "description": "",
+      "type": "bool",
+      "value": false
+    },
+    {
+      "name": "nzbg_url",
+      "title": "NZBGet URL",
+      "description": "",
+      "type": "string",
+      "value": "http://nzbget:tegbzn6789@127.0.0.1:6789"
+    },
+    {
+      "name": "testNZBGet",
+      "label": "Test NZBGet",
+      "type": "control",
+      "title": " "
+    },
+    {
+      "name": "cat_tv",
+      "title": "TV Category",
+      "description": "",
+      "type": "string",
+      "value": "Series"
+    },
+    {
+      "name": "cat_movies",
+      "title": "Movies Category",
+      "description": "",
+      "type": "string",
+      "value": "Movies"
+    },
+    {
+      "name": "cat_anime",
+      "title": "Anime Category",
+      "description": "",
+      "type": "string",
+      "value": "Anime"
+    },
+    {
+      "name": "cat_music",
+      "title": "Music Category",
+      "description": "",
+      "type": "string",
+      "value": "Music"
+    },
+    {
+      "name": "cat_games",
+      "title": "Games Category",
+      "description": "",
+      "type": "string",
+      "value": "Games"
+    },
+    {
+      "name": "cat_reading",
+      "title": "Reading Category",
+      "description": "",
+      "type": "string",
+      "value": "Ebooks"
+    },
+    {
+      "name": "cat_comics",
+      "title": "Comics Category",
+      "description": "",
+      "type": "string",
+      "value": "Comics"
+    },
+    {
+      "name": "cat_apps",
+      "title": "Apps Category",
+      "description": "",
+      "type": "string",
+      "value": "Apps"
+    },
+    {
+      "name": "cat_adult",
+      "title": "Adult Category",
+      "description": "",
+      "type": "string",
+      "value": "Adult"
+    },
+    {
+      "name": "cat_custom",
+      "title": "Extra Categories",
+      "description": "Comma separated list of extra categories to add to NZB download prompt category list",
+      "type": "string",
+      "value": ""
+    },
+    {
+      "name": "dev",
+      "title": "Developer Mode",
+      "description": "Enables additional logging to web console.\nOnly enable if you know what you are doing!",
+      "type": "bool",
+      "value": false
+    },
+    {
+      "name": "connection_timeout",
+      "title": "Connection Timeout",
+      "description": "Seconds. Time to wait for remote download client to respond to API calls. Default 1 second\nMust be lower than active refresh speed.",
+      "type": "integer",
+      "value": 1
+    },
+    {
+      "name": "refresh_active",
+      "title": "Refresh Speed while Active",
+      "description": "Seconds. While the UI Panel is visible or an NZB is downloading, nzbFox will refresh your download client at this speed. Default 3 seconds, 0 to disable",
+      "type": "integer",
+      "value": 3
+    },
+    {
+      "name": "refresh_idle",
+      "title": "Refresh Speed while Idle",
+      "description": "Seconds. While the UI Panel is hidden and an NZB is not downloading, nzbFox will refresh your download client at this speed. Default 2 minutes, 0 to disable",
+      "type": "integer",
+      "value": 120
+    },
+    {
+      "name": "refresh_history",
+      "title": "Refresh History Speed",
+      "description": "Seconds. How often to check remote history for finished downloads. Default 15 seconds",
+      "type": "integer",
+      "value": 15
+    },
+    {
+      "name": "custom_indexers",
+      "title": "Personal Newznab Indexers",
+      "description": "If you have your own Newznab indexer, enter the domain name here.\nDefault template is recommended.\nUse ',' for multiple domains.\n(Example: myindexer.com,192.168.1.4,localhost)",
+      "type": "string",
+      "value": ""
+    },
+    {
+      "name": "prompt_action",
+      "title": "Automatically Send NZB Downloads to",
+      "description": "When prompted to download an NZB file, select an option here if you want nzbFox to automatically send the NZB to your download client",
+      "type": "radio",
+      "value": "",
+      "options": [
+        {
+          "value": "",
+          "label": "None"
+        },
+        {
+          "value": "nzbg",
+          "label": "NZBGet"
+        },
+        {
+          "value": "sab",
+          "label": "SABnzbd+"
+        }
+      ]
+    }
+  ]
 }

@@ -3,154 +3,178 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-		nzbFox (c) 2014 Nick Cooper - https://github.com/NickSC
+        nzbFox (c) 2014 Nick Cooper - https://github.com/NickSC
 
 -->
 <!DOCTYPE html>
 <html>
+
 <head>
-	<meta charset="utf-8">
-	<link id="theme" href="theme.light.css" rel="stylesheet">
-	<style type="text/css" media="all">
-		html {
-			overflow: hidden;
-			font-size: 12px;
-			width: 500px
-		}
-		div.nzbFox {
-			display: inline;
-		}
-		div.template {
-			display: none;
-		}
-		div.nzbFox#error {
-			padding-left: 5px;
-			color: #FF0000;
-		}
-		.ui-progressbar {
-			position: relative;
-		}
-		.ui-progressbar-label {
-			position: absolute;
-			left: 50%;
-			top: 4px;
-			font-weight: bold;
-		}
-		span.showOptions {
-			float: right;
-			position: relative;
-			z-index: 0;
-		}
-		.ui-menu {
-			width: 120px;
-			position: absolute;
-		}
-		.ui-tabs-anchor {
-			outline: none;
-		}
-		li.windows-only {
-			display: none;
-		}
-		.ui-widget-content .ui-state-active .ui-menu-item {
-			font-weight: normal;
-		}
-		.ui-widget-content .ui-state-focus .ui-menu-item {
-			font-weight: normal;
-		}
-	</style>
+    <meta charset="utf-8">
+    <link id="theme" href="theme.light.css" rel="stylesheet">
+    <style type="text/css" media="all">
+        html {
+            overflow: hidden;
+            font-size: 12px;
+            width: 500px
+        }
+
+        div.nzbFox {
+            display: inline;
+        }
+
+        div.template {
+            display: none;
+        }
+
+        div.nzbFox#error {
+            padding-left: 5px;
+            color: #FF0000;
+        }
+
+        .ui-progressbar {
+            position: relative;
+        }
+
+        .ui-progressbar-label {
+            position: absolute;
+            left: 50%;
+            top: 4px;
+            font-weight: bold;
+        }
+
+        span.showOptions {
+            float: right;
+            position: relative;
+            z-index: 0;
+        }
+
+        .ui-menu {
+            width: 120px;
+            position: absolute;
+        }
+
+        .ui-tabs-anchor {
+            outline: none;
+        }
+
+        li.windows-only {
+            display: none;
+        }
+
+        .ui-widget-content .ui-state-active .ui-menu-item {
+            font-weight: normal;
+        }
+
+        .ui-widget-content .ui-state-focus .ui-menu-item {
+            font-weight: normal;
+        }
+    </style>
 </head>
+
 <body>
 
-<div id="tabs">
-	<ul id="tabList">
-		<span class="showOptions"><button id="showOptions">Show Options</button></span>
-	</ul>
-</div>
+    <div id="tabs">
+        <ul id="tabList">
+            <span class="showOptions"><button id="showOptions">Show Options</button></span>
+        </ul>
+    </div>
 
-<div id="nzbg" class="template" title="NZBGet">
-	<b>Speed:</b> <div id="speed" class="nzbFox"></div><br/>
-	<b>Downloading:</b> <div id="name" class="nzbFox"></div><br/>
-	<b>Remaining:</b> <div id="time" class="nzbFox"></div><br/>
-	<div id="progressBar" class="ui-progressbar"><div id="progressLabel" class="ui-progressbar-label"></div></div><br/>
-	<div id="btnSet" class="nzbFox">
-		<button id="togglePause">...</button>
-		<button id="refresh">Refresh</button>
-		<button id="showMenu">Select an action</button>
-	</div>
-	<ul id="menu">
-		<li id="speedLimit">Speed limit</li>
-		<li>Pause for...
-			<ul>
-				<li id="pause-5m">5 mins</li>
-				<li id="pause-15m">15 mins</li>
-				<li id="pause-30m">30 mins</li>
-				<li id="pause-60m">1 hour</li>
-				<li>-</li>
-				<li id="pause-custom">Custom</li>
-			</ul>
-		</li>
-	</ul>
-	<div id="activity" class="icon-spinner"></div>
-	<div id="error" class="nzbFox"></div>
-	<button id="open" style="float: right">Open in Browser</button>
-</div>
+    <div id="nzbg" class="template" title="NZBGet">
+        <b>Speed:</b>
+        <div id="speed" class="nzbFox"></div><br/>
+        <b>Downloading:</b>
+        <div id="name" class="nzbFox"></div><br/>
+        <b>Remaining:</b>
+        <div id="time" class="nzbFox"></div><br/>
+        <div id="progressBar" class="ui-progressbar">
+            <div id="progressLabel" class="ui-progressbar-label"></div>
+        </div><br/>
+        <div id="btnSet" class="nzbFox">
+            <button id="togglePause">...</button>
+            <button id="refresh">Refresh</button>
+            <button id="showMenu">Select an action</button>
+        </div>
+        <ul id="menu">
+            <li id="speedLimit">Speed limit</li>
+            <li>Pause for...
+                <ul>
+                    <li id="pause-5m">5 mins</li>
+                    <li id="pause-15m">15 mins</li>
+                    <li id="pause-30m">30 mins</li>
+                    <li id="pause-60m">1 hour</li>
+                    <li>-</li>
+                    <li id="pause-custom">Custom</li>
+                </ul>
+            </li>
+        </ul>
+        <div id="activity" class="icon-spinner"></div>
+        <div id="error" class="nzbFox"></div>
+        <button id="open" style="float: right">Open in Browser</button>
+    </div>
 
-<div id="sab" class="template" title="SABnzbd+">
-	<b>Speed:</b> <div id="speed" class="nzbFox"></div><br/>
-	<b>Downloading:</b> <div id="name" class="nzbFox"></div><br/>
-	<b>Remaining:</b> <div id="time" class="nzbFox"></div><br/>
-	<div id="progressBar" class="ui-progressbar"><div id="progressLabel" class="ui-progressbar-label"></div></div><br/>
-	<div id="btnSet" class="nzbFox">
-		<button id="togglePause">...</button>
-		<button id="refresh">Refresh</button>
-		<button id="showMenu">Select an action</button>
-	</div>
-	<ul id="menu">
-		<li id="speedLimit">Speed limit</li>
-		<li>Pause for...
-			<ul>
-				<li id="pause-5m">5 mins</li>
-				<li id="pause-15m">15 mins</li>
-				<li id="pause-30m">30 mins</li>
-				<li id="pause-60m">1 hour</li>
-				<li>-</li>
-				<li id="pause-custom">Custom</li>
-			</ul>
-		</li>
-		<li>On finish...
-		<ul style="width: 130px">
-				<li id="finish-nothing">Do nothing</li>
-				<li id="finish-shutdown">Shutdown SAB</li>
-				<li id="finish-shutdownPC" class="windows-only">Shutdown PC</li>
-				<li id="finish-standbyPC" class="windows-only">Standby PC</li>
-				<li id="finish-hibernatePC" class="windows-only">Hibernate PC</li>
-				<li>-</li>
-				<li id="finish-script">Run script</li>
-			</ul>
-		</li>
-	</ul>
-	<div id="activity" class="icon-spinner"></div>
-	<div id="error" class="nzbFox"></div>
-	<button id="open" style="float: right">Open in Browser</button>
-</div>
+    <div id="sab" class="template" title="SABnzbd+">
+        <b>Speed:</b>
+        <div id="speed" class="nzbFox"></div><br/>
+        <b>Downloading:</b>
+        <div id="name" class="nzbFox"></div><br/>
+        <b>Remaining:</b>
+        <div id="time" class="nzbFox"></div><br/>
+        <div id="progressBar" class="ui-progressbar">
+            <div id="progressLabel" class="ui-progressbar-label"></div>
+        </div><br/>
+        <div id="btnSet" class="nzbFox">
+            <button id="togglePause">...</button>
+            <button id="refresh">Refresh</button>
+            <button id="showMenu">Select an action</button>
+        </div>
+        <ul id="menu">
+            <li id="speedLimit">Speed limit</li>
+            <li>Pause for...
+                <ul>
+                    <li id="pause-5m">5 mins</li>
+                    <li id="pause-15m">15 mins</li>
+                    <li id="pause-30m">30 mins</li>
+                    <li id="pause-60m">1 hour</li>
+                    <li>-</li>
+                    <li id="pause-custom">Custom</li>
+                </ul>
+            </li>
+            <li>On finish...
+                <ul style="width: 130px">
+                    <li id="finish-nothing">Do nothing</li>
+                    <li id="finish-shutdown">Shutdown SAB</li>
+                    <li id="finish-shutdownPC" class="windows-only">Shutdown PC</li>
+                    <li id="finish-standbyPC" class="windows-only">Standby PC</li>
+                    <li id="finish-hibernatePC" class="windows-only">Hibernate PC</li>
+                    <li>-</li>
+                    <li id="finish-script">Run script</li>
+                </ul>
+            </li>
+        </ul>
+        <div id="activity" class="icon-spinner"></div>
+        <div id="error" class="nzbFox"></div>
+        <button id="open" style="float: right">Open in Browser</button>
+    </div>
 
-<div id="pauseFor" title="Pause for..." class="dialog template">
-		<p><input type="number" value="60" class="text ui-widget-content ui-corner-all" style="width: 60px"> <i>minutes</i></p>
-</div>
+    <div id="pauseFor" title="Pause for..." class="dialog template">
+        <p><input type="number" value="60" class="text ui-widget-content ui-corner-all" style="width: 60px"> <i>minutes</i></p>
+    </div>
 
-<div id="speedLimit" title="Set Speed Limit" class="dialog template">
-		<p><input type="number" value="" class="text ui-widget-content ui-corner-all" style="width: 60px"> <i>KB/s</i></p>
-</div>
+    <div id="speedLimit" title="Set Speed Limit" class="dialog template">
+        <p><input type="number" value="" class="text ui-widget-content ui-corner-all" style="width: 60px"> <i>KB/s</i></p>
+    </div>
 
-<div id="finishScript" title="Finish script" class="dialog template">
-		<p><select class="text ui-widget-content ui-corner-all"></select></p>
-</div>
+    <div id="finishScript" title="Finish script" class="dialog template">
+        <p><select class="text ui-widget-content ui-corner-all"></select></p>
+    </div>
 
-<div id="dev" style="display: none">
-	<button id="test1">Test 1</button>
-	<button id="test2">Test 2</button>
-	<button id="test3">Test 3</button>
-</div>
+    <div id="dev" style="display: none">
+        <button id="test1">Test 1</button>
+        <button id="test2">Test 2</button>
+        <button id="test3">Test 3</button>
+    </div>
 
 </body>
+
 </html>
